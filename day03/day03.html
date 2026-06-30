@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 03 · MCP와 FastMCP 개요</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--wash-2); border:1px solid var(--line); border-radius:15px; padding:20px; display:flex; flex-direction:column; gap:8px;}
+  .card .ic{width:40px; height:40px; border-radius:11px; display:grid; place-items:center; background:var(--wash); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0;}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:#F3FBF9; border-color:#CFEDE7;} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:13px; padding:16px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--wash); border:1px solid var(--line);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{background:var(--mint-soft); border-color:#CFEDE7;} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{background:#FEF6E9; border-color:#F6E2BC;} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{background:#FDEEF3; border-color:#F6C9D8;} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:linear-gradient(135deg,#F4F1FF,#FBFAFF); border:1px dashed var(--violet-300); border-radius:13px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:13px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
+  .pane.bad{background:#FDF1F1; border-color:#F3CFCF;} .pane.good{background:#F1FBF7; border-color:#CDEEDD;}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+<!-- COVER -->
+<section class="slide cover active" data-title="표지 · Day 03">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 3 · DAY 03</span><span>MODEL CONTEXT PROTOCOL</span></div>
+    <h1>MCP와 FastMCP<br/>AI를 위한 표준 연결</h1>
+  </div>
+</section>
+
+<!-- AGENDA -->
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">DAY 03</span><span class="dot"></span>AGENDA</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body top">
+    <div class="cards c3">
+      <div class="card"><h3>CH0–1 · 왜 MCP</h3><p>N×M 통합 문제, USB-C 비유, 구조.</p></div>
+      <div class="card"><h3>CH2 · 3가지 기본요소</h3><p>Tools·Resources·Prompts.</p></div>
+      <div class="card"><h3>CH3 · 전송 방식</h3><p>stdio·SSE·Streamable HTTP.</p></div>
+      <div class="card"><h3>CH4–5 · FastMCP·검사</h3><p>데코레이터, MCP Inspector.</p></div>
+      <div class="card"><h3>CH6 · 보안·설계</h3><p>권한·검증·주의점.</p></div>
+      <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><h3>CH7 · 실습 (LAB)</h3><p>첫 MCP 서버 만들고 Inspector로 검증.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOOK problem -->
+<section class="slide" data-title="도입 — N×M 통합 문제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>도입</div>
+  <h2 class="s-title sm">왜 매번 ‘연결’이 문제인가</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>✕ 표준이 없을 때</h4><p>모델 M개 × 도구 N개 = <b>M×N개의 맞춤 연동</b>을 각자 만든다. 도구가 늘 때마다 모든 앱이 다시 작업.</p></div>
+      <div class="pane good"><h4>✓ 표준이 있을 때</h4><p>도구는 <b>MCP 서버</b>로 한 번만, 앱은 <b>MCP 클라이언트</b>로 한 번만 → 서로 자유롭게 연결.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">비유</span><div>기기마다 충전 단자가 다르던 시절 → <b>USB-C</b> 하나로 통일. MCP는 “AI를 위한 USB-C”.</div></div>
+  </div>
+</section>
+
+<!-- ===== CH1 ===== -->
+<section class="slide section" data-title="[섹션] MCP란 무엇인가">
+  <div class="ghost">01</div><div class="seyebrow">CHAPTER 01</div>
+  <h2>MCP란<br/>무엇인가</h2>
+  <div class="agenda"><span>정의</span><span>구성요소</span><span>JSON-RPC</span></div>
+</section>
+
+<section class="slide" data-title="MCP 한 장 정의">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">MCP — 모델과 도구를 잇는 공개 표준</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="keymsg" style="margin-bottom:18px"><span class="k">정의</span><div><b>Model Context Protocol</b> — LLM 앱이 외부 데이터·도구를 <b>표준화된 방식</b>으로 안전하게 쓰게 하는 프로토콜. 2024년 11월 공개 → 사실상 표준으로 확산.</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>도구 쪽은 <b>한 번</b> 서버로 만들면 여러 앱(Claude·Cursor·VS Code…)에서 재사용</div></div>
+      <div class="v"><span class="b">→</span><div>앱 쪽은 <b>한 번</b> 클라이언트만 구현하면 모든 MCP 서버와 연결</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="구성: Host·Client·Server">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구성요소</div>
+  <h2 class="s-title sm">호스트 · 클라이언트 · 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="arch">
+      <div class="box"><div class="bt">Host</div><div class="bs">AI 앱(Claude Desktop 등)</div></div>
+      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
+      <div class="box"><div class="bt">Client</div><div class="bs">호스트 안의 연결 담당</div></div>
+      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
+      <div class="box api"><div class="bt">Server</div><div class="bs">도구·데이터 제공(우리가 만든다)</div></div>
+    </div>
+    <div class="keymsg" style="margin-top:24px"><span class="k">역할</span><div>호스트가 LLM을 품고, 클라이언트가 서버와 1:1로 말하며, <b>서버가 실제 기능</b>을 노출한다. 오늘 우리는 <b>서버</b>를 만든다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="JSON-RPC 위에서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>통신</div>
+  <h2 class="s-title sm">속은 JSON-RPC 2.0 메시지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">MCP는 <b style="color:var(--ink)">JSON-RPC 2.0</b> 규약으로 메시지를 주고받습니다. “웹 API와 비슷하되, LLM 상호작용에 맞춰 설계된” 것.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>도구 목록 요청 / 도구 호출 / 결과 반환</div></div>
+          <div class="v"><span class="b">✓</span><div>다행히 <b>FastMCP가 이 배선을 다 숨긴다</b> → 우린 함수만 작성</div></div>
+        </div>
+      </div>
+      <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div><div class="ct"><h4>한 줄</h4><p>JSON-RPC를 몰라도 된다. 데코레이터 단 함수가 곧 표준 메시지로 번역된다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH2 primitives ===== -->
+<section class="slide section" data-title="[섹션] 3가지 기본요소">
+  <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div>
+  <h2>Tools · Resources<br/>Prompts</h2>
+  <div class="agenda"><span>Tool</span><span>Resource</span><span>Prompt</span><span>구분 규칙</span></div>
+</section>
+
+<section class="slide" data-title="3 primitives 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>세 기둥</div>
+  <h2 class="s-title sm">MCP 서버가 노출하는 3가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><span class="n" style="color:var(--violet)">행동</span><h3>Tools</h3><p>POST 같은 <b>호출 함수</b>. 부작용 있음 — 메일 전송, DB 쓰기, 계산.</p></div>
+      <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n" style="color:var(--mint)">데이터</span><h3>Resources</h3><p>GET 같은 <b>읽기 전용</b> 데이터. URI로 주소 지정 — 문서·설정·로그.</p></div>
+      <div class="card"><span class="n">템플릿</span><h3>Prompts</h3><p>재사용 <b>프롬프트 템플릿</b>. 호스트에서 슬래시 명령처럼 노출.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기억</span><div>오늘은 셋 다 만들어 본다. 내일(Day 4)은 그중 <b>Resources</b>를 깊게 설계한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="구분 규칙">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Tool vs Resource</div>
+  <h2 class="s-title sm">헷갈릴 땐 — ‘부작용이 있는가’</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane"><h4 style="color:var(--violet)">Tool (행동/POST)</h4><p>상태를 <b>바꾸거나</b> 외부에 영향. “티켓 생성”, “이메일 발송”, “주문”.</p></div>
+      <div class="pane good"><h4>Resource (읽기/GET)</h4><p>그냥 <b>읽어오기</b>. “정책 문서 읽기”, “설정값 조회”, “로그 보기”.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">한 줄 규칙</span><div><b>부작용 있으면 Tool, 읽기 전용이면 Resource.</b> 이 한 문장이 설계의 8할.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="✏️ 미니실습 · Tool인가 Resource인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>분류</div>
+  <h2 class="s-title sm">직접 해보기 — 무엇으로 만들까</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <p class="phase-label">과제 — 각 기능을 Tool / Resource로 분류 <span class="ln"></span></p>
+    <div class="vlist">
+      <div class="v"><span class="b">A</span><div>“오늘 환율 조회해 반환”</div></div>
+      <div class="v"><span class="b">B</span><div>“회의록을 캘린더에 일정으로 등록”</div></div>
+      <div class="v"><span class="b">C</span><div>“사내 휴가 정책 문서 읽기”</div></div>
+      <div class="v"><span class="b">D</span><div>“두 수를 더한 결과 반환”</div></div>
+    </div>
+    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>정답</h4><p>C = Resource(읽기) / A·B·D = Tool(조회 호출·등록·계산처럼 ‘행위’). 외부 상태를 바꾸는 B는 분명한 Tool.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH3 transports ===== -->
+<section class="slide section" data-title="[섹션] 전송 방식">
+  <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div>
+  <h2>어떻게 연결되나<br/>Transports</h2>
+  <div class="agenda"><span>stdio</span><span>SSE</span><span>Streamable HTTP</span></div>
+</section>
+
+<section class="slide" data-title="3가지 전송 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>transport</div>
+  <h2 class="s-title sm">로컬이냐, 원격이냐</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><span class="n" style="color:var(--violet)">로컬·기본</span><h3>stdio</h3><p>같은 머신의 하위 프로세스로 실행. 개발·로컬 도구의 기본값.</p></div>
+      <div class="card"><span class="n">레거시</span><h3>SSE</h3><p>Server-Sent Events. 예전 원격 방식(점차 대체됨).</p></div>
+      <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n" style="color:var(--mint)">운영</span><h3>Streamable HTTP</h3><p>원격·프로덕션 배포용. 인증과 함께 서비스로 노출.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">오늘</span><div>실습은 <b>stdio</b>(로컬)로 시작 → 필요하면 한 줄로 <b>Streamable HTTP</b>로 전환.</div></div>
+  </div>
+</section>
+
+<!-- ===== CH4 FastMCP ===== -->
+<section class="slide section" data-title="[섹션] FastMCP">
+  <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div>
+  <h2>함수에 데코레이터만<br/>FastMCP</h2>
+  <div class="agenda"><span>왜</span><span>tool·resource·prompt</span><span>타입힌트→스키마</span></div>
+</section>
+
+<section class="slide" data-title="FastMCP — 왜">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>왜 FastMCP</div>
+  <h2 class="s-title sm">보일러플레이트를 지운다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">원시 SDK로 직접 짜면 stdio 처리·JSON-RPC 직렬화·핸들러 등록이 번거롭습니다. <b style="color:var(--ink)">FastMCP</b>는 이를 <b style="color:var(--ink)">데코레이터+타입힌트</b>로 압축합니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">✓</span><div>함수 시그니처 → <b>JSON 스키마 자동 생성</b></div></div>
+          <div class="v"><span class="b">✓</span><div>입력 검증·문서화·라우팅 자동</div></div>
+          <div class="v"><span class="b">★</span><div>MCP 서버의 약 70%가 FastMCP 기반</div></div>
+        </div>
+      </div>
+      <div class="code sm" style="align-self:start">
+        <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">install</span></div>
+        <pre><code><span class="cm"># 설치 (현재 3.x)</span>
+pip install fastmcp
+
+<span class="cm"># 버전 확인</span>
+fastmcp version</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="최소 서버 3줄">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>최소 예제</div>
+  <h2 class="s-title sm">세 줄이면 유효한 MCP 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">server.py</span></div>
+      <pre><code><span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
+
+<span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">add</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
+    <span class="st">"""두 수를 더한다"""</span>          <span class="cm"># docstring → 모델이 읽는 설명</span>
+    <span class="kw">return</span> a + b
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    mcp.<span class="fn2">run</span>()                      <span class="cm"># 기본 stdio 전송</span></code></pre>
+    </div>
+    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>핵심</h4><p>타입힌트(<span style="font-family:var(--mono)">int</span>)와 docstring만으로 <b>스키마·설명</b>이 만들어진다. 3.x에선 데코레이터가 원함수를 그대로 돌려줘 <b>직접 호출도 가능</b>.</p></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="resource · prompt 데코레이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>나머지 둘</div>
+  <h2 class="s-title sm">resource와 prompt도 같은 패턴</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">more.py</span></div>
+      <pre><code><span class="cm"># 읽기 전용 데이터 — URI로 주소 지정</span>
+<span class="kw">@mcp.resource</span>(<span class="st">"greeting://{name}"</span>, description=<span class="st">"이름으로 인사말 반환"</span>)
+<span class="kw">def</span> <span class="fn2">greeting</span>(name: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="kw">return</span> <span class="st">f"안녕하세요, {name}님!"</span>
+
+<span class="cm"># 재사용 프롬프트 템플릿 (슬래시 명령처럼)</span>
+<span class="kw">@mcp.prompt</span>
+<span class="kw">def</span> <span class="fn2">summarize</span>(topic: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="kw">return</span> <span class="st">f"다음 주제를 3문장으로 요약해줘: {topic}"</span></code></pre>
+    </div>
+    <div class="callout amber" style="margin-top:12px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>실무 팁</h4><p>resource는 <b>description=을 명시</b>하라 — FastMCP의 docstring 파싱이 항상 잡히진 않는다(클라이언트 목록에서 설명이 비는 사고 방지).</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH5 Inspector ===== -->
+<section class="slide section" data-title="[섹션] 검사 & 클라이언트">
+  <div class="ghost">05</div><div class="seyebrow">CHAPTER 05</div>
+  <h2>만들었으면<br/>검사하고 연결</h2>
+  <div class="agenda"><span>MCP Inspector</span><span>Claude Desktop</span></div>
+</section>
+
+<section class="slide" data-title="MCP Inspector">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>검사 도구</div>
+  <h2 class="s-title sm">브라우저에서 서버를 눌러본다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px"><b style="color:var(--ink)">MCP Inspector</b>는 서버를 띄워 <b style="color:var(--ink)">Tools·Resources·Prompts 탭</b>에서 직접 호출·확인하는 디버깅 UI입니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>도구를 클릭해 입력값 넣고 ‘Run’</div></div>
+          <div class="v"><span class="b">→</span><div>실제 반환을 즉시 확인</div></div>
+        </div>
+      </div>
+      <div class="code sm" style="align-self:start">
+        <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">inspect</span></div>
+        <pre><code><span class="cm"># FastMCP 3.x</span>
+fastmcp dev inspector
+
+<span class="cm"># 또는 공식 SDK 방식</span>
+uv run mcp dev server.py
+<span class="cm"># 브라우저에서 localhost 접속 → Connect</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Claude Desktop 연결">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실제 호스트</div>
+  <h2 class="s-title sm">Claude Desktop·Cursor에 꽂기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>설정 파일에 서버 등록</h4><p>호스트의 MCP 설정에 실행 명령(파이썬·경로)을 추가.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>호스트 재시작</h4><p>도구·리소스가 대화 중 인식된다.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>같은 서버, 여러 호스트</h4><p>한 번 만든 서버가 Claude·Cursor·ChatGPT에서 그대로 동작.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>‘USB-C’의 약속 — <b>한 번 만들면 어디서나</b>.</div></div>
+  </div>
+</section>
+
+<!-- ===== CH6 security ===== -->
+<section class="slide section" data-title="[섹션] 보안 & 설계">
+  <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div>
+  <h2>힘이 센 만큼<br/>조심해야</h2>
+  <div class="agenda"><span>권한</span><span>입력 검증</span><span>설계 원칙</span></div>
+</section>
+
+<section class="slide" data-title="보안·설계 주의">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>주의점</div>
+  <h2 class="s-title sm">도구에 권한을 주는 일의 무게</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><div class="ic" style="background:#FDEEF3;color:var(--rose)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 7v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V7z"/></svg></div><h3>최소 권한</h3><p>도구가 할 수 있는 일을 <b>딱 필요한 만큼만</b>. 위험한 행동엔 확인 단계.</p></div>
+      <div class="card"><div class="ic" style="background:#FDEEF3;color:var(--rose)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/></svg></div><h3>입력 검증</h3><p>모델이 보내는 인자를 <b>믿지 말고</b> 검증. 경로·쿼리 주입 방지.</p></div>
+      <div class="card"><div class="ic" style="background:#FDEEF3;color:var(--rose)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg></div><h3>비밀 보호</h3><p>API 키·토큰은 코드·로그에 노출 금지. 환경변수로.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">원칙</span><div>도구는 ‘작고 명확하게’ — 하나의 도구가 한 가지 일을, 설명을 분명하게(모델이 오용하지 않도록).</div></div>
+  </div>
+</section>
+
+<!-- ===== CH7 LAB ===== -->
+<section class="slide section mintbg" data-title="[섹션] HANDS-ON LAB">
+  <div class="ghost">07</div>
+  <span class="lab-flag"><span class="sq"></span>HANDS-ON LAB · 로컬</span>
+  <h2 style="margin-top:16px">첫 MCP 서버를 만들고 검사한다</h2>
+  <div class="agenda"><span>설치</span><span>tool</span><span>Inspector</span><span>resource</span><span>prompt</span><span>실전</span></div>
+</section>
+
+<section class="slide" data-title="Lab 0 · 설치·실행">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 0</span><span class="dot"></span>셋업</div>
+  <h2 class="s-title sm">설치하고 빈 서버 띄우기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab0</span></div>
+      <pre><code>pip install fastmcp
+
+<span class="cm"># server.py</span>
+<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+mcp = <span class="fn2">FastMCP</span>(<span class="st">"MyFirstServer"</span>)
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    mcp.<span class="fn2">run</span>()</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:14px"><span class="sq"></span>✅ 오류 없이 실행되면 ‘빈 서버’ 준비 완료</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 1 · 첫 Tool">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 1</span><span class="dot"></span>tool</div>
+  <h2 class="s-title sm">도구 두 개 추가</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab1_tools.py</span></div>
+      <pre><code><span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">add</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
+    <span class="st">"""두 정수를 더한다"""</span>
+    <span class="kw">return</span> a + b
+
+<span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">word_count</span>(text: <span class="kw">str</span>) -> <span class="kw">int</span>:
+    <span class="st">"""문장의 단어 수를 센다"""</span>
+    <span class="kw">return</span> <span class="fn2">len</span>(text.<span class="fn2">split</span>())</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ 타입힌트·docstring을 꼭 넣어 스키마·설명이 생기게</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 2 · Inspector로 검증">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 2</span><span class="dot"></span>검사</div>
+  <h2 class="s-title sm">Inspector에서 직접 호출</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div>
+      <pre><code>fastmcp dev inspector       <span class="cm"># 또는: uv run mcp dev server.py</span>
+<span class="cm"># 브라우저 열림 → Connect</span>
+<span class="cm"># Tools 탭 → add 선택 → a=2, b=3 → Run → 5 확인</span></code></pre>
+    </div>
+    <div class="vlist" style="margin-top:14px">
+      <div class="v"><span class="b">→</span><div>Tools 탭에 add·word_count가 <b>설명과 함께</b> 보이는지</div></div>
+      <div class="v"><span class="b">→</span><div>입력 폼에 값을 넣고 실제 반환을 확인</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 3 · Resource 추가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 3</span><span class="dot"></span>resource</div>
+  <h2 class="s-title sm">읽기 전용 데이터 노출</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab3_resource.py</span></div>
+      <pre><code>STATUS = {<span class="st">"version"</span>: <span class="st">"1.0"</span>, <span class="st">"env"</span>: <span class="st">"dev"</span>}
+
+<span class="kw">@mcp.resource</span>(<span class="st">"config://status"</span>, description=<span class="st">"서버 상태 정보"</span>)
+<span class="kw">def</span> <span class="fn2">status</span>() -> <span class="kw">dict</span>:
+    <span class="kw">return</span> STATUS</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ Inspector의 Resources 탭에서 config://status 읽기 확인</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 4 · Prompt 추가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 4</span><span class="dot"></span>prompt</div>
+  <h2 class="s-title sm">재사용 프롬프트 템플릿</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab4_prompt.py</span></div>
+      <pre><code><span class="kw">@mcp.prompt</span>
+<span class="kw">def</span> <span class="fn2">code_review</span>(language: <span class="kw">str</span>, code: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="st">"""코드 리뷰를 요청하는 프롬프트"""</span>
+    <span class="kw">return</span> <span class="st">f"다음 {language} 코드를 리뷰하고 개선점을 알려줘:\n\n{code}"</span></code></pre>
+    </div>
+    <div class="callout mint" style="margin-top:12px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>구분</h4><p>Prompt는 ‘대화를 세팅’(템플릿), Tool은 ‘일을 실행’. Inspector의 Prompts 탭에서 인자를 넣어 결과 메시지를 확인.</p></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 5 · 실전 도구">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 5</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">쓸모 있는 도구 하나 — 메모 저장/검색</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab5_notes.py</span></div>
+      <pre><code>NOTES: <span class="kw">list</span>[<span class="kw">str</span>] = []
+
+<span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">add_note</span>(text: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="st">"""메모를 추가한다(부작용 → Tool)"""</span>
+    NOTES.<span class="fn2">append</span>(text); <span class="kw">return</span> <span class="st">f"저장됨 (총 {len(NOTES)}개)"</span>
+
+<span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">search_notes</span>(keyword: <span class="kw">str</span>) -> <span class="kw">list</span>[<span class="kw">str</span>]:
+    <span class="st">"""키워드가 든 메모를 찾는다"""</span>
+    <span class="kw">return</span> [n <span class="kw">for</span> n <span class="kw">in</span> NOTES <span class="kw">if</span> keyword <span class="kw">in</span> n]</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ add_note로 몇 개 저장 → search_notes로 검색되는지 확인</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Lab 6 · 도전(선택)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 6</span><span class="dot"></span>도전(선택)</div>
+  <h2 class="s-title sm">한 발 더</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">도전 A</span><h3>Claude Desktop 연결</h3><p>설정에 서버 등록 → 대화에서 도구 호출.</p></div>
+      <div class="card"><span class="n">도전 B</span><h3>HTTP 전환</h3><p>mcp.run(transport="streamable-http")로 원격화.</p></div>
+      <div class="card"><span class="n">도전 C</span><h3>입력 검증</h3><p>잘못된 인자에 친절한 오류를 반환하도록.</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:18px"><div class="ci" style="font-size:18px">🏆</div><div class="ct"><h4>여유가 있다면</h4><p>도구 설명(docstring)을 다듬어 모델이 더 정확히 호출하게 만들어 보세요.</p></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="트러블슈팅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>자주 나는 문제</div>
+  <h2 class="s-title sm">막히면 여기부터</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
+      <tbody>
+        <tr><td>import fastmcp 실패</td><td>업그레이드 잔재</td><td class="hl">pip install --force-reinstall fastmcp</td></tr>
+        <tr><td>도구 설명이 빔</td><td>docstring 누락</td><td class="hl">docstring·resource는 description= 명시</td></tr>
+        <tr><td>Inspector 연결 안 됨</td><td>서버 미실행/포트</td><td class="hl">서버 실행 확인 후 Connect 재시도</td></tr>
+        <tr><td>Claude Desktop서 안 보임</td><td>설정/경로·재시작</td><td class="hl">파이썬 경로 확인 후 호스트 재시작</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide" data-title="실습 산출물">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>산출물</div>
+  <h2 class="s-title sm">오늘 손에 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">체크리스트 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">✓</span><div><b>Tool·Resource·Prompt</b>를 모두 갖춘 서버</div></div>
+          <div class="v"><span class="b">✓</span><div><b>Inspector</b>로 호출·검증 완료</div></div>
+          <div class="v"><span class="b">✓</span><div>‘부작용=Tool, 읽기=Resource’ 체득</div></div>
+        </div>
+      </div>
+      <div class="deliv" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div style="display:flex;gap:12px;align-items:center"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="dt"><b>DELIVERABLE</b><span>나의 첫 MCP 서버(server.py)</span></div></div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5">Tool·Resource·Prompt 예제를 담은 동작 서버.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH8 정리 ===== -->
+<section class="slide section" data-title="[섹션] 정리 & 회고">
+  <div class="ghost">08</div><div class="seyebrow">CHAPTER 08</div>
+  <h2>정리 · 오개념</h2>
+</section>
+
+<section class="slide" data-title="핵심 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>핵심 정리</div>
+  <h2 class="s-title sm">오늘 꼭 가져갈 5가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>MCP = AI를 위한 USB-C</h4><p>모델×도구의 N×M 통합 문제를 표준으로 해결.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>Host·Client·Server</h4><p>우리는 ‘서버’를 만들어 기능을 노출한다.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>3 primitives</h4><p>Tools(행동)·Resources(읽기)·Prompts(템플릿).</p></div></div>
+      <div class="li"><div class="num">4</div><div class="tx"><h4>FastMCP = 데코레이터+타입힌트</h4><p>JSON-RPC 배선을 숨겨 함수만 작성.</p></div></div>
+      <div class="li"><div class="num">5</div><div class="tx"><h4>Inspector로 검증</h4><p>탭에서 직접 눌러 동작 확인.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="자주 묻는 오개념">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>오개념 정리</div>
+  <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>오해</th><th>사실</th></tr></thead>
+      <tbody>
+        <tr><td>“MCP는 특정 회사 전용”</td><td class="hl">공개 표준 — 여러 호스트가 함께 쓴다</td></tr>
+        <tr><td>“모든 기능은 Tool”</td><td class="hl">읽기 전용은 Resource가 적합</td></tr>
+        <tr><td>“JSON-RPC를 알아야 한다”</td><td class="hl">FastMCP가 숨김 — 함수만 작성</td></tr>
+        <tr><td>“docstring이면 충분”</td><td class="hl">resource는 description= 명시가 안전</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide cover" data-title="끝 · Day 03">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">END · DAY 03</span><span>MODEL CONTEXT PROTOCOL</span></div>
+    <h1>한 번 만들면,<br/>어디서나 연결된다.</h1>
+  </div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>

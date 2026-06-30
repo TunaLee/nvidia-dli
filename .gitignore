@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 실습 실행 시 생성되는 산출물 (커밋 대상 아님)
+data/
+qdrant_db/
+docs/
+employees.csv
+executed.ipynb
+
+# OS / 에디터
+.DS_Store

@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 00 · 딥러닝 기초 (Fundamentals of Deep Learning)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--wash-2); border:1px solid var(--line); border-radius:15px; padding:20px; display:flex; flex-direction:column; gap:8px;}
+  .card .ic{width:40px; height:40px; border-radius:11px; display:grid; place-items:center; background:var(--wash); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0;}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:#F3FBF9; border-color:#CFEDE7;} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:13px; padding:16px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--wash); border:1px solid var(--line);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{background:var(--mint-soft); border-color:#CFEDE7;} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{background:#FEF6E9; border-color:#F6E2BC;} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{background:#FDEEF3; border-color:#F6C9D8;} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:linear-gradient(135deg,#F4F1FF,#FBFAFF); border:1px dashed var(--violet-300); border-radius:13px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:13px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
+  .pane.bad{background:#FDF1F1; border-color:#F3CFCF;} .pane.good{background:#F1FBF7; border-color:#CDEEDD;}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+<!-- 1 COVER -->
+<section class="slide cover active" data-title="표지 · Day 00 딥러닝 기초">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">DAY 00 · PREP</span><span>FUNDAMENTALS OF DEEP LEARNING</span></div>
+    <h1>딥러닝 기초<br/>기계는 어떻게 ‘배우는가’</h1>
+  </div>
+</section>
+
+<!-- 2 AGENDA -->
+<section class="slide" data-title="오늘의 일정 (아젠다)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">DAY 01</span><span class="dot"></span>AGENDA</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body top">
+    <div class="cards c3">
+      <div class="card"><h3>CH0 · 큰 그림 + 체험</h3><p>AI·ML·DL, 그리고 Teachable Machine으로 직접 모델 학습.</p></div>
+      <div class="card"><h3>CH1–2 · 신경망과 학습</h3><p>뉴런·순전파, 손실·경사하강법·역전파.</p></div>
+      <div class="card"><h3>CH3 · 일반화</h3><p>활성화 함수, 과적합, 데이터 증강.</p></div>
+      <div class="card"><h3>CH4–5 · CNN·전이학습</h3><p>합성곱·풀링, 사전학습 모델 재사용.</p></div>
+      <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><h3>CH7 · 실습 (LAB)</h3><p>Colab 무료 GPU로 신경망→CNN→전이학습.</p></div>
+      <div class="card"><h3>CH6·8 · NLP 다리·정리</h3><p>임베딩·Transformer 맛보기 → 다음 주 RAG.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 HOOK -->
+<section class="slide" data-title="도입 질문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>도입 질문</div>
+  <div class="body" style="justify-content:center">
+    <div class="quote" style="border-left-width:6px"><p>우리는 고양이를 ‘정의’하지 않는다.<br/>그냥 <span style="color:var(--violet)">고양이 사진을 잔뜩 보여주면</span> 기계가 스스로 알아챈다.</p><div class="src">— 이것이 ‘규칙을 짜는 프로그래밍’과 ‘배우는 기계’의 결정적 차이</div></div>
+    <p class="s-sub" style="margin-top:24px">오늘의 질문 —<br/><b style="color:var(--ink)">① 기계가 ‘배운다’는 게 정확히 뭔가? ② 그 안에서 무슨 일이 일어나나? ③ 우리가 직접 만들 수 있나?</b></p>
+  </div>
+</section>
+
+<!-- 4 AI/ML/DL -->
+<section class="slide" data-title="AI · ML · DL 관계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>용어 정리</div>
+  <h2 class="s-title sm">AI · 머신러닝 · 딥러닝</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">가장 넓음</span><h3>AI</h3><p>‘똑똑해 보이는’ 모든 기법. 규칙 기반도 포함.</p></div>
+      <div class="card"><span class="n">부분집합</span><h3>머신러닝(ML)</h3><p>규칙을 사람이 짜지 않고 <b>데이터에서 학습</b>.</p></div>
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><span class="n" style="color:var(--violet)">오늘</span><h3>딥러닝(DL)</h3><p>여러 층의 <b>인공 신경망</b>으로 특징까지 스스로 학습.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">핵심 차이</span><div>전통 프로그래밍은 <b>규칙→답</b>. 머신러닝은 <b>예시(데이터)+답→규칙</b>을 거꾸로 찾는다.</div></div>
+  </div>
+</section>
+
+<!-- 5 WHY NOW -->
+<section class="slide" data-title="왜 지금 딥러닝인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>맥락</div>
+  <h2 class="s-title sm">왜 지금 딥러닝이 폭발했나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>데이터</h3><p>인터넷·센서로 대규모 라벨 데이터 확보.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><h3>연산(GPU)</h3><p>병렬 연산으로 거대한 망을 학습 가능.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><h3>알고리즘</h3><p>역전파·ReLU·Transformer 등 돌파구.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">결과</span><div>이미지·음성·언어에서 사람 수준을 넘보는 정확도 — 오늘은 그 <b>가장 기본 원리</b>를 손에 익힌다.</div></div>
+  </div>
+</section>
+
+<!-- 6 WHAT DL DOES -->
+<section class="slide" data-title="딥러닝이 잘하는 일">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>적용 영역</div>
+  <h2 class="s-title sm">딥러닝이 잘하는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><h3>컴퓨터 비전</h3><p>이미지 분류·검출·분할.</p></div>
+      <div class="card"><h3>음성</h3><p>인식·합성·번역.</p></div>
+      <div class="card"><h3>자연어</h3><p>번역·요약·대화(→LLM).</p></div>
+      <div class="card"><h3>추천·예측</h3><p>패턴이 복잡해 규칙으로 못 짜는 문제.</p></div>
+    </div>
+    <div class="callout" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div><div class="ct"><h4>공통점</h4><p>사람이 ‘규칙’을 적기 어려운, <b>데이터에 패턴이 숨은</b> 문제들. 이번 주가 끝나면 다음 주엔 이 흐름이 <b>LLM·RAG</b>로 이어진다.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== 체험형 실습 ===== -->
+<!-- 7 SECTION EXPERIENTIAL -->
+<section class="slide section mintbg" data-title="[섹션] 체험형 실습 · 먼저 학습시켜보기">
+  <span class="lab-flag"><span class="sq"></span>HANDS-ON · 먼저 만들어보기</span>
+  <h2 style="margin-top:16px">모델을 ‘직접’ 학습시켜 본다</h2>
+  <div class="agenda"><span>Teachable Machine</span><span>분류기 학습</span><span>일반화·편향 관찰</span></div>
+</section>
+
+<!-- 8 TM INTRO -->
+<section class="slide" data-title="Teachable Machine이란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">체험 실습</span><span class="dot"></span>무코드로</div>
+  <h2 class="s-title sm">코드 없이, 브라우저에서 모델 학습</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">Google <b style="color:var(--ink)">Teachable Machine</b>은 브라우저에서 이미지·소리·포즈 분류기를 <b style="color:var(--ink)">코드·계정 없이</b> 학습시키는 도구입니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>학습이 <b>내 기기(브라우저)</b>에서 진행 — 데이터가 서버로 안 감</div></div>
+          <div class="v"><span class="b">→</span><div>몇 분 만에 ‘작동하는 모델’ 완성</div></div>
+          <div class="v"><span class="b">→</span><div>내부는 사전학습(MobileNet) <b>전이학습</b> — CH5에서 정체를 밝힌다</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci" style="font-size:18px">🧪</div><div class="ct"><h4>왜 먼저 써보나</h4><p>‘데이터 → 학습 → 예측’의 전체 고리를 <b>손으로 한 바퀴</b> 돌려보고, 그다음 내부를 코드로 연다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 TM LAB A -->
+<section class="slide" data-title="체험 A · 분류기 학습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">체험 A</span><span class="dot"></span>학습시키기</div>
+  <h2 class="s-title sm">직접 해보기 — 나만의 분류기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">과제 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div><b>teachablemachine.withgoogle.com</b> → Image Project</div></div>
+          <div class="v"><span class="b">2</span><div>3개 클래스(예: ✊✋✌️) 각 <b>30~50장</b> 웹캠으로 수집</div></div>
+          <div class="v"><span class="b">3</span><div><b>Train</b> 클릭 → Preview에서 실시간 예측 확인</div></div>
+          <div class="v"><span class="b">?</span><div>예측에 붙는 <b>확률(%)</b>은 무엇을 뜻할까</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>관찰 포인트</h4><p>‘예시(데이터)’만 줬는데 분류 규칙이 생겼다 — 이게 <b>머신러닝</b>. 확률은 모델의 <b>확신도</b>.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 TM LAB B -->
+<section class="slide" data-title="체험 B · 일반화·편향">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">체험 B</span><span class="dot"></span>한계 관찰</div>
+  <h2 class="s-title sm">일부러 ‘편향된’ 데이터로 학습하기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">과제 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>‘밝은 곳’ 사진만으로 한 클래스를 학습</div></div>
+          <div class="v"><span class="b">2</span><div>‘어두운 곳’에서 테스트 → 잘 맞히나?</div></div>
+          <div class="v"><span class="b">3</span><div>틀릴 때 어떻게 고칠지 생각 (힌트: 데이터)</div></div>
+        </div>
+      </div>
+      <div class="callout amber" style="flex-direction:column"><div class="ci" style="font-size:18px">⚠️</div><div class="ct"><h4>큰 교훈</h4><p>모델은 <b>본 데이터만큼만</b> 안다. 편향된 데이터 → 편향된 모델. 고치는 법은 대개 <b>“데이터를 더, 더 다양하게”</b>.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">기억</span><div>‘일반화(generalization)’ — 학습에서 못 본 새 상황에도 잘 맞히는 능력. 오늘 내내 따라올 주제.</div></div>
+  </div>
+</section>
+
+<!-- 11 TM CONNECT -->
+<section class="slide" data-title="체험 → 원리 연결">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">회고</span><span class="dot"></span>경험 → 원리</div>
+  <h2 class="s-title sm">방금 일어난 일을 ‘열어’ 본다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num" style="background:var(--mint)">✓</div><div class="tx"><h4>“사진을 모아 Train을 눌렀다”</h4><p>= 데이터로 <b>가중치를 조정(학습)</b>한 것. CH2에서 원리.</p></div></div>
+      <div class="li"><div class="num" style="background:var(--mint)">✓</div><div class="tx"><h4>“확률(%)로 답했다”</h4><p>= 출력층의 <b>softmax</b>가 확신도를 만든 것. CH3.</p></div></div>
+      <div class="li"><div class="num" style="background:var(--mint)">✓</div><div class="tx"><h4>“금방 학습됐다”</h4><p>= 내부가 <b>전이학습</b>이라 마지막 층만 배운 것. CH5.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">다음</span><div>이제 블랙박스를 연다 — <b>뉴런 → 학습 → CNN → 전이학습</b>, 그리고 오후엔 Colab에서 코드로.</div></div>
+  </div>
+</section>
+
+<!-- ===== CH1 신경망 직관 ===== -->
+<!-- 12 SECTION CH1 -->
+<section class="slide section" data-title="[섹션] 신경망 직관">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>신경망은 무엇으로<br/>이루어지는가</h2>
+  <div class="agenda"><span>뉴런</span><span>가중치·편향</span><span>층</span><span>순전파</span></div>
+</section>
+
+<!-- 13 NEURON -->
+<section class="slide" data-title="뉴런 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>가장 작은 단위</div>
+  <h2 class="s-title sm">인공 뉴런 — 곱하고, 더하고, 통과시킨다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="formula"><div style="color:var(--code-dim);font-size:12px">ONE NEURON</div><div class="big">y = f( w₁x₁ + w₂x₂ + … + b )</div><div style="color:var(--code-dim);font-size:12.5px;text-align:center;line-height:1.6">입력 x에 <b style="color:#fff">가중치 w</b>를 곱해 더하고(+편향 b),<br/>활성화 함수 f를 통과시켜 출력</div></div>
+    <div class="vlist" style="margin-top:18px">
+      <div class="v"><span class="b">w</span><div><b>가중치</b> — 그 입력을 얼마나 중요하게 볼지(학습으로 정해짐)</div></div>
+      <div class="v"><span class="b">b</span><div><b>편향</b> — 출력의 기준점을 옮기는 값</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 PERCEPTRON -->
+<section class="slide" data-title="퍼셉트론·결정 경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>가장 단순한 학습기</div>
+  <h2 class="s-title sm">뉴런 하나가 긋는 ‘경계선’</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">뉴런 하나는 입력 공간에 <b style="color:var(--ink)">직선(경계)</b>을 그어 두 부류를 가릅니다. 가중치가 그 선의 기울기·위치를 정합니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>가중치가 바뀌면 경계선이 회전·이동</div></div>
+          <div class="v"><span class="b">→</span><div>학습 = 데이터를 잘 가르는 선을 찾기</div></div>
+        </div>
+      </div>
+      <div class="callout amber" style="flex-direction:column"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M19 7 9 17"/></svg></div><div class="ct"><h4>한계</h4><p>뉴런 하나(직선)로는 <b>복잡한 경계</b>를 못 그린다. → 여러 뉴런을 <b>층</b>으로 쌓는 이유.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 NETWORK -->
+<section class="slide" data-title="신경망 = 층의 쌓임">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>층 구조</div>
+  <h2 class="s-title sm">뉴런을 층으로 쌓으면 신경망</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="arch">
+      <div class="box"><div class="bt">입력층</div><div class="bs">데이터(픽셀·숫자)</div></div>
+      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
+      <div class="box api"><div class="bt">은닉층 ×N</div><div class="bs">특징을 점점 추상화</div></div>
+      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
+      <div class="box"><div class="bt">출력층</div><div class="bs">예측(클래스 확률)</div></div>
+    </div>
+    <div class="keymsg" style="margin-top:24px"><span class="k">깊다=deep</span><div>은닉층이 많을수록 ‘깊은’ 신경망. 층이 쌓이며 <b>단순한 특징 → 복잡한 개념</b>으로 조합된다.</div></div>
+  </div>
+</section>
+
+<!-- 16 FORWARD -->
+<section class="slide" data-title="순전파">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>순전파</div>
+  <h2 class="s-title sm">순전파 — 숫자가 앞으로 흐른다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">in</div><div class="sn">입력</div><div class="sd">x</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">×w+b</div><div class="sn">가중합</div><div class="sd">선형 결합</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">f()</div><div class="sn">활성화</div><div class="sd">비선형</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">out</div><div class="sn">예측</div><div class="sd">ŷ</div></div>
+    </div>
+    <div class="callout" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="ct"><h4>핵심</h4><p>이 한 방향 계산이 ‘<b>예측</b>’. 처음엔 가중치가 엉터리라 예측도 엉터리 — 그걸 <b>고쳐가는 게 학습</b>(CH2).</p></div></div>
+  </div>
+</section>
+
+<!-- 17 MINI NEURON -->
+<section class="slide" data-title="✏️ 미니실습 · 뉴런 계산">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>손계산</div>
+  <h2 class="s-title sm">직접 해보기 — 뉴런 출력 구하기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">과제 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>입력 x=[2, 3], 가중치 w=[0.5, −1], 편향 b=1</div></div>
+          <div class="v"><span class="b">2</span><div>가중합 z = w·x + b 를 계산</div></div>
+          <div class="v"><span class="b">3</span><div>ReLU(z)=max(0,z) 적용 → 출력은?</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>정답 확인</h4><p>z = 0.5·2 + (−1)·3 + 1 = <b>−1</b> → ReLU(−1) = <b>0</b>. ‘음수는 0으로 막는’ ReLU의 동작을 직접 확인.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH2 학습의 원리 ===== -->
+<!-- 18 SECTION CH2 -->
+<section class="slide section" data-title="[섹션] 학습의 원리">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>‘학습’이란<br/>가중치를 고치는 일</h2>
+  <div class="agenda"><span>손실</span><span>경사하강법</span><span>역전파</span><span>학습률·에폭</span></div>
+</section>
+
+<!-- 19 LEARNING = ADJUST -->
+<section class="slide" data-title="학습 = 가중치 조정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습의 정의</div>
+  <h2 class="s-title sm">학습 = 틀린 만큼 가중치를 고치기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">①</div><div class="sn">예측</div><div class="sd">순전파로 ŷ</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">②</div><div class="sn">오차 측정</div><div class="sd">손실 = ŷ vs 정답</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">③</div><div class="sn">가중치 수정</div><div class="sd">손실↓ 방향</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">↻</div><div class="sn">반복</div><div class="sd">수천 번</div></div>
+    </div>
+    <div class="keymsg" style="margin-top:22px"><span class="k">한 줄</span><div>모델은 ‘정답을 보고 → 틀린 만큼 → 가중치를 조금씩’ 고친다. 이 반복이 곧 <b>훈련(training)</b>.</div></div>
+  </div>
+</section>
+
+<!-- 20 LOSS -->
+<section class="slide" data-title="손실 함수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>오차의 척도</div>
+  <h2 class="s-title sm">손실 함수 — ‘얼마나 틀렸나’를 숫자로</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c2">
+      <div class="card"><span class="n">회귀</span><h3>MSE</h3><p>예측과 정답의 차이를 제곱해 평균. 숫자를 맞히는 문제.</p></div>
+      <div class="card"><span class="n">분류</span><h3>Cross-Entropy</h3><p>정답 클래스에 높은 확률을 줄수록 손실↓. 분류의 표준.</p></div>
+    </div>
+    <div class="callout" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 4-6"/></svg></div><div class="ct"><h4>목표</h4><p>학습의 목적은 단 하나 — 이 <b>손실 값을 최소화</b>하는 가중치 찾기. 어떻게? → 경사하강법.</p></div></div>
+  </div>
+</section>
+
+<!-- 21 GRADIENT DESCENT -->
+<section class="slide" data-title="경사하강법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>최적화</div>
+  <h2 class="s-title sm">경사하강법 — 가장 가파른 내리막으로</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">손실을 ‘지형’이라 하면, 학습은 <b style="color:var(--ink)">골짜기(최소 손실)</b>를 찾아 내려가는 일. 각 지점의 <b style="color:var(--ink)">기울기(gradient)</b>가 ‘어느 쪽이 내리막인지’ 알려줍니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>현재 가중치에서 손실의 기울기 계산</div></div>
+          <div class="v"><span class="b">2</span><div>기울기 <b>반대 방향</b>으로 한 걸음 이동</div></div>
+          <div class="v"><span class="b">3</span><div>반복 → 점점 손실이 작은 곳으로</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci" style="font-size:18px">🏔️</div><div class="ct"><h4>비유: 안개 속 하산</h4><p>한 치 앞만 보이는 안갯속에서, 발밑이 <b>가장 가파르게 내려가는 방향</b>으로 한 걸음씩. 그렇게 골짜기에 도달한다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 BACKPROP -->
+<section class="slide" data-title="역전파">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>역전파</div>
+  <h2 class="s-title sm">역전파 — 오차를 거꾸로 나눠준다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div class="formula"><div style="color:var(--code-dim);font-size:12px">BACKPROPAGATION</div><div class="big">출력 오차 → 층을 거슬러 → 각 가중치의 ‘책임’</div><div style="color:var(--code-dim);font-size:12.5px;text-align:center;line-height:1.55">미분(연쇄법칙)으로 ‘이 가중치가 오차에<br/>얼마나 기여했나’를 계산해 수정량을 정함</div></div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>순전파로 예측·손실을 구하고</div></div>
+          <div class="v"><span class="b">→</span><div>오차를 <b>뒤에서 앞으로</b> 전파하며</div></div>
+          <div class="v"><span class="b">→</span><div>각 가중치의 기울기를 한 번에 구한다</div></div>
+        </div>
+        <div class="callout amber" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v3"/></svg></div><div class="ct"><h4>왜 중요</h4><p>역전파 덕분에 <b>수백만 가중치</b>도 효율적으로 학습된다. 현대 딥러닝의 엔진.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 HYPERPARAMS -->
+<section class="slide" data-title="학습률·에폭·배치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습 설정</div>
+  <h2 class="s-title sm">학습률 · 에폭 · 배치</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">보폭</span><h3>학습률(lr)</h3><p>한 걸음 크기. 너무 크면 골짜기를 건너뛰고, 너무 작으면 한없이 느리다.</p></div>
+      <div class="card"><span class="n">반복</span><h3>에폭(epoch)</h3><p>전체 데이터를 한 번 다 보는 횟수. 여러 번 돌며 점점 개선.</p></div>
+      <div class="card"><span class="n">묶음</span><h3>배치(batch)</h3><p>한 번에 처리하는 표본 수. 메모리·속도·안정성의 균형.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">감각</span><div>이 값들은 <b>사람이 정하는 하이퍼파라미터</b>. 오후 실습에서 학습률을 바꿔 ‘학습이 망가지는’ 순간을 직접 본다.</div></div>
+  </div>
+</section>
+
+<!-- 24 MINI LR -->
+<section class="slide" data-title="✏️ 미니실습 · 학습률">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>예측</div>
+  <h2 class="s-title sm">직접 해보기 — 학습률 진단</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <p class="phase-label">과제 — 손실 곡선만 보고 학습률 문제를 진단하세요 <span class="ln"></span></p>
+    <div class="cards c3">
+      <div class="card" style="border-color:#F2C9C9;background:#FEF6F6"><span class="n" style="color:#D9534F">A</span><h3>손실이 출렁·발산</h3><p>학습률이 ___?</p></div>
+      <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n" style="color:var(--mint)">B</span><h3>완만히 잘 감소</h3><p>학습률이 ___?</p></div>
+      <div class="card" style="border-color:#F2C9C9;background:#FEF6F6"><span class="n" style="color:#D9534F">C</span><h3>거의 안 줄어듦</h3><p>학습률이 ___?</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>정답</h4><p>A = 너무 큼(건너뜀) · B = 적정 · C = 너무 작음(느림). 곡선만 봐도 lr을 가늠할 수 있다.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH3 활성화·일반화 ===== -->
+<!-- 25 SECTION CH3 -->
+<section class="slide section" data-title="[섹션] 활성화·일반화">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>비선형, 그리고<br/>‘외우지 않고 배우기’</h2>
+  <div class="agenda"><span>활성화 함수</span><span>과적합</span><span>train/val/test</span><span>데이터 증강</span></div>
+</section>
+
+<!-- 26 ACTIVATION -->
+<section class="slide" data-title="활성화 함수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>비선형의 힘</div>
+  <h2 class="s-title sm">활성화 함수 — 왜 ‘비선형’이 필요한가</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><span class="n" style="color:var(--violet)">기본</span><h3>ReLU</h3><p>음수는 0, 양수는 그대로. 빠르고 잘 작동 — 은닉층 표준.</p></div>
+      <div class="card"><span class="n">확률</span><h3>Sigmoid</h3><p>0~1로 압축. 이진 분류 출력에.</p></div>
+      <div class="card"><span class="n">다중분류</span><h3>Softmax</h3><p>여러 클래스를 합=1 확률로. 출력층에.</p></div>
+    </div>
+    <div class="callout" style="margin-top:18px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M5 17c4 0 4-8 8-8s4 4 6 4"/></svg></div><div class="ct"><h4>핵심</h4><p>비선형이 없으면 층을 아무리 쌓아도 ‘직선 하나’와 같다. 활성화 함수가 <b>곡선·복잡한 경계</b>를 가능하게 한다.</p></div></div>
+  </div>
+</section>
+
+<!-- 27 OVERFIT -->
+<section class="slide" data-title="과적합 vs 과소적합">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>일반화의 적</div>
+  <h2 class="s-title sm">과적합 — ‘외워버린’ 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>✕ 과적합(overfitting)</h4><p>학습 데이터는 완벽히 맞히지만 <b>새 데이터엔 실패</b>. 답을 ‘외운’ 상태 — 시험 문제만 외운 학생.</p></div>
+      <div class="pane good"><h4>✓ 적정 일반화</h4><p>학습·검증 데이터 모두 고르게 잘 맞힘. ‘원리를 이해한’ 상태.</p></div>
+    </div>
+    <div class="callout amber" style="margin-top:16px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>신호</h4><p><b>학습 손실↓인데 검증 손실↑</b>로 벌어지면 과적합. 반대로 둘 다 높으면 과소적합(덜 배움).</p></div></div>
+  </div>
+</section>
+
+<!-- 28 SPLIT -->
+<section class="slide" data-title="train/val/test">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>데이터 분할</div>
+  <h2 class="s-title sm">학습 · 검증 · 테스트로 나눈다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">train</span><h3>학습용</h3><p>가중치를 실제로 조정하는 데 사용.</p></div>
+      <div class="card"><span class="n">validation</span><h3>검증용</h3><p>학습 중 ‘일반화’ 점검·하이퍼파라미터 선택.</p></div>
+      <div class="card"><span class="n">test</span><h3>테스트용</h3><p>마지막에 단 한 번, 진짜 성능 측정.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">철칙</span><div>테스트 데이터로 <b>학습·튜닝하면 안 된다</b> — ‘시험지를 미리 본’ 셈이라 성능이 거짓으로 부풀려진다.</div></div>
+  </div>
+</section>
+
+<!-- 29 REGULARIZE -->
+<section class="slide" data-title="과적합 줄이기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>처방</div>
+  <h2 class="s-title sm">과적합을 줄이는 방법들</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><h3>데이터 더</h3><p>가장 확실. 다양한 표본이 일반화를 키운다.</p></div>
+      <div class="card"><h3>드롭아웃</h3><p>학습 중 일부 뉴런을 끔 → 의존 분산.</p></div>
+      <div class="card"><h3>조기 종료</h3><p>검증 손실이 오르기 시작하면 멈춤.</p></div>
+      <div class="card"><h3>가중치 규제</h3><p>가중치가 과하게 커지지 않도록 벌점.</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:18px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>다음 슬라이드</h4><p>데이터를 ‘공짜로 늘리는’ 가장 실용적인 기법 — <b>데이터 증강</b>.</p></div></div>
+  </div>
+</section>
+
+<!-- 30 AUGMENT -->
+<section class="slide" data-title="데이터 증강">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>데이터 증강</div>
+  <h2 class="s-title sm">한 장을 여러 장처럼 — 데이터 증강</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">이미지를 <b style="color:var(--ink)">뒤집고·돌리고·자르고·밝기를 바꿔</b> 변형하면, 같은 사진에서 ‘새로운 예시’가 생깁니다. 모델이 더 <b style="color:var(--ink)">강건</b>해집니다.</p>
+        <div class="chips">
+          <span class="chip">좌우 반전</span><span class="chip">회전</span><span class="chip">랜덤 크롭</span><span class="chip">밝기·대비</span><span class="chip">노이즈</span>
+        </div>
+      </div>
+      <div class="callout amber" style="flex-direction:column"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div><div class="ct"><h4>주의</h4><p>의미를 깨는 증강은 금물(예: 숫자 ‘6’을 뒤집으면 ‘9’). 데이터 특성에 맞게 골라야 한다.</p></div></div>
+    </div>
+    <div class="lab-badge" style="margin-top:16px"><span class="sq"></span>오후 Lab 6에서 증강을 켜고/끄고 정확도 변화를 비교합니다</div>
+  </div>
+</section>
+
+<!-- 31 MINI OVERFIT -->
+<section class="slide" data-title="✏️ 미니실습 · 곡선 읽기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>해석</div>
+  <h2 class="s-title sm">직접 해보기 — 학습 곡선 진단</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <p class="phase-label">과제 — 각 상황을 ‘과적합/과소적합/적정’으로 판정 <span class="ln"></span></p>
+    <div class="vlist">
+      <div class="v"><span class="b">A</span><div>학습 정확도 99% · 검증 정확도 70% → ?</div></div>
+      <div class="v"><span class="b">B</span><div>학습 65% · 검증 63% (둘 다 낮음) → ?</div></div>
+      <div class="v"><span class="b">C</span><div>학습 92% · 검증 90% → ?</div></div>
+    </div>
+    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>정답</h4><p>A=과적합(격차 큼) · B=과소적합(덜 배움) · C=적정. 처방: A→증강·드롭아웃, B→더 학습·더 큰 모델.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH4 CNN ===== -->
+<!-- 32 SECTION CH4 -->
+<section class="slide section" data-title="[섹션] 컴퓨터 비전 & CNN">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>이미지를 보는 신경망<br/>CNN</h2>
+  <div class="agenda"><span>이미지=숫자</span><span>합성곱</span><span>풀링</span><span>특징 계층</span></div>
+</section>
+
+<!-- 33 IMAGE=PIXELS -->
+<section class="slide" data-title="이미지 = 픽셀 숫자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>출발점</div>
+  <h2 class="s-title sm">컴퓨터에게 이미지는 ‘숫자 격자’</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="formula"><div style="color:var(--code-dim);font-size:12px">IMAGE</div><div class="big">28×28 흑백 = 784개 숫자 · 컬러는 ×3(RGB)</div><div style="color:var(--code-dim);font-size:12.5px;text-align:center;line-height:1.5">각 픽셀의 밝기(0~255)가 입력값</div></div>
+    <div class="callout" style="margin-top:18px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="ct"><h4>그래서</h4><p>이미지도 결국 ‘숫자 벡터’ → 신경망에 넣을 수 있다. 문제는 <b>숫자가 너무 많다</b>는 것(다음 슬라이드).</p></div></div>
+  </div>
+</section>
+
+<!-- 34 WHY NOT MLP -->
+<section class="slide" data-title="일반 신경망의 한계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>왜 CNN이 필요</div>
+  <h2 class="s-title sm">이미지에 일반 신경망은 왜 약한가</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num" style="background:var(--rose)">!</div><div class="tx"><h4>파라미터 폭발</h4><p>큰 이미지를 한 줄로 펴서 모두 연결하면 가중치가 수억 개 — 학습 불가.</p></div></div>
+      <div class="li"><div class="num" style="background:var(--rose)">!</div><div class="tx"><h4>위치에 취약</h4><p>고양이가 좌상단↔우하단으로 옮기면 ‘다른 입력’으로 본다.</p></div></div>
+      <div class="li"><div class="num" style="background:var(--rose)">!</div><div class="tx"><h4>공간 구조 무시</h4><p>이웃 픽셀의 관계(모서리·질감)를 못 살린다.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">해결</span><div><b>CNN</b> — 작은 필터를 이미지 전체에 ‘공유’해, 적은 가중치로 위치에 강한 특징을 잡는다.</div></div>
+  </div>
+</section>
+
+<!-- 35 CONVOLUTION -->
+<section class="slide" data-title="합성곱">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>핵심 연산</div>
+  <h2 class="s-title sm">합성곱 — 작은 필터가 훑고 지나간다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">작은 <b style="color:var(--ink)">필터(커널)</b>를 이미지 위에서 미끄러뜨리며, 그 자리에 특정 무늬(엣지·곡선)가 있는지 점수를 매깁니다. 결과가 <b style="color:var(--ink)">특징 지도</b>.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>같은 필터를 <b>이미지 전체</b>에 공유 → 위치 무관</div></div>
+          <div class="v"><span class="b">→</span><div>필터의 값도 <b>학습</b>으로 정해진다</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci" style="font-size:18px">🔦</div><div class="ct"><h4>비유: 돋보기로 훑기</h4><p>작은 ‘무늬 탐지 돋보기’를 사진 위 곳곳에 대보며 “여기 세로 모서리 있네”를 표시해 나간다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 36 POOLING -->
+<section class="slide" data-title="풀링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>요약·축소</div>
+  <h2 class="s-title sm">풀링 — 중요한 것만 남기고 줄인다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">특징 지도를 작은 칸으로 묶어 <b style="color:var(--ink)">대표값(예: 최댓값)</b>만 남깁니다. 크기를 줄여 연산을 아끼고, 작은 위치 변화에 둔감해집니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">↓</span><div>해상도↓ → 연산·과적합↓</div></div>
+          <div class="v"><span class="b">≈</span><div>약간의 이동·왜곡에 강건</div></div>
+        </div>
+      </div>
+      <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg></div><div class="ct"><h4>Max Pooling</h4><p>2×2 영역에서 가장 큰 값만 남김 → ‘이 부근에 그 특징이 강하게 있었다’만 보존.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 37 CNN ARCH -->
+<section class="slide" data-title="CNN 구조 & 특징 계층">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>전체 구조</div>
+  <h2 class="s-title sm">CNN — 특징이 점점 추상화된다</h2>
+  <div class="rule"></div>
+  <div class="body top">
+    <div class="pipe">
+      <div class="step"><div class="si">입력</div><div class="sn">이미지</div><div class="sd">픽셀</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">conv+pool</div><div class="sn">저수준</div><div class="sd">엣지·색</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">conv+pool</div><div class="sn">중수준</div><div class="sd">질감·부분</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">FC</div><div class="sn">고수준</div><div class="sd">객체→분류</div></div>
+    </div>
+    <div class="callout mint" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>핵심 직관</h4><p>앞층은 <b>엣지</b> 같은 단순 무늬, 뒷층은 <b>눈·바퀴·얼굴</b> 같은 복잡한 부분을 본다. 층이 쌓이며 ‘조각 → 개념’.</p></div></div>
+  </div>
+</section>
+
+<!-- 38 MINI FILTER -->
+<section class="slide" data-title="✏️ 미니실습 · 필터 예측">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>예측</div>
+  <h2 class="s-title sm">직접 해보기 — 어느 층이 무엇을 볼까</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <p class="phase-label">과제 — 특징을 ‘앞층/뒷층’으로 분류 <span class="ln"></span></p>
+    <div class="chips" style="margin-bottom:16px">
+      <span class="chip">세로 모서리</span><span class="chip">강아지 얼굴</span><span class="chip">색 변화</span><span class="chip">자동차 바퀴</span><span class="chip">곡선</span><span class="chip">고양이 귀</span>
+    </div>
+    <div class="twopane">
+      <div class="pane"><h4 style="color:var(--violet)">앞층(저수준)</h4><p style="color:var(--mut)">단순 무늬 3개는?</p></div>
+      <div class="pane good"><h4>뒷층(고수준)</h4><p style="color:var(--mut)">복잡한 부분 3개는?</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:12px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>정답</h4><p>앞층: 세로 모서리·색 변화·곡선 / 뒷층: 강아지 얼굴·자동차 바퀴·고양이 귀.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH5 전이학습 ===== -->
+<!-- 39 SECTION CH5 -->
+<section class="slide section" data-title="[섹션] 전이학습">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>남이 배운 것을<br/>가져다 쓰기</h2>
+  <div class="agenda"><span>사전학습 모델</span><span>feature extraction</span><span>fine-tuning</span></div>
+</section>
+
+<!-- 40 PRETRAINED -->
+<section class="slide" data-title="사전학습 모델">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>거인의 어깨</div>
+  <h2 class="s-title sm">이미 ‘보는 법’을 배운 모델들</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px"><b style="color:var(--ink)">ImageNet</b>(수백만 장)으로 학습된 ResNet·MobileNet 등은, 엣지부터 객체 부분까지 <b style="color:var(--ink)">일반적인 시각 특징</b>을 이미 갖고 있습니다.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>이 ‘본 법’은 <b>다른 이미지 문제에도</b> 대체로 유용</div></div>
+          <div class="v"><span class="b">→</span><div>처음부터(scratch) 학습할 필요가 줄어든다</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci" style="font-size:18px">🏗️</div><div class="ct"><h4>비유: 이미 지어진 골조</h4><p>건물을 맨땅부터 짓지 않고, <b>튼튼한 골조 위에 내 인테리어만</b> 올린다. 빠르고 적은 자재로.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 41 TRANSFER -->
+<section class="slide" data-title="전이학습 두 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>두 가지 방식</div>
+  <h2 class="s-title sm">전이학습 — 특징은 재사용, 마지막만 새로</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c2">
+      <div class="card"><span class="n">가볍게</span><h3>Feature Extraction</h3><p>사전학습 부분은 <b>얼리고(freeze)</b>, 새 분류층만 학습. 데이터 적을 때·빠름.</p></div>
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><span class="n" style="color:var(--violet)">더 맞춤</span><h3>Fine-tuning</h3><p>뒷부분 일부도 <b>살짝 같이 학습</b>. 데이터가 좀 더 있을 때 성능↑.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">장점</span><div><b>적은 데이터·짧은 시간</b>으로 높은 정확도. 실무 이미지 문제의 사실상 기본 출발점.</div></div>
+  </div>
+</section>
+
+<!-- 42 TM REVEAL -->
+<section class="slide" data-title="아침 체험의 정체">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">아침의 Teachable Machine이 바로 이것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="callout mint" style="margin-bottom:16px"><div class="ci" style="font-size:18px">💡</div><div class="ct"><h4>왜 몇 초 만에 학습됐나</h4><p>Teachable Machine은 내부에서 <b>MobileNet의 학습된 특징</b>을 쓰고, 우리가 준 사진으로 <b>마지막 층만</b> 배웠습니다. 그래서 적은 사진·짧은 시간에 작동한 것.</p></div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">✓</span><div>‘보는 법’(엣지·질감)은 이미 완성 → 재사용</div></div>
+      <div class="v"><span class="b">✓</span><div>‘내 클래스 구분’만 새로 학습</div></div>
+      <div class="v"><span class="b">→</span><div>오후 Lab 7에서 <b>같은 일을 코드로</b>(사전학습 ResNet)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 43 MINI TRANSFER -->
+<section class="slide" data-title="✏️ 미니실습 · 전이학습 판단">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">직접 해보기 — 어떤 전략?</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <p class="phase-label">과제 — 각 상황에 scratch / feature extraction / fine-tuning 중 추천 <span class="ln"></span></p>
+    <div class="vlist">
+      <div class="v"><span class="b">A</span><div>고양이 품종 사진 200장만 있다 → ?</div></div>
+      <div class="v"><span class="b">B</span><div>일반 사물과 매우 다른 ‘위성 적외선’ 영상 수십만 장 → ?</div></div>
+      <div class="v"><span class="b">C</span><div>제품 불량 사진 5,000장, 시간 여유 있음 → ?</div></div>
+    </div>
+    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>가이드</h4><p>A=feature extraction(데이터 적음) · B=scratch 고려(도메인 매우 다름·데이터 많음) · C=fine-tuning(중간 데이터).</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH6 NLP 다리 ===== -->
+<!-- 44 SECTION CH6 -->
+<section class="slide section" data-title="[섹션] 순차·NLP·임베딩 다리">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>이미지에서 언어로<br/>그리고 다음 주로</h2>
+  <div class="agenda"><span>순차 데이터</span><span>Transformer</span><span>임베딩</span><span>→ RAG</span></div>
+</section>
+
+<!-- 45 SEQUENCE -->
+<section class="slide" data-title="순차 데이터·RNN">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>순서가 있는 데이터</div>
+  <h2 class="s-title sm">언어·시계열 — 순서가 의미를 만든다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <p class="s-sub" style="margin-bottom:12px">문장·음성·주가처럼 <b style="color:var(--ink)">앞뒤 맥락</b>이 중요한 데이터가 있습니다. “나는 밥을 ___”의 빈칸은 앞 단어에 달려 있죠.</p>
+        <div class="vlist">
+          <div class="v"><span class="b">RNN</span><div>이전 상태를 기억하며 한 단어씩 처리(전통 방식)</div></div>
+          <div class="v"><span class="b">한계</span><div>먼 과거를 잊고, 순차라 느리다</div></div>
+        </div>
+      </div>
+      <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><div class="ct"><h4>그래서</h4><p>이 한계를 깬 것이 <b>Transformer</b> — 오늘날 LLM의 토대(다음 슬라이드).</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 46 TRANSFORMER -->
+<section class="slide" data-title="Transformer 한 장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>현대의 표준</div>
+  <h2 class="s-title sm">Transformer — ‘주의(attention)’로 맥락을 본다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>어텐션(Attention)</h4><p>문장의 모든 단어가 서로를 ‘참고’해, 중요한 관계에 가중치를 둔다.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>병렬 처리</h4><p>한 단어씩이 아니라 한꺼번에 → 대규모 학습이 가능.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>먼 맥락도 포착</h4><p>문장 양 끝 단어의 관계도 직접 연결.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>이 구조가 GPT·Qwen 같은 <b>LLM</b>의 토대. 다음 주 RAG가 쓰는 임베딩·LLM이 여기서 나온다.</div></div>
+  </div>
+</section>
+
+<!-- 47 EMBEDDING BRIDGE -->
+<section class="slide" data-title="임베딩 → RAG 다리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>다음 주로</div>
+  <h2 class="s-title sm">텍스트 → 벡터(임베딩) = 다음 주의 핵심</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="formula"><div style="color:var(--code-dim);font-size:12px">EMBEDDING</div><div class="big">"환불 방법" → [0.12, −0.8, … , 0.07]</div><div style="color:var(--code-dim);font-size:12.5px;text-align:center;line-height:1.5">신경망이 의미를 ‘좌표’로 — 비슷한 뜻은 가까운 벡터</div></div>
+    <div class="callout mint" style="margin-top:18px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="ct"><h4>연결</h4><p>오늘 배운 ‘신경망이 특징을 벡터로 만든다’가, 다음 주엔 <b>문서 검색(RAG)</b>의 심장이 됩니다 — 의미가 가까운 문서를 벡터로 찾는다.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== CH7 LAB (Colab) ===== -->
+<!-- 48 SECTION LAB -->
+<section class="slide section mintbg" data-title="[섹션] HANDS-ON LAB · Colab GPU">
+  <div class="ghost">07</div>
+  <span class="lab-flag"><span class="sq"></span>HANDS-ON LAB · Google Colab GPU</span>
+  <h2 style="margin-top:16px">신경망을 코드로 직접 학습</h2>
+  <div class="agenda"><span>Lab0 셋업</span><span>Lab1 데이터</span><span>Lab2 MLP</span><span>Lab3 학습루프</span><span>Lab4 평가</span><span>Lab5 CNN</span><span>Lab6 증강</span><span>Lab7 전이학습</span></div>
+</section>
+
+<!-- 49 LAB ENV -->
+<section class="slide" data-title="실습 환경 · Colab GPU">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>환경</div>
+  <h2 class="s-title sm">Google Colab 무료 GPU</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">준비 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div><b>colab.research.google.com</b> 접속(구글 계정)</div></div>
+          <div class="v"><span class="b">2</span><div>런타임 → 런타임 유형 변경 → <b>GPU(T4)</b> 선택</div></div>
+          <div class="v"><span class="b">3</span><div>설치 불필요 — torch·torchvision 기본 제공</div></div>
+        </div>
+      </div>
+      <div class="callout mint" style="flex-direction:column"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>왜 GPU</h4><p>신경망 학습은 거대한 행렬 곱의 연속 — GPU의 <b>병렬 연산</b>으로 CPU보다 수십 배 빠르다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 50 LAB0 -->
+<section class="slide" data-title="Lab 0 · GPU 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 0</span><span class="dot"></span>셋업</div>
+  <h2 class="s-title sm">GPU가 잡혔는지 확인</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab0_setup.py</span></div>
+      <pre><code><span class="kw">import</span> torch
+device = <span class="st">"cuda"</span> <span class="kw">if</span> torch.cuda.<span class="fn2">is_available</span>() <span class="kw">else</span> <span class="st">"cpu"</span>
+<span class="fn2">print</span>(<span class="st">"device:"</span>, device)          <span class="cm"># cuda 면 성공 ✓</span>
+<span class="fn2">print</span>(torch.cuda.<span class="fn2">get_device_name</span>(<span class="nm">0</span>) <span class="kw">if</span> device==<span class="st">"cuda"</span> <span class="kw">else</span> <span class="st">"CPU"</span>)</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:16px"><span class="sq"></span>✅ ‘cuda’ + Tesla T4 가 출력되면 준비 완료</div>
+  </div>
+</section>
+
+<!-- 51 LAB1 -->
+<section class="slide" data-title="Lab 1 · 데이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 1</span><span class="dot"></span>데이터 불러오기</div>
+  <h2 class="s-title sm">FashionMNIST 불러오기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab1_data.py</span></div>
+      <pre><code><span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+
+tf = transforms.<span class="fn2">ToTensor</span>()
+train = datasets.<span class="fn2">FashionMNIST</span>(<span class="st">"./data"</span>, train=<span class="kw">True</span>,  download=<span class="kw">True</span>, transform=tf)
+test  = datasets.<span class="fn2">FashionMNIST</span>(<span class="st">"./data"</span>, train=<span class="kw">False</span>, download=<span class="kw">True</span>, transform=tf)
+
+train_dl = <span class="fn2">DataLoader</span>(train, batch_size=<span class="nm">64</span>, shuffle=<span class="kw">True</span>)
+test_dl  = <span class="fn2">DataLoader</span>(test,  batch_size=<span class="nm">256</span>)
+<span class="fn2">print</span>(<span class="fn2">len</span>(train), <span class="st">"학습 이미지"</span>)   <span class="cm"># 28x28 흑백, 10개 클래스</span></code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ 의류 이미지 10종(티셔츠·신발 등) 6만 장</div>
+  </div>
+</section>
+
+<!-- 52 LAB2 -->
+<section class="slide" data-title="Lab 2 · MLP 정의">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 2</span><span class="dot"></span>모델 정의</div>
+  <h2 class="s-title sm">작은 신경망(MLP) 만들기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab2_mlp.py</span></div>
+      <pre><code><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+model = nn.<span class="fn2">Sequential</span>(
+    nn.<span class="fn2">Flatten</span>(),                 <span class="cm"># 28x28 → 784</span>
+    nn.<span class="fn2">Linear</span>(<span class="nm">784</span>, <span class="nm">128</span>), nn.<span class="fn2">ReLU</span>(),   <span class="cm"># 은닉층 + 활성화</span>
+    nn.<span class="fn2">Linear</span>(<span class="nm">128</span>, <span class="nm">10</span>),              <span class="cm"># 출력 10클래스</span>
+).<span class="fn2">to</span>(device)
+<span class="fn2">print</span>(model)</code></pre>
+    </div>
+    <div class="callout" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div><div class="ct"><h4>구조</h4><p>입력 784 → 은닉 128(ReLU) → 출력 10. CH1의 ‘층 쌓기’를 코드로.</p></div></div>
+  </div>
+</section>
+
+<!-- 53 LAB3 -->
+<section class="slide" data-title="Lab 3 · 학습 루프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 3</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">학습 루프 — 예측·손실·역전파</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab3_train.py</span></div>
+      <pre><code>loss_fn = nn.<span class="fn2">CrossEntropyLoss</span>()
+opt = torch.optim.<span class="fn2">Adam</span>(model.<span class="fn2">parameters</span>(), lr=<span class="nm">1e-3</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">5</span>):
+    <span class="kw">for</span> x, y <span class="kw">in</span> train_dl:
+        x, y = x.<span class="fn2">to</span>(device), y.<span class="fn2">to</span>(device)
+        pred = <span class="fn2">model</span>(x)              <span class="cm"># ① 순전파</span>
+        loss = <span class="fn2">loss_fn</span>(pred, y)      <span class="cm"># ② 손실</span>
+        opt.<span class="fn2">zero_grad</span>(); loss.<span class="fn2">backward</span>()  <span class="cm"># ③ 역전파</span>
+        opt.<span class="fn2">step</span>()                   <span class="cm"># ④ 가중치 수정</span>
+    <span class="fn2">print</span>(epoch, loss.<span class="fn2">item</span>())</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ CH2의 ‘예측→손실→역전파→수정’ 네 줄이 그대로 코드로</div>
+  </div>
+</section>
+
+<!-- 54 LAB4 -->
+<section class="slide" data-title="Lab 4 · 평가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 4</span><span class="dot"></span>정확도</div>
+  <h2 class="s-title sm">테스트 정확도 측정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab4_eval.py</span></div>
+      <pre><code>model.<span class="fn2">eval</span>(); correct = <span class="nm">0</span>
+<span class="kw">with</span> torch.<span class="fn2">no_grad</span>():
+    <span class="kw">for</span> x, y <span class="kw">in</span> test_dl:
+        x, y = x.<span class="fn2">to</span>(device), y.<span class="fn2">to</span>(device)
+        pred = <span class="fn2">model</span>(x).<span class="fn2">argmax</span>(<span class="nm">1</span>)
+        correct += (pred == y).<span class="fn2">sum</span>().<span class="fn2">item</span>()
+<span class="fn2">print</span>(<span class="st">"정확도:"</span>, correct / <span class="fn2">len</span>(test))</code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ MLP 기준선 확보 — 다음 Lab에서 CNN으로 끌어올린다</div>
+  </div>
+</section>
+
+<!-- 55 LAB5 -->
+<section class="slide" data-title="Lab 5 · CNN">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 5</span><span class="dot"></span>업그레이드</div>
+  <h2 class="s-title sm">CNN으로 정확도 끌어올리기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab5_cnn.py</span></div>
+      <pre><code>cnn = nn.<span class="fn2">Sequential</span>(
+    nn.<span class="fn2">Conv2d</span>(<span class="nm">1</span>, <span class="nm">32</span>, <span class="nm">3</span>, padding=<span class="nm">1</span>), nn.<span class="fn2">ReLU</span>(), nn.<span class="fn2">MaxPool2d</span>(<span class="nm">2</span>),
+    nn.<span class="fn2">Conv2d</span>(<span class="nm">32</span>, <span class="nm">64</span>, <span class="nm">3</span>, padding=<span class="nm">1</span>), nn.<span class="fn2">ReLU</span>(), nn.<span class="fn2">MaxPool2d</span>(<span class="nm">2</span>),
+    nn.<span class="fn2">Flatten</span>(),
+    nn.<span class="fn2">Linear</span>(<span class="nm">64</span>*<span class="nm">7</span>*<span class="nm">7</span>, <span class="nm">128</span>), nn.<span class="fn2">ReLU</span>(),
+    nn.<span class="fn2">Linear</span>(<span class="nm">128</span>, <span class="nm">10</span>),
+).<span class="fn2">to</span>(device)   <span class="cm"># conv→pool→conv→pool→FC (CH4 구조)</span></code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ 같은 학습 루프로 재학습 → MLP보다 정확도↑ 확인</div>
+  </div>
+</section>
+
+<!-- 56 LAB6 -->
+<section class="slide" data-title="Lab 6 · 데이터 증강">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 6</span><span class="dot"></span>증강</div>
+  <h2 class="s-title sm">데이터 증강 켜고 비교</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab6_augment.py</span></div>
+      <pre><code>aug = transforms.<span class="fn2">Compose</span>([
+    transforms.<span class="fn2">RandomHorizontalFlip</span>(),
+    transforms.<span class="fn2">RandomRotation</span>(<span class="nm">10</span>),
+    transforms.<span class="fn2">ToTensor</span>(),
+])
+<span class="cm"># train 데이터셋 transform=aug 로 교체 후 재학습</span>
+<span class="cm"># → 검증 정확도 변화를 증강 전후로 비교</span></code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ 증강이 과적합을 줄이는지(train·val 격차) 직접 관찰</div>
+  </div>
+</section>
+
+<!-- 57 LAB7 -->
+<section class="slide" data-title="Lab 7 · 전이학습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 7</span><span class="dot"></span>전이학습</div>
+  <h2 class="s-title sm">사전학습 ResNet으로 전이학습</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab7_transfer.py</span></div>
+      <pre><code><span class="kw">from</span> torchvision <span class="kw">import</span> models
+net = models.<span class="fn2">resnet18</span>(weights=<span class="st">"IMAGENET1K_V1"</span>)   <span class="cm"># 사전학습</span>
+
+<span class="kw">for</span> p <span class="kw">in</span> net.<span class="fn2">parameters</span>(): p.requires_grad = <span class="kw">False</span>  <span class="cm"># 특징 얼리기</span>
+net.fc = nn.<span class="fn2">Linear</span>(net.fc.in_features, <span class="nm">10</span>)        <span class="cm"># 마지막 층만 새로</span>
+net = net.<span class="fn2">to</span>(device)
+<span class="cm"># → 새 분류층만 학습 = Teachable Machine이 한 일</span></code></pre>
+    </div>
+    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ 적은 학습으로 높은 정확도 — 아침 체험의 정체를 코드로 재현</div>
+  </div>
+</section>
+
+<!-- 58 LAB8 -->
+<section class="slide" data-title="Lab 8 · 도전">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 8</span><span class="dot"></span>도전(선택)</div>
+  <h2 class="s-title sm">한 발 더 — 튜닝·시각화</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">도전 A</span><h3>하이퍼파라미터</h3><p>lr·batch·은닉 크기를 바꿔 최고 정확도 갱신.</p></div>
+      <div class="card"><span class="n">도전 B</span><h3>오분류 살펴보기</h3><p>틀린 이미지를 출력해 ‘왜 틀렸나’ 관찰.</p></div>
+      <div class="card"><span class="n">도전 C</span><h3>학습 곡선</h3><p>train·val 손실을 그려 과적합 시점 찾기.</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:18px"><div class="ci" style="font-size:18px">🏆</div><div class="ct"><h4>여유가 있다면</h4><p>CIFAR-10(컬러)으로 바꿔 같은 파이프라인을 적용해 보세요.</p></div></div>
+  </div>
+</section>
+
+<!-- 59 TROUBLESHOOT -->
+<section class="slide" data-title="트러블슈팅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>자주 나는 문제</div>
+  <h2 class="s-title sm">막히면 여기부터</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
+      <tbody>
+        <tr><td>cuda가 안 잡힘</td><td>런타임 GPU 미설정</td><td class="hl">런타임 유형 → GPU(T4) 후 재시작</td></tr>
+        <tr><td>device mismatch 오류</td><td>모델·데이터 위치 불일치</td><td class="hl">x,y와 model 모두 .to(device)</td></tr>
+        <tr><td>손실이 NaN</td><td>학습률 과대</td><td class="hl">lr 낮추기(예: 1e-3→1e-4)</td></tr>
+        <tr><td>shape 오류(CNN)</td><td>Flatten 차원 계산 불일치</td><td class="hl">pool 횟수에 맞춰 입력 크기 재계산</td></tr>
+        <tr><td>너무 느림</td><td>CPU로 실행 중</td><td class="hl">device=cuda 확인, batch↑</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 60 DELIVERABLE -->
+<section class="slide" data-title="실습 산출물 · 체크리스트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>산출물</div>
+  <h2 class="s-title sm">오늘 손에 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <p class="phase-label">체크리스트 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">✓</span><div>Colab GPU에서 <b>신경망 학습</b> 성공</div></div>
+          <div class="v"><span class="b">✓</span><div>MLP → <b>CNN</b>으로 정확도 향상 확인</div></div>
+          <div class="v"><span class="b">✓</span><div>증강·전이학습 효과 <b>비교</b></div></div>
+          <div class="v"><span class="b">✓</span><div>학습 곡선으로 <b>과적합</b> 진단</div></div>
+        </div>
+      </div>
+      <div class="deliv" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div style="display:flex;gap:12px;align-items:center"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="dt"><b>DELIVERABLE</b><span>학습된 이미지 분류기(Colab 노트북)</span></div></div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5">MLP·CNN·전이학습 정확도 <b>비교표</b> 포함.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CH8 정리 ===== -->
+<!-- 61 SECTION CLOSE -->
+<section class="slide section" data-title="[섹션] 정리 & 회고">
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
+  <h2>정리 · 오개념 · 다음 주</h2>
+</section>
+
+<!-- 62 RECAP -->
+<section class="slide" data-title="핵심 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>핵심 정리</div>
+  <h2 class="s-title sm">오늘 꼭 가져갈 5가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>딥러닝 = 데이터로 가중치를 학습</h4><p>규칙을 짜는 게 아니라, 예시에서 규칙을 찾는다.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>학습 = 손실↓ (경사하강법·역전파)</h4><p>예측→손실→역전파→수정의 반복.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>일반화가 목표</h4><p>과적합을 경계하고, 데이터·증강·검증으로 다스린다.</p></div></div>
+      <div class="li"><div class="num">4</div><div class="tx"><h4>CNN은 이미지의 특징을 계층으로</h4><p>합성곱·풀링으로 적은 가중치·강한 인식.</p></div></div>
+      <div class="li"><div class="num">5</div><div class="tx"><h4>전이학습으로 적은 데이터에도 강하게</h4><p>사전학습 특징을 재사용 — 실무의 기본기.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 63 MISCONCEPTIONS -->
+<section class="slide" data-title="자주 묻는 오개념">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>오개념 정리</div>
+  <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>오해</th><th>사실</th></tr></thead>
+      <tbody>
+        <tr><td>“데이터 많을수록 항상 좋다”</td><td class="hl">질·다양성이 더 중요 — 편향된 다량은 편향만 키운다</td></tr>
+        <tr><td>“정확도 100%면 최고”</td><td class="hl">학습 100%·검증 저조면 과적합(외운 것)</td></tr>
+        <tr><td>“층이 깊을수록 무조건 낫다”</td><td class="hl">데이터·규제 없이 깊기만 하면 과적합·학습난</td></tr>
+        <tr><td>“GPU 없으면 못 한다”</td><td class="hl">전이학습·작은 모델은 Colab 무료 GPU로 충분</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 64 NEXT -->
+<section class="slide" data-title="다음 주 예고">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>다음 주</div>
+  <h2 class="s-title sm">다음 주 — LLM과 RAG로</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><h3>임베딩 → 검색</h3><p>오늘의 ‘특징 벡터’가 문서 검색의 핵심이 된다.</p></div>
+      <div class="card"><h3>LLM의 한계</h3><p>Transformer 기반 LLM이 ‘왜 틀리나’와 그 보완.</p></div>
+      <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><h3>RAG 구축</h3><p>검색+생성으로 근거 있는 답을 만드는 첫 봇.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">다리</span><div>오늘 배운 <b>신경망·임베딩·전이학습</b>이 다음 주 RAG의 토대가 됩니다.</div></div>
+  </div>
+</section>
+
+<!-- 65 REFERENCES -->
+<section class="slide" data-title="참고자료">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>더 보기</div>
+  <h2 class="s-title sm">복습 · 참고자료</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <p class="phase-label">연계 학습 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">▶</span><div><b>NVIDIA DLI</b> · Fundamentals of Deep Learning(수료증)</div></div>
+          <div class="v"><span class="b">▶</span><div>Teachable Machine으로 자유 실험</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="phase-label">도구 <span class="ln"></span></p>
+        <div class="vlist">
+          <div class="v"><span class="b">🔧</span><div>PyTorch · torchvision 공식 튜토리얼</div></div>
+          <div class="v"><span class="b">🔧</span><div>Google Colab(무료 GPU)</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">수고했어요</span><div>오늘 ‘기계가 배우는 원리’를 손으로 익혔습니다. 다음 주엔 이 위에 <b>LLM·RAG</b>를 올립니다.</div></div>
+  </div>
+</section>
+
+<!-- 66 END -->
+<section class="slide cover" data-title="끝 · Day 00 딥러닝 기초">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">END · DAY 00</span><span>FUNDAMENTALS OF DEEP LEARNING</span></div>
+    <h1>데이터로 배우고,<br/>특징을 스스로 찾는다.</h1>
+  </div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+)</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); go(idx - 1); }
+    if (e.key === 'Home'){ go(0); } if (e.key === 'End'){ go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+    if (e.key === '0'){ userZoom = 1; applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
