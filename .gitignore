@@ -8,9 +8,19 @@ venv/
 # 실습 실행 시 생성되는 산출물 (커밋 대상 아님)
 data/
 qdrant_db/
+my_qdrant/
+my_docs/
 docs/
 employees.csv
 executed.ipynb
+
+# 배포/서버 런타임
+serving/.venv/
+serving/proxy.log
+
+# 배포 비밀 (수강생 키 등 — 절대 커밋 금지)
+serving/keys.txt
+serving/roster.csv
 
 # OS / 에디터
 .DS_Store
