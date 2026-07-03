@@ -17,24 +17,25 @@ dli-llm · NVIDIA DLI 강의용 LLM 클라이언트
     llm.chat.completions.create(model=MODEL, messages=[...])
 
 환경변수
-  DLI_API_KEY   (필수) 수강생 개인 키
-  DLI_BASE_URL  엔드포인트, 기본값은 강사 배포 공개 URL (아래 상수)
+  DLI_API_KEY / NVIDIA_API_KEY  (필수) 개인 키
+  DLI_BASE_URL  엔드포인트, 기본값은 NVIDIA build (아래 상수)
+  DLI_MODEL     모델 id, 기본값은 아래 상수
 """
 from __future__ import annotations
 import os
 from openai import OpenAI
 
-# DGX Spark 공개 엔드포인트. IP가 바뀌면 이 줄만 고치거나 DLI_BASE_URL 로 덮어씀.
-DEFAULT_BASE_URL = os.getenv("DLI_BASE_URL", "http://124.51.229.210:30001/v1")
-MODEL = "Qwen/Qwen3.5-35B-A3B"
+# 기본: NVIDIA build. 강사 DGX로 쓰려면 DLI_BASE_URL=http://124.51.229.210:30001/v1
+DEFAULT_BASE_URL = os.getenv("DLI_BASE_URL", "https://integrate.api.nvidia.com/v1")
+MODEL = os.getenv("DLI_MODEL", "qwen/qwen3.5-397b-a17b")
 
 __all__ = ["chat", "get_client", "healthcheck", "MODEL"]
 
 
 def _key() -> str:
-    k = os.getenv("DLI_API_KEY")
+    k = os.getenv("DLI_API_KEY") or os.getenv("NVIDIA_API_KEY")
     if not k:
-        raise RuntimeError("DLI_API_KEY 가 없습니다. 강사에게 받은 키를 환경변수로 설정하세요.")
+        raise RuntimeError("API 키가 없습니다. DLI_API_KEY 또는 NVIDIA_API_KEY 환경변수를 설정하세요.")
     return k
 
 

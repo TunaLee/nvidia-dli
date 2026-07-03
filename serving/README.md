@@ -40,14 +40,11 @@ python gen_keys.py 30           # keys.txt(프록시용) + roster.csv(배포용)
 python loadtest.py --url http://localhost:8080/v1 --key <roster의 키 하나> --levels 1,10,30
 ```
 
-## 수강생 배포물
-- `roster.csv` 의 각 `DLI_API_KEY` 를 학생별로 전달
-- 공개 `base_url` (예: `http://124.51.229.210:30001/v1`)
-- `pip install dli-llm` (또는 사내 배포 wheel/git)
-
-## 대안: NVIDIA build 무료 API
-학생이 각자 무료 키를 발급받아 쓰는 경로. 발급 방법은 [NVIDIA_build_키발급.md](NVIDIA_build_키발급.md) 참고.
-DGX와 전환은 `QWEN_BASE_URL`·키·모델 3줄이면 끝 → 서로 백업으로 쓸 수 있음.
+## 엔드포인트 방식 (현재: NVIDIA build 주력, DGX 백업)
+- **주력 = NVIDIA build**: 학생이 각자 무료 키 발급 → 노트북 상단에서 입력.
+  발급·입력 방법은 리포 루트 **[../실습_시작하기.ipynb](../실습_시작하기.ipynb)** 에 스크린샷과 함께 정리됨.
+- **백업 = 이 DGX**: `roster.csv` 의 `DLI_API_KEY` 배포 + `QWEN_BASE_URL`을 `http://124.51.229.210:30001/v1` 로.
+- 둘 다 OpenAI 호환 → `QWEN_BASE_URL`·키·모델 3줄이면 즉시 전환.
 
 ## 권장 튜닝 (선택, 처리량↑)
 현재 SGLang은 `--dtype bfloat16`. GB10(≈270GB/s 대역폭)에선 **FP8**이 처리량 ~2배·메모리 ~35GB 절감.
