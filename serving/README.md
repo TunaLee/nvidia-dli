@@ -42,8 +42,12 @@ python loadtest.py --url http://localhost:8080/v1 --key <roster의 키 하나> -
 
 ## 수강생 배포물
 - `roster.csv` 의 각 `DLI_API_KEY` 를 학생별로 전달
-- 공개 `base_url` (예: `https://xxx.trycloudflare.com/v1`)
+- 공개 `base_url` (예: `http://124.51.229.210:30001/v1`)
 - `pip install dli-llm` (또는 사내 배포 wheel/git)
+
+## 대안: NVIDIA build 무료 API
+학생이 각자 무료 키를 발급받아 쓰는 경로. 발급 방법은 [NVIDIA_build_키발급.md](NVIDIA_build_키발급.md) 참고.
+DGX와 전환은 `QWEN_BASE_URL`·키·모델 3줄이면 끝 → 서로 백업으로 쓸 수 있음.
 
 ## 권장 튜닝 (선택, 처리량↑)
 현재 SGLang은 `--dtype bfloat16`. GB10(≈270GB/s 대역폭)에선 **FP8**이 처리량 ~2배·메모리 ~35GB 절감.
