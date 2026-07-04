@@ -10,7 +10,6 @@ data/
 qdrant_db/
 my_qdrant/
 my_docs/
-docs/
 employees.csv
 executed.ipynb
 
