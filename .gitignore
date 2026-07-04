@@ -15,12 +15,12 @@ employees.csv
 executed.ipynb
 
 # 배포/서버 런타임
-serving/.venv/
-serving/proxy.log
+_강사전용/serving/.venv/
+_강사전용/serving/proxy.log
 
 # 배포 비밀 (수강생 키 등 — 절대 커밋 금지)
-serving/keys.txt
-serving/roster.csv
+_강사전용/serving/keys.txt
+_강사전용/serving/roster.csv
 
 # OS / 에디터
 .DS_Store
