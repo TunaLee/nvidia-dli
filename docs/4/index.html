@@ -98,10 +98,10 @@
 
   .cards{display:grid; gap:16px;}
   .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
-  .card{background:var(--wash-2); border:1px solid var(--line); border-radius:15px; padding:20px; display:flex; flex-direction:column; gap:8px;}
-  .card .ic{width:40px; height:40px; border-radius:11px; display:grid; place-items:center; background:var(--wash); color:var(--violet); margin-bottom:3px;}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
   .card .ic svg{width:20px;height:20px;}
-  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
   .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
   .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
 
@@ -114,13 +114,13 @@
   .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
   .phase-label .ln{height:1px; flex:1; background:var(--line);}
   .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
-  .pipe .step{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
   .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
   .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
   .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
   .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
   .pipe .arrow svg{width:17px;height:17px;}
-  .pipe.q .step{background:#F3FBF9; border-color:#CFEDE7;} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
 
   .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
   .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
@@ -132,14 +132,14 @@
   .code.sm code{font-size:12px; line-height:1.55;}
   .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
 
-  .callout{border-radius:13px; padding:16px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--wash); border:1px solid var(--line);}
-  .callout .ci{flex:none; width:34px;height:34px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
   .callout .ci svg{width:18px;height:18px;}
   .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
   .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
-  .callout.mint{background:var(--mint-soft); border-color:#CFEDE7;} .callout.mint .ci{background:var(--mint);}
-  .callout.amber{background:#FEF6E9; border-color:#F6E2BC;} .callout.amber .ci{background:var(--amber);}
-  .callout.rose{background:#FDEEF3; border-color:#F6C9D8;} .callout.rose .ci{background:var(--rose);}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
 
   .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
   .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
@@ -151,8 +151,8 @@
   .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
   .chip b{color:var(--violet);}
 
-  .deliv{background:linear-gradient(135deg,#F4F1FF,#FBFAFF); border:1px dashed var(--violet-300); border-radius:13px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
-  .deliv .di{flex:none;width:36px;height:36px;border-radius:10px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
   .deliv .di svg{width:19px;height:19px;}
   .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
   .deliv .dt span{font-size:15px;font-weight:700;}
@@ -162,7 +162,7 @@
   .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
   .vlist .v b{color:var(--ink);font-weight:700;}
 
-  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:13px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
   .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
   .keymsg b{color:#fff;}
 
@@ -187,7 +187,7 @@
   .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
   .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
   .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
-  .refbox{background:var(--wash-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
   .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
   .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
   .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
@@ -203,17 +203,17 @@
   .arch .conn svg{width:34px;height:18px;}
 
   .stat-row{display:flex; gap:16px;}
-  .stat{flex:1; background:var(--wash-2); border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
   .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
   .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
 
   .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
-  .pane{border:1px solid var(--line); border-radius:13px; padding:16px 18px;}
-  .pane.bad{background:#FDF1F1; border-color:#F3CFCF;} .pane.good{background:#F1FBF7; border-color:#CDEEDD;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
   .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
   .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
   .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
-  .pane .mini{font-family:var(--mono); font-size:12px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
 
   .controlbar{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
@@ -280,7 +280,7 @@
 <section class="slide cover active" data-title="표지 · Day 04">
   <div class="aperture"></div><div class="ring"></div>
   <div class="wrap">
-    <div class="kick"><span class="pill">WEEK 3 · DAY 04</span><span>MCP RESOURCES</span></div>
+    <div class="kick"><span class="pill">WEEK 1 · DAY 04</span><span>MCP RESOURCES</span></div>
     <h1>Resource 기반<br/>MCP 설계</h1>
   </div>
 </section>
@@ -322,7 +322,7 @@
 <!-- ===== CH1 ===== -->
 <section class="slide section" data-title="[섹션] Resource 심화">
   <div class="ghost">01</div><div class="seyebrow">CHAPTER 01</div>
-  <h2>Resource란<br/>다시 깊게</h2>
+  <h2>Resource<br/>더 자세히</h2>
   <div class="agenda"><span>읽기전용·URI</span><span>static</span><span>dynamic·템플릿</span></div>
 </section>
 
@@ -374,6 +374,38 @@
   </div>
 </section>
 
+
+<section class="slide" data-title="리소스 사용 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>사용 방식</div>
+  <h2 class="s-title sm">리소스는 어떻게 컨텍스트로 들어가나</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n" style="color:var(--mint)">앱이 고른다</span><h3>애플리케이션 주도</h3><p>호스트 앱이 대화 맥락에 맞는 리소스를 골라 넣는다.</p></div><div class="card"><span class="n" style="color:var(--violet)">사용자가 첨부</span><h3>명시적 참조</h3><p>사용자가 “이 문서 봐” 하고 특정 리소스를 지목한다.</p></div><div class="card"><span class="n" style="color:var(--amber)">모델이 요청</span><h3>목록 보고 선택</h3><p>모델이 목록에서 필요한 리소스를 읽어달라고 한다.</p></div></div><div class="keymsg"><span class="k">Tool과 다른 점</span><div>Tool은 <b>모델이 스스로</b> 부르지만, Resource는 대개 <b>앱·사용자가</b> 골라 넣는다. 그래서 읽기 전용이 안전하다.</div></div></div>
+</section>
+
+<section class="slide" data-title="MIME·바이너리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>형식</div>
+  <h2 class="s-title sm">텍스트만이 아니다 — 형식을 밝혀라</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">text</span><h3>텍스트</h3><p>text/plain·text/markdown — 그냥 문자열.</p></div><div class="card"><span class="n">json</span><h3>구조화</h3><p>application/json — dict를 그대로 노출.</p></div><div class="card"><span class="n">blob</span><h3>바이너리</h3><p>이미지·PDF는 base64(blob)로. 화면·문서도 리소스가 된다.</p></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></div><div class="ct"><h4>한 줄 팁</h4><p><span style="font-family:var(--mono)">mimeType</span>을 명시하면 클라이언트가 알맞게 처리한다. 안 밝히면 텍스트로 취급돼 깨질 수 있다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="URI 스킴 짓기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>URI</div>
+  <h2 class="s-title sm">커스텀 스킴을 쓰고, file://은 피한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane bad"><h4>✕ file:// 그대로</h4><p>많은 호스트가 <b>file://</b>을 자기 파일 접근으로 가로챈다 → 내 리소스가 안 열린다.</p></div><div class="pane good"><h4>✓ 커스텀 스킴</h4><p><b>docs://</b>, <b>policy://</b>처럼 <b>내 스킴</b>을 정한다 → 충돌 없이 안전.</p></div></div><div class="keymsg"><span class="k">규칙</span><div><span style="font-family:var(--mono)">type://path/{param}</span> 꼴로 <b>종류별 접두사</b>를 통일한다. 예측 가능한 주소가 모델 활용도를 높인다.</div></div></div>
+</section>
+
+<section class="slide" data-title="세 프리미티브 비유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>비유</div>
+  <h2 class="s-title sm">버튼·서랍·양식 — 셋을 한 그림으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n" style="color:var(--violet)">Tool</span><h3>버튼</h3><p>누르면 작동한다. 상태를 바꾼다(부작용).</p></div><div class="card"><span class="n" style="color:var(--mint)">Resource</span><h3>서랍 속 문서</h3><p>열어서 읽는다. 건드려도 바뀌지 않는다.</p></div><div class="card"><span class="n" style="color:var(--amber)">Prompt</span><h3>서식(양식)</h3><p>빈칸을 채워 쓰는 재사용 템플릿.</p></div></div><div class="keymsg"><span class="k">오늘</span><div>이 중 <b>서랍(Resource)</b>을 깊게 판다. Day 3에서 배운 셋의 구분이 그대로 이어진다.</div></div></div>
+</section>
 <!-- ===== CH2 vs Tool ===== -->
 <section class="slide section" data-title="[섹션] Resource vs Tool">
   <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div>
@@ -403,7 +435,7 @@
 <section class="slide" data-title="✏️ 미니실습 · 설계 결정">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>설계</div>
-  <h2 class="s-title sm">직접 해보기 — 리소스/툴 + URI 짓기</h2>
+  <h2 class="s-title sm">무엇으로 만들지, URI는 어떻게</h2>
   <div class="rule"></div>
   <div class="body">
     <p class="phase-label">과제 — 무엇으로 만들지 정하고, Resource면 URI를 설계 <span class="ln"></span></p>
@@ -416,6 +448,14 @@
   </div>
 </section>
 
+
+<section class="slide" data-title="결정 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>결정 흐름</div>
+  <h2 class="s-title sm">정할 땐 이 순서로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="pipe q"><div class="step"><div class="si">① 부작용?</div><div class="sn">상태를 바꾸나</div><div class="sd">예 → Tool</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">② 매개변수?</div><div class="sn">값을 받아 달라지나</div><div class="sd">예 → 템플릿 리소스</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③ 그 외</div><div class="sn">항상 같은 데이터</div><div class="sd">고정 리소스</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>바꾸면 Tool</b>, 읽기인데 <b>매개변수가 있으면 템플릿</b>, 없으면 <b>고정 리소스</b>.</div></div></div>
+</section>
 <!-- ===== CH3 design ===== -->
 <section class="slide section" data-title="[섹션] Resource 설계 원칙">
   <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div>
@@ -452,6 +492,66 @@
   </div>
 </section>
 
+
+<section class="slide" data-title="목록·페이지네이션">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>발견·규모</div>
+  <h2 class="s-title sm">목록으로 알리고, 크면 나눈다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>클라이언트는 <span style="font-family:var(--mono)">resources/list</span>로 무엇이 있는지 발견한다</div></div><div class="v"><span class="b">→</span><div>항목이 많으면 <b>커서 기반 페이지네이션</b>으로 나눠 전달</div></div><div class="v"><span class="b">→</span><div>별도 <b>인덱스 리소스</b>도 두면 모델이 훑기 쉽다</div></div></div><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>왜 중요</h4><p>목록이 없으면 모델은 무엇을 읽을 수 있는지 모른다. 발견 가능성이 곧 활용도.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="인자 자동완성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>꿀팁</div>
+  <h2 class="s-title sm">템플릿 인자를 자동완성으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><span style="font-family:var(--mono)">policy://{topic}</span>의 <span style="font-family:var(--mono)">{topic}</span> 값 후보를 서버가 제안</div></div><div class="v"><span class="b">→</span><div>사용자·모델이 오타 없이 올바른 값을 고른다</div></div><div class="v"><span class="b">★</span><div>MCP의 <b>completion</b> 기능 — 있으면 UX가 크게 좋아진다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">complete.py</span></div><pre><code><span class="cm"># 클라이언트가 topic 후보를 요청하면</span>
+<span class="cm"># ["leave", "expense", "remote"] 처럼 후보를 돌려준다</span>
+<span class="cm"># → 사용자가 목록에서 선택</span></code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="캐싱 팁">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>성능</div>
+  <h2 class="s-title sm">리소스는 캐싱이 효자</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>같은 리소스가 <b>자주 반복해서</b> 읽힌다 — 매번 파일·DB를 치면 느리다</div></div><div class="v"><span class="b">→</span><div>메모리에 캐시하고, <b>원본이 바뀌면 무효화</b>한다</div></div><div class="v"><span class="b">→</span><div>무거운 문서는 <b>요약본 리소스</b>를 따로 두는 것도 방법</div></div></div><div class="keymsg"><span class="k">감각</span><div>리소스는 GET과 같다 — <b>읽기 최적화</b>가 통한다.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] Resource 고급">
+  <div class="ghost">3.5</div><div class="seyebrow">ADVANCED RESOURCES</div>
+  <h2>리소스의 고급 기능</h2>
+  <div class="agenda"><span>구독·갱신</span><span>Roots</span><span>프롬프트 결합</span></div>
+</section>
+
+<section class="slide" data-title="구독·갱신">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">고급</span><span class="dot"></span>실시간</div>
+  <h2 class="s-title sm">바뀌면 알려주는 구독</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>클라이언트가 <span style="font-family:var(--mono)">subscribe</span>로 특정 리소스를 구독</div></div><div class="v"><span class="b">→</span><div>내용이 바뀌면 서버가 <b>updated</b> 알림을 보낸다</div></div><div class="v"><span class="b">→</span><div>목록 자체가 바뀌면 <b>list_changed</b> 알림</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/></svg></div><div class="ct"><h4>언제 쓰나</h4><p>대시보드 상태·실시간 문서처럼 값이 계속 변하는 리소스에 유용하다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="Roots">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">고급</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">Roots — 클라이언트가 정한 울타리</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>클라이언트가 <b>Roots</b>로 “여기까지가 네 작업 폴더”라고 알려준다(Day 3의 클라이언트 기능)</div></div><div class="v"><span class="b">→</span><div>서버는 그 <b>울타리 안의 파일만</b> 리소스로 노출한다</div></div><div class="v"><span class="b">→</span><div>경로 검증과 <b>이중 안전장치</b>가 된다</div></div></div><div class="keymsg"><span class="k">연결</span><div>경로 매개변수 검증(코드) + Roots(프로토콜) — 두 겹으로 막는다.</div></div></div>
+</section>
+
+<section class="slide" data-title="프롬프트에 리소스">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">고급</span><span class="dot"></span>결합</div>
+  <h2 class="s-title sm">리소스를 프롬프트에 끼워넣기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><p class="s-sub" style="margin-bottom:12px">프롬프트가 리소스 <b style="color:var(--ink)">원문을 임베드</b>해 대화를 구성할 수 있다. 세 프리미티브가 함께 작동하는 지점.</p><div class="vlist"><div class="v"><span class="b">→</span><div>정책 원문을 읽어 리뷰 프롬프트에 끼운다</div></div><div class="v"><span class="b">→</span><div>모델은 근거를 곧바로 손에 쥔다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">prompt_embed.py</span></div><pre><code><span class="kw">@mcp.prompt</span>
+<span class="kw">def</span> check_policy(topic: str) -> str:
+    <span class="st">"""정책 원문을 근거로 질문하는 템플릿"""</span>
+    text = policy(topic)            <span class="cm"># 리소스 함수 재사용</span>
+    <span class="kw">return</span> <span class="st">f"다음 정책을 근거로 답해줘:\n{text}"</span></code></pre></div></div></div>
+</section>
 <!-- ===== CH4 data sources ===== -->
 <section class="slide section" data-title="[섹션] 데이터 소스 연결">
   <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div>
@@ -502,6 +602,27 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
   </div>
 </section>
 
+
+<section class="slide" data-title="API를 리소스로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>외부 연결</div>
+  <h2 class="s-title sm">외부 API(GET)도 리소스가 된다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>읽기 전용 <b>GET</b>이면 자연스럽게 Resource</div></div><div class="v"><span class="b">→</span><div>함수 안에서 호출하고 결과를 반환</div></div><div class="v"><span class="b">i</span><div>외부 호출 실패·타임아웃은 <b>친절한 메시지</b>로</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">api.py</span></div><pre><code><span class="kw">import</span> httpx
+
+<span class="kw">@mcp.resource</span>(<span class="st">"weather://{city}"</span>, description=<span class="st">"도시의 현재 날씨"</span>)
+<span class="kw">def</span> weather(city: str) -> dict:
+    r = httpx.get(<span class="st">f"https://api.example.com/w/{city}"</span>)
+    <span class="kw">return</span> r.json()</code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="리소스 보안 심화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>보안</div>
+  <h2 class="s-title sm">경로 검증만으로는 부족하다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2"><div class="card"><span class="n" style="color:var(--rose)">경로</span><h3>탈출 차단</h3><p>../ 같은 경로 탈출을 막는다(필수).</p></div><div class="card"><span class="n" style="color:var(--rose)">민감정보</span><h3>필터링</h3><p>비밀번호·주민번호 등은 걸러서 노출.</p></div><div class="card"><span class="n" style="color:var(--rose)">크기</span><h3>용량 제한</h3><p>거대한 파일은 잘라서·요약해서.</p></div><div class="card"><span class="n" style="color:var(--rose)">권한</span><h3>범위 제한</h3><p>공개해도 되는 것만. 최소 권한.</p></div></div><div class="keymsg"><span class="k">원칙</span><div>리소스는 <b>‘무엇을 읽히지 않을지’</b>부터 정한다.</div></div></div>
+</section>
 <!-- ===== CH5 RAG bridge ===== -->
 <section class="slide section" data-title="[섹션] RAG 연계 맛보기">
   <div class="ghost">05</div><div class="seyebrow">CHAPTER 05</div>
@@ -512,17 +633,41 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
 <section class="slide" data-title="RAG × MCP 미리보기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>연결 고리</div>
-  <h2 class="s-title sm">Week 2의 RAG를 MCP로 노출한다면</h2>
+  <h2 class="s-title sm">1·2강의 RAG를 MCP로 노출한다면</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c2">
       <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><h3>지식 = Resource</h3><p>문서·청크를 <span style="font-family:var(--mono)">docs://{id}</span>로 ‘읽기’ 노출. 모델이 필요할 때 원문을 가져온다.</p></div>
       <div class="card" style="border-color:var(--violet-300);background:#F8F5FF"><h3>검색 = Tool</h3><p>질의→하이브리드·reranker 같은 ‘연산’은 <span style="font-family:var(--mono)">search(query)</span> Tool로.</p></div>
     </div>
-    <div class="keymsg"><span class="k">미리보기</span><div>Day1~2의 RAG 봇을 <b>MCP 서버</b>로 감싸면, 어떤 호스트에서도 ‘지식 도구’로 쓸 수 있다 — 실무 통합은 Day 6에서.</div></div>
+    <div class="keymsg"><span class="k">미리보기</span><div>1·2강의 RAG 봇을 <b>MCP 서버</b>로 감싸면 어떤 호스트에서도 ‘지식 도구’로 쓸 수 있다 — 검색 도구는 <b>5강</b>에서 깊게 만든다.</div></div>
   </div>
 </section>
 
+
+<section class="slide" data-title="RAG↔MCP 매핑">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>매핑</div>
+  <h2 class="s-title sm">RAG 파이프라인을 MCP로 나누면</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="pipe"><div class="step"><div class="si">Resource</div><div class="sn">chunk://{id}</div><div class="sd">청크 원문 읽기</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">Tool</div><div class="sn">search(query)</div><div class="sd">하이브리드+reranker</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">Prompt</div><div class="sn">qa 템플릿</div><div class="sd">근거로 답하기</div></div></div><div class="keymsg"><span class="k">연결</span><div>Day 3에서 만든 <b>search_docs</b> 도구가 여기서 ‘검색=Tool’ 자리에 그대로 들어간다.</div></div></div>
+</section>
+
+<section class="slide" data-title="비유 — 도서관">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>비유</div>
+  <h2 class="s-title sm">도서관으로 이해하기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n" style="color:var(--mint)">Resource</span><h3>서가의 책</h3><p>꺼내서 읽는다. 원문 그대로.</p></div><div class="card"><span class="n" style="color:var(--violet)">Tool</span><h3>사서에게 요청</h3><p>“이 주제 찾아줘” — 검색·랭킹이라는 일.</p></div><div class="card"><span class="n" style="color:var(--amber)">Prompt</span><h3>대출 신청서</h3><p>정해진 양식으로 요청을 만든다.</p></div></div><div class="keymsg"><span class="k">핵심</span><div><b>검색은 사서(Tool)</b>, <b>책은 서가(Resource)</b>. RAG의 검색을 리소스로 착각하지 않기.</div></div></div>
+</section>
+
+<section class="slide" data-title="지식 서버의 모습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>종합</div>
+  <h2 class="s-title sm">한 서버에 셋을 모으면</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">Resource</span><h3>지식</h3><p><span style="font-family:var(--mono)">chunk://{id}</span>로 문서·청크를 읽기 노출.</p></div><div class="card"><span class="n">Tool</span><h3>검색</h3><p><span style="font-family:var(--mono)">search(query)</span>로 관련 청크를 찾아준다.</p></div><div class="card"><span class="n">Prompt</span><h3>질의</h3><p>근거를 넣어 답을 만드는 재사용 템플릿.</p></div></div><div class="keymsg"><span class="k">그림</span><div>이 셋을 갖추면 <b>어디서나 붙는 지식 서버</b>가 된다 — 이후 통합의 뼈대.</div></div></div>
+</section>
 <!-- ===== CH6 LAB ===== -->
 <section class="slide section mintbg" data-title="[섹션] HANDS-ON LAB">
   <div class="ghost">06</div>
@@ -628,7 +773,7 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
 <section class="slide" data-title="Lab 6 · 도전(선택)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">LAB 6</span><span class="dot"></span>도전(선택)</div>
-  <h2 class="s-title sm">한 발 더</h2>
+  <h2 class="s-title sm">도전 과제</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
@@ -636,14 +781,14 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
       <div class="card"><span class="n">도전 B</span><h3>JSON MIME</h3><p>dict 반환을 JSON으로 명확히 노출.</p></div>
       <div class="card"><span class="n">도전 C</span><h3>인덱스 자동화</h3><p>폴더를 스캔해 목록 리소스를 자동 생성.</p></div>
     </div>
-    <div class="callout mint" style="margin-top:18px"><div class="ci" style="font-size:18px">🏆</div><div class="ct"><h4>여유가 있다면</h4><p>Day1~2의 청크를 <span style="font-family:var(--mono)">chunk://{id}</span> 리소스로 노출해, ‘지식 서버’의 뼈대를 만들어 보세요.</p></div></div>
+    <div class="callout mint" style="margin-top:18px"><div class="ci" style="font-size:18px">🏆</div><div class="ct"><h4>여유가 있다면</h4><p>1·2강의 청크를 <span style="font-family:var(--mono)">chunk://{id}</span> 리소스로 노출해, ‘지식 서버’의 뼈대를 만들어 보세요.</p></div></div>
   </div>
 </section>
 
 <section class="slide" data-title="트러블슈팅">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>자주 나는 문제</div>
-  <h2 class="s-title sm">막히면 여기부터</h2>
+  <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>트러블슈팅</div>
+  <h2 class="s-title sm">자주 나는 오류와 해결</h2>
   <div class="rule"></div>
   <div class="body">
     <table class="ctable">
@@ -661,7 +806,7 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
 <section class="slide" data-title="실습 산출물">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">LAB</span><span class="dot"></span>산출물</div>
-  <h2 class="s-title sm">오늘 손에 남는 것</h2>
+  <h2 class="s-title sm">오늘 만든 결과물</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -691,7 +836,7 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
 <section class="slide" data-title="핵심 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>핵심 정리</div>
-  <h2 class="s-title sm">오늘 꼭 가져갈 5가지</h2>
+  <h2 class="s-title sm">핵심 정리 5가지</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="biglist">
@@ -704,6 +849,14 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
   </div>
 </section>
 
+
+<section class="slide" data-title="치트시트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">한 장 치트시트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2"><div class="card"><h3>Resource란</h3><p>읽기 전용·URI로 주소. GET 같은 창구.</p></div><div class="card"><h3>두 종류</h3><p>고정 <span style="font-family:var(--mono)">config://status</span> · 템플릿 <span style="font-family:var(--mono)">docs://{id}</span></p></div><div class="card"><h3>꼭 지킬 것</h3><p>description= 명시 · 일관된 스킴 · 경로 검증</p></div><div class="card"><h3>고급</h3><p>목록·페이지네이션 · 구독 · completion · Roots</p></div></div></div>
+</section>
 <section class="slide" data-title="자주 묻는 오개념">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>오개념 정리</div>
@@ -722,6 +875,14 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
   </div>
 </section>
 
+
+<section class="slide" data-title="다음 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>다음</div>
+  <h2 class="s-title sm">다음 단계와 자료</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>5강</b> — Tool 기반 MCP 기능 구현(부작용 도구·검증·Context).</div></div><div class="v"><span class="b">→</span><div>오늘 만든 리소스 서버에 <b>검색 도구(Tool)</b>를 합치면 지식 서버가 된다.</div></div><div class="v"><span class="b">→</span><div>공식 스펙: modelcontextprotocol.io · FastMCP: gofastmcp.com</div></div></div><div class="keymsg"><span class="k">정리</span><div>데이터를 <b>안전하게 읽히게</b> 만드는 게 오늘의 전부. 그 위에 검색·프롬프트를 얹으면 지식 서버다.</div></div></div>
+</section>
 <section class="slide cover" data-title="끝 · Day 04">
   <div class="aperture"></div><div class="ring"></div>
   <div class="wrap">
