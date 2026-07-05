@@ -21,3 +21,4 @@ _강사전용/
 
 # OS / 에디터
 .DS_Store
+.gstack/
