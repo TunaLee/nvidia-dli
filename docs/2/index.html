@@ -766,6 +766,51 @@
   <div class="body"><div class="bpipe"><div class="bstep" style="--bg:#E4F8F4;--bd:#9FDCD2;--ck:#0FB5A1"><span class="chip2">스케치·여러 말</span><div class="bic">✏️</div><div class="bn">질문 다듬기</div><div class="bd">모호할 때만 ON</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#E7F0FE;--bd:#A9C9F8;--ck:#2F7FF0"><span class="chip2">두 사서</span><div class="bic">👥</div><div class="bn">두 사서 검색</div><div class="bd">BM25 + 벡터</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#E6F6EC;--bd:#A5DFC0;--ck:#22A45D"><span class="chip2">석차 합산</span><div class="bic">🥇</div><div class="bn">등수로 합침</div><div class="bd">RRF</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#EFEAFF;--bd:#C4B6FB;--ck:#5B3DF5"><span class="chip2">서류→면접</span><div class="bic">🧑‍💼</div><div class="bn">면접</div><div class="bd">Reranker · N→K</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#FEF3E0;--bd:#F8D9A4;--ck:#F4A93C"><span class="chip2">책 고르기</span><div class="bic">📚</div><div class="bn">골라 담기</div><div class="bd">MMR·재배치</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#FDEEF3;--bd:#F5BBCB;--ck:#E8537A"><span class="chip2">답안</span><div class="bic">💬</div><div class="bn">생성</div><div class="bd">근거로 답</div></div></div><div class="callout mint" style="margin-top:6px"><div class="ci" style="font-size:18px">✅</div><div class="ct"><h4>이제 전부 연결됐다</h4><p>마지막 블록까지 끼웠다 — 겹치는 후보 대신 <b>서로 다른 근거</b>를 담고(MMR), 핵심은 <b>처음과 끝</b>에 배치한다. 블록 ①은 모호한 질문에만 켠다.</p></div></div><div class="keymsg"><span class="k">기억</span><div>랩에서 이 지도를 <b>블록당 함수 하나</b>로 그대로 조립한다 — 왼쪽부터 순서대로.</div></div></div>
 </section>
 
+<!-- ===== CH5 측정 & 튜닝 (NEW) ===== -->
+<section class="slide" data-title="느낌 말고 숫자로 — 왜 평가하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag ">CH5</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">“이게 더 나은 듯?” → 숫자로 확인한다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="callout mint"><div class="ci" style="font-size:18px">📏</div><div class="ct"><h4>측정할 수 있어야 개선할 수 있다</h4><p>기준선 · 하이브리드 · +리랭커 중 뭐가 나은지 <b>느낌</b>이 아니라 <b>점수</b>로 비교한다. 그래야 다음에 뭘 바꿀지(튜닝)도 정해진다.</p></div></div>
+    <table class="ctable" style="margin-top:12px"><thead><tr><th style="width:44%">무엇을</th><th>어떻게</th></tr></thead><tbody>
+      <tr><td>검색이 정답을 가져왔나</td><td class="hl">Recall@k · MRR — 오프라인 지표</td></tr>
+      <tr><td>생성이 근거대로 답했나</td><td class="hl">근거 충실도 · 환각 여부 — 사람/LLM 채점</td></tr>
+    </tbody></table>
+    <div class="keymsg"><span class="k">기억</span><div>먼저 <b>작은 평가셋(질문 + 정답)</b>을 만들면, 이후 모든 실험이 숫자로 말한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Recall@k · MRR — 검색 채점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag ">CH5</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">Recall@k · MRR — 검색을 채점하는 두 자</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th style="width:20%">지표</th><th>뜻</th><th style="width:24%">직관</th></tr></thead><tbody>
+      <tr><td class="hl">Recall@k</td><td>top-k 안에 정답이 <b>하나라도</b> 있으면 성공 → 성공한 질문 비율</td><td>“놓치지 않았나”</td></tr>
+      <tr><td class="hl">MRR</td><td>정답이 <b>몇 등</b>에 처음 나왔나의 역수 평균 (1등=1.0, 2등=0.5…)</td><td>“윗자리에 뒀나”</td></tr>
+    </tbody></table>
+    <div class="callout amber" style="margin-top:12px"><div class="ci" style="font-size:18px">💡</div><div class="ct"><h4>Recall이 같아도 MRR은 다르다</h4><p>둘 다 정답을 top-3에 넣어도 <b>1등에 둔 쪽</b>이 MRR이 높다 — 리랭커가 빛나는 지점이 바로 여기.</p></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="손잡이 튜닝 — 지표 보며 조절">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag ">CH5</span><span class="dot"></span>튜닝</div>
+  <h2 class="s-title sm">손잡이 튜닝 — 지표 보며 값을 고른다</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th style="width:26%">손잡이</th><th>크게 하면</th><th>작게 하면</th></tr></thead><tbody>
+      <tr><td class="hl">chunk_size</td><td>문맥 넉넉 · 노이즈↑</td><td>정밀 · 문맥 잘림↑</td></tr>
+      <tr><td class="hl">top_k (검색 개수)</td><td>놓칠 확률↓ · 노이즈↑</td><td>깔끔 · 정답 누락 위험</td></tr>
+      <tr><td class="hl">N→K (리랭커)</td><td>N 넓게 주울수록 기회↑ · 느려짐</td><td>K 좁힐수록 정밀</td></tr>
+    </tbody></table>
+    <div class="keymsg"><span class="k">방법</span><div>후보 몇 값을 <b>스윕</b>(예: chunk 80·120·200 × top_k 1·3·5)해 <b>Recall/MRR이 가장 높은 조합</b>을 고른다 — 이게 RAG 하이퍼파라미터 튜닝. <span style="color:var(--mut)">(더 나아가면 Optuna 등 자동 탐색)</span></div></div>
+  </div>
+</section>
+
 <!-- ===== CH6 GraphRAG (NEW) ===== -->
 <section class="slide section" data-title="[섹션] GraphRAG">
   <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div>
