@@ -2,12 +2,101 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="refresh" content="0; url=1/" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NVIDIA DLI · RAG & Agentic MCP 강의자료</title>
-<link rel="canonical" href="1/" />
-<script>location.replace("1/");</script>
+<meta name="description" content="RAG부터 Agentic MCP까지 — Day별 강의 슬라이드" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root{
+    --bg1:#141230; --bg2:#1b1740; --card:#211d44; --card2:#262150;
+    --line:#332c62; --ink:#ECEAFB; --muted:#9E99C4;
+    --green:#76c442; --green2:#8ed85a; --teal:#34D6C2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1200px 700px at 15% -10%,#2a2160 0%,transparent 55%),
+               radial-gradient(1000px 700px at 110% 10%,#123f3a 0%,transparent 50%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:64px 24px 72px}
+  header{margin-bottom:40px}
+  .brand{display:inline-flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.02em;
+    color:var(--green2);font-size:.82rem;text-transform:uppercase;
+    border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.02)}
+  .brand::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+  h1{font-size:clamp(1.8rem,4.5vw,2.7rem);font-weight:800;line-height:1.2;margin:20px 0 10px;letter-spacing:-.01em}
+  h1 .accent{background:linear-gradient(90deg,var(--green2),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:1.02rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:8px}
+  .card{
+    position:relative;display:block;text-decoration:none;color:inherit;
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;
+    transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;overflow:hidden;
+  }
+  .card::after{content:"→";position:absolute;right:20px;top:20px;color:var(--muted);
+    font-size:1.1rem;transition:transform .16s ease,color .16s ease}
+  .card:hover{transform:translateY(-4px);border-color:var(--green);
+    box-shadow:0 12px 34px rgba(0,0,0,.35),0 0 0 1px rgba(118,196,66,.25)}
+  .card:hover::after{transform:translateX(4px);color:var(--green2)}
+  .num{font-size:.78rem;font-weight:700;letter-spacing:.14em;color:var(--green2);text-transform:uppercase}
+  .topic{display:block;font-size:1.24rem;font-weight:800;margin:6px 0 8px;line-height:1.25}
+  .desc{display:block;color:var(--muted);font-size:.9rem;line-height:1.5}
+  footer{margin-top:44px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:20px}
+  footer a{color:var(--teal);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+</style>
 </head>
 <body>
-<p><a href="1/">Day 1로 이동</a></p>
+<div class="wrap">
+  <header>
+    <span class="brand">NVIDIA DLI</span>
+    <h1>RAG & <span class="accent">Agentic MCP</span> 강의자료</h1>
+    <p class="sub">Day별 슬라이드 — 카드를 눌러 이동하세요.</p>
+  </header>
+
+  <main class="grid">
+    <a class="card" href="0/">
+      <span class="num">Day 00</span>
+      <span class="topic">딥러닝 기초</span>
+      <span class="desc">신경망 · CNN · 전이학습 — Fundamentals of Deep Learning</span>
+    </a>
+    <a class="card" href="1/">
+      <span class="num">Day 01</span>
+      <span class="topic">RAG 구조 설계</span>
+      <span class="desc">청킹 · 임베딩 · 벡터DB · 검색 품질 결정 요소</span>
+    </a>
+    <a class="card" href="2/">
+      <span class="num">Day 02</span>
+      <span class="topic">고급 검색 &amp; Agentic RAG</span>
+      <span class="desc">하이브리드 · 리랭커 · HyDE · GraphRAG · 에이전트</span>
+    </a>
+    <a class="card" href="3/">
+      <span class="num">Day 03</span>
+      <span class="topic">MCP &amp; FastMCP</span>
+      <span class="desc">RAG에서 세상으로 — Tool · Resource · Prompt</span>
+    </a>
+    <a class="card" href="4/">
+      <span class="num">Day 04</span>
+      <span class="topic">Resource 기반 MCP 설계</span>
+      <span class="desc">읽기 전용 데이터를 안전하게 노출하기</span>
+    </a>
+    <a class="card" href="5/">
+      <span class="num">Day 05</span>
+      <span class="topic">Tool 기반 MCP 기능 구현</span>
+      <span class="desc">에이전트가 쓰는 도구를 직접 만들기</span>
+    </a>
+  </main>
+
+  <footer>
+    실습 노트북 · 코드 → <a href="https://github.com/TunaLee/nvidia-dli">GitHub 저장소</a>
+  </footer>
+</div>
 </body>
 </html>
