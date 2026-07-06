@@ -13,6 +13,10 @@ my_docs/
 employees.csv
 executed.ipynb
 
+# 단, Day02 코퍼스는 커밋 대상 (학생이 노트북에서 내려받아 로딩)
+!day02/data/
+!day02/data/corpus.txt
+
 # 강사전용 (공개 저장소에는 올리지 않음)
 _강사전용/
 
