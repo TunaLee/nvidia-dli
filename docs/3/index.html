@@ -460,6 +460,27 @@
   </div>
 </section>
 
+
+<section class="slide" data-title="MCP 클라이언트란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>클라이언트</div>
+  <h2 class="s-title sm">MCP 클라이언트란 — 서버와 대화하는 부품</h2>
+  <div class="rule"></div>
+  <div class="body">
+  <div class="callout mint"><div class="ci">↔</div><div class="ct"><h4>호스트(앱) 안에서 서버 하나와 1:1로 연결하는 부품</h4><p>서버가 무엇을 제공하는지 알아내고, 대신 호출·읽어서 호스트(LLM)에 넘긴다. 서버가 여러 개면 클라이언트도 그만큼(1:1).</p></div></div>
+  <div class="twocol w" style="margin-top:16px"><div>
+    <div class="vlist">
+      <div class="v"><span class="b">1</span><div><b>발견</b> — 서버에 "뭐 있어?" (도구·리소스·프롬프트 목록)</div></div>
+      <div class="v"><span class="b">2</span><div><b>실행</b> — 도구 호출·리소스 읽기를 대신 수행</div></div>
+      <div class="v"><span class="b">3</span><div><b>전달</b> — 결과를 호스트(LLM)에 넘겨 답에 쓰게 함</div></div>
+    </div>
+  </div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">client.py</span></div><pre><code>from fastmcp import Client
+
+async with Client(mcp) as c:          <span class="cm"># 이게 MCP 클라이언트</span>
+    await c.list_tools()              <span class="cm"># ① 발견</span>
+    await c.call_tool(&quot;add&quot;, {...})   <span class="cm"># ② 실행</span></code></pre></div></div></div>
+  <div class="keymsg"><span class="k">구분</span><div>호스트 = 사용자가 쓰는 앱(LLM 포함), 클라이언트 = 그 앱 안의 <b>연결 부품</b>. 우리 실습의 <code>Client(mcp)</code> 가 바로 MCP 클라이언트다.</div></div></div>
+</section>
 <section class="slide" data-title="JSON-RPC 위에서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>통신</div>
