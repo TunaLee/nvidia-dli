@@ -606,6 +606,64 @@
 
 
 
+
+<section class="slide section mintbg" data-title="[섹션] 실무 — LLM이 도구를 부른다">
+  <div class="ghost">LLM</div><div class="seyebrow">TOOL CALLING</div>
+  <h2>이제 LLM이 스스로 도구를 부른다</h2>
+  <div class="agenda"><span>function calling</span><span>NVIDIA Qwen</span><span>Agentic RAG 씨앗</span></div>
+</section>
+
+<section class="slide" data-title="우리가 불렀다 → LLM이 부른다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">실무</span><span class="dot"></span>왜 필요한가</div>
+  <h2 class="s-title sm">지금까진 우리가 불렀다 — 이제 LLM이 부른다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+    <div class="pane"><h4 style="color:var(--violet)">지금까지 (실습 Lab 1~5)</h4><p><b>우리가 코드로</b> <code>client.call_tool("search_docs", {...})</code> 를 직접 호출했다. 어떤 도구를 언제 부를지 사람이 정한다.</p></div>
+    <div class="pane good"><h4>실무 (Lab 7)</h4><p><b>LLM이 스스로</b> 질문을 보고 필요한 도구를 골라 부른다. 도구 목록만 건네주면, 판단·호출·답변을 LLM이 한다.</p></div>
+  </div>
+  <div class="keymsg"><span class="k">핵심</span><div>도구를 <b>만드는</b> 것에서, 에이전트가 도구를 <b>쓰는</b> 것으로 — 우리는 지금 NVIDIA Qwen으로 이걸 실제로 돌린다.</div></div></div>
+</section>
+
+<section class="slide" data-title="LLM ↔ MCP 도구 호출 루프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">실무</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">한눈에 — LLM이 도구를 부르는 4단계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="pipe">
+    <div class="step"><div class="si">1</div><div class="sn">도구 → 스펙</div><div class="sd">MCP 도구를 OpenAI function schema로 변환해 LLM에 제공</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">2</div><div class="sn">LLM 선택</div><div class="sd">Qwen이 질문을 보고 부를 도구·인자를 결정</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step new"><div class="si">3</div><div class="sn">MCP 실행</div><div class="sd">우리가 call_tool로 실제 실행 → 결과를 LLM에 반환</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">4</div><div class="sn">LLM 답변</div><div class="sd">근거로 최종 답. 필요하면 2~3을 반복</div></div>
+  </div>
+  <div class="keymsg"><span class="k">연결</span><div>이 루프가 <b>Agentic RAG의 씨앗</b> — 3주차에서 LangGraph로 확장한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="코드 미리보기 — 도구 호출 루프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 7</span><span class="dot"></span>실습 코드 · tool calling</div>
+  <h2 class="s-title sm">코드 미리보기 — LLM이 도구를 부르는 루프</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agent.py · NVIDIA Qwen</span></div><pre><code>def to_openai_tools(tools):          <span class="cm"># MCP 도구 → OpenAI function 스펙</span>
+    return [{&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {
+        &quot;name&quot;: t.name, &quot;description&quot;: t.description, &quot;parameters&quot;: t.inputSchema}} for t in tools]
+
+async def run_agent(question):
+    async with Client(mcp) as client:
+        oai = to_openai_tools(await client.list_tools())
+        msgs = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: question}]
+        while True:
+            m = llm.chat.completions.create(model=LLM_MODEL, messages=msgs, tools=oai).choices[0].message
+            if not m.tool_calls:
+                return m.content                       <span class="cm"># 최종 답변</span>
+            msgs.append(m)                             <span class="cm"># LLM의 도구 호출 턴</span>
+            for tc in m.tool_calls:                    <span class="cm"># LLM이 고른 도구를 MCP로 실제 실행</span>
+                res = await client.call_tool(tc.function.name, json.loads(tc.function.arguments))
+                msgs.append({&quot;role&quot;: &quot;tool&quot;, &quot;tool_call_id&quot;: tc.id, &quot;content&quot;: str(res.data)})</code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>day05/Day05_Tool_MCP_실습.ipynb · Lab 7</div></div>
+</section>
 <section class="slide section mintbg" data-title="[섹션] HANDS-ON LAB">
   <div class="ghost">07</div>
   <span class="lab-flag"><span class="sq"></span>HANDS-ON LAB · 로컬</span>
