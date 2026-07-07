@@ -473,15 +473,15 @@
 </section>
 <!-- ===== CH2 primitives ===== -->
 
-<section class="slide section mintbg" data-title="[섹션] 준비 · 파이썬 데코레이터">
+<section class="slide section mintbg" data-title="[섹션] 파이썬 데코레이터">
   <div class="ghost">@</div><div class="seyebrow">PYTHON DECORATOR</div>
-  <h2>@mcp.tool 을 이해하는 최소 파이썬</h2>
+  <h2>데코레이터 — @mcp.tool 의 문법</h2>
   <div class="agenda"><span>함수는 값</span><span>감싸기</span><span>@ 문법</span><span>인자 받는 데코레이터</span></div>
 </section>
 <section class="slide" data-title="함수도 값이다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">예열</span><span class="dot"></span>데코레이터 ①</div>
-  <h2 class="s-title sm">데코레이터 이전에 — 함수도 '값'이다</h2>
+  <div class="eyebrow"><span class="tag">준비</span><span class="dot"></span>데코레이터 ①</div>
+  <h2 class="s-title sm">함수도 값이다</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">values.py</span></div><pre><code>def hello():
     return &quot;안녕&quot;
@@ -489,12 +489,12 @@
 f = hello        <span class="cm"># 괄호 없이 = 함수 &#x27;자체&#x27;를 변수에 담기 (호출 아님)</span>
 print(f())       <span class="cm"># 안녕</span>
 <span class="cm"># 함수를 인자로 넘기거나, 함수를 돌려줄 수도 있다</span></code></pre></div>
-  <div class="keymsg"><span class="k">토대</span><div>함수를 값처럼 다룰 수 있어서, <b>'함수를 받아 함수를 돌려주는'</b> 데코레이터가 가능하다.</div></div></div>
+  <div class="keymsg"><span class="k">토대</span><div>함수를 값으로 다룰 수 있으니, <b>함수를 받아 함수를 돌려주는</b> 데코레이터도 가능하다.</div></div></div>
 </section>
 <section class="slide" data-title="데코레이터란 — 함수를 감싸는 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">예열</span><span class="dot"></span>데코레이터</div>
-  <h2 class="s-title sm">데코레이터란 — `@`는 '함수를 감싸는' 문법</h2>
+  <div class="eyebrow"><span class="tag">준비</span><span class="dot"></span>데코레이터</div>
+  <h2 class="s-title sm">데코레이터 — 함수를 감싸는 함수</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">decorator.py</span></div><pre><code>def announce(func):
     def wrapper(*a, **k):
@@ -510,8 +510,8 @@ def greet(name):
 
 <section class="slide" data-title="@mcp.tool 은 함수를 등록한다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">예열</span><span class="dot"></span>MCP와 연결</div>
-  <h2 class="s-title sm">@mcp.tool 은 함수를 '도구 목록에 등록'한다</h2>
+  <div class="eyebrow"><span class="tag mint">준비</span><span class="dot"></span>MCP와 연결</div>
+  <h2 class="s-title sm">@mcp.tool 은 함수를 도구로 등록한다</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">register.py</span></div><pre><code>TOOLS = {}
 def tool(func):          <span class="cm"># @mcp.tool 의 축소판</span>
@@ -526,8 +526,8 @@ def add(a, b): return a + b
 
 <section class="slide" data-title="인자를 받는 데코레이터">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">예열</span><span class="dot"></span>데코레이터 ④</div>
-  <h2 class="s-title sm">인자를 받는 데코레이터 — @mcp.tool(...)의 정체</h2>
+  <div class="eyebrow"><span class="tag mint">준비</span><span class="dot"></span>데코레이터 ④</div>
+  <h2 class="s-title sm">인자를 받는 데코레이터 — @mcp.tool(...) 형태</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">factory.py</span></div><pre><code>def repeat(n):        <span class="cm"># 1) 설정 n 을 받아서</span>
     def deco(func):   <span class="cm"># 2) 데코레이터를 돌려주고</span>
