@@ -508,6 +508,26 @@ def greet(name):
   <div class="keymsg"><span class="k">핵심</span><div><b>@announce</b> 는 <code>greet = announce(greet)</code> 의 문법 설탕 — 함수를 받아 기능을 덧입힌 새 함수로 바꾼다.</div></div></div>
 </section>
 
+
+<section class="slide" data-title="args kwargs — wrapper에 담기는 값">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">준비</span><span class="dot"></span>데코레이터 ③</div>
+  <h2 class="s-title sm">*args, **kwargs — wrapper에 담기는 값</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">args.py</span></div><pre><code>def show_args(func):
+    def wrapper(*args, **kwargs):
+        print(args)     <span class="cm"># 위치 인자 → 튜플</span>
+        print(kwargs)   <span class="cm"># 키워드 인자 → 딕셔너리</span>
+        return func(*args, **kwargs)
+    return wrapper
+
+@show_args
+def order(item, qty, urgent=False): ...
+
+order(&quot;커피&quot;, 3)        <span class="cm"># args=(&#x27;커피&#x27;, 3)   kwargs={}</span>
+order(&quot;녹차&quot;, qty=2)    <span class="cm"># args=(&#x27;녹차&#x27;,)    kwargs={&#x27;qty&#x27;: 2}</span></code></pre></div>
+  <div class="keymsg"><span class="k">핵심</span><div><b>*</b>는 위치 인자를 <b>튜플</b>로, <b>**</b>는 키워드 인자를 <b>딕셔너리</b>로 모은다 — 그래서 어떤 함수든 그대로 감쌀 수 있다.</div></div></div>
+</section>
 <section class="slide" data-title="@mcp.tool 은 함수를 등록한다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">준비</span><span class="dot"></span>MCP와 연결</div>
