@@ -446,21 +446,15 @@
 <section class="slide" data-title="구성: Host·Client·Server">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구성요소</div>
-  <h2 class="s-title sm">호스트 · 클라이언트 · 서버</h2>
+  <h2 class="s-title sm">MCP 구성 요소 — 호스트 · 클라이언트 · 서버</h2>
   <div class="rule"></div>
-  <div class="body">
-    <div class="arch">
-      <div class="box"><div class="bt">Host</div><div class="bs">AI 앱(Claude Desktop 등)</div></div>
-      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
-      <div class="box"><div class="bt">Client</div><div class="bs">호스트 안의 연결 담당</div></div>
-      <div class="conn"><svg viewBox="0 0 40 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h30M28 4l6 5-6 5"/></svg></div>
-      <div class="box api"><div class="bt">Server</div><div class="bs">도구·데이터 제공(우리가 만든다)</div></div>
-    </div>
-    <div class="keymsg" style="margin-top:24px"><span class="k">역할</span><div>호스트가 LLM을 품고, 클라이언트가 서버와 1:1로 말하며, <b>서버가 실제 기능</b>을 노출한다. 오늘 우리는 <b>서버</b>를 만든다.</div></div>
+  <div class="body"><div class="cards c3">
+    <div class="card"><span class="n">Host</span><h3>AI 앱 (Claude Desktop 등)</h3><p>사용자 질문을 받고 답을 생성하는 앱. UI 제공, 대화·컨텍스트 관리, 클라이언트로 외부 도구/데이터 활용, 최종 답변 제공.</p><p style="font-size:12px;color:var(--mut);margin-top:2px">예: Claude Desktop · ChatGPT Desktop · 직접 만든 앱</p></div>
+    <div class="card"><span class="n">Client</span><h3>호스트 안의 연결 담당</h3><p>서버를 찾아 연결하고 메시지를 주고받는다(요청/응답). MCP 표준 처리·보안·인증. 서버 1개당 클라이언트 1개.</p><p style="font-size:12px;color:var(--mut);margin-top:2px">예: 연결 관리 · 메시지 처리 · 보안/인증</p></div>
+    <div class="card"><span class="n">Server</span><h3>도구·데이터 제공 (우리가 만든다)</h3><p>도구(기능)와 데이터/리소스를 제공하고, 요청을 처리해 결과를 반환. 접근 제어·로깅.</p><p style="font-size:12px;color:var(--mut);margin-top:2px">예: 도구(함수) · 파일 리소스 · DB · 웹 API</p></div>
   </div>
+  <div class="keymsg"><span class="k">한 줄</span><div>Host(사용자와 대화) + Client(연결 담당·중개자) + Server(도구·데이터 제공) = 함께 AI 능력을 확장. Host↔Client는 내장, <b>Client↔Server는 MCP 프로토콜</b>.</div></div></div>
 </section>
-
-
 <section class="slide" data-title="MCP 클라이언트란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>클라이언트</div>
@@ -504,11 +498,16 @@ async with Client(mcp) as c:          <span class="cm"># 이게 MCP 클라이언
 <section class="slide" data-title="수명주기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>수명주기</div>
-  <h2 class="s-title sm">연결은 이렇게 시작된다</h2>
+  <h2 class="s-title sm">MCP 주기 (Lifecycle) — 연결은 이렇게 흐른다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="li"><div class="num">1</div><div class="tx"><h4>초기화(initialize)</h4><p>클라이언트가 지원 버전·기능을 보내고 서버가 자기 기능으로 응답한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>기능 협상</h4><p>서로 무엇을 지원하는지(도구·리소스·샘플링 등) 맞춘다. 없는 기능은 쓰지 않는다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>운영</h4><p>도구 호출·리소스 읽기·알림을 주고받는다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>종료</h4><p>연결을 정리하고 닫는다.</p></div></div></div>
+  <div class="body"><div class="cards c4">
+    <div class="card"><span class="n">1 · 초기화</span><h3>서로 소개</h3><p>클라이언트가 지원 버전·기능을 보내고, 서버가 자기 기능으로 응답한다.</p></div>
+    <div class="card"><span class="n">2 · 기능 협상</span><h3>맞추기</h3><p>지원 기능(도구·리소스·샘플링 등)을 맞춘다. 합의된 것만 쓰고 미지원은 뺀다.</p></div>
+    <div class="card"><span class="n">3 · 운영</span><h3>협업</h3><p>도구 호출·리소스 읽기·알림을 주고받으며 실제 작업을 한다.</p></div>
+    <div class="card"><span class="n">4 · 종료</span><h3>정리</h3><p>연결을 정리하고 닫는다.</p></div>
+  </div>
+  <div class="keymsg"><span class="k">한 줄</span><div>초기화(소개) → 협상(맞춤) → 운영(협업) → 종료(정리) = 안정적인 MCP 연결.</div></div></div>
 </section>
-
 <section class="slide" data-title="메시지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>메시지</div>
@@ -728,14 +727,34 @@ def hi(): print(&quot;안녕&quot;)</code></pre></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n">Roots</span><h3>작업 범위</h3><p>클라이언트가 서버에 “여기까지가 네 작업 폴더”라고 경계를 알려준다.</p></div><div class="card"><span class="n">Sampling</span><h3>모델에 되묻기</h3><p>서버가 클라이언트의 LLM에게 “이걸 요약해줘”처럼 생성을 요청.</p></div><div class="card"><span class="n">Elicitation</span><h3>사용자에 되묻기</h3><p>서버가 실행 중 부족한 입력을 사용자에게 물어본다(2025-06 추가).</p></div></div><div class="keymsg"><span class="k">방향</span><div>도구 호출은 보통 앱→서버지만, 이 셋은 <b>서버→클라이언트</b>로도 흐른다. MCP가 단방향이 아닌 이유.</div></div></div>
 </section>
 
+<section class="slide" data-title="tool calling이란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>도구 호출</div>
+  <h2 class="s-title sm">tool calling이란 — 모델이 스스로 도구를 부른다</h2>
+  <div class="rule"></div>
+  <div class="body">
+  <div class="callout mint"><div class="ci">↔</div><div class="ct"><h4>우리가 부르는 게 아니라, 모델이 부른다</h4><p>LLM(에이전트)이 질문을 보고 <b>어떤 도구를·어떤 인자로·언제</b> 부를지 스스로 정해 호출한다. 우리는 도구 목록만 넘겨준다.</p></div></div>
+  <div class="pipe" style="margin-top:16px">
+    <div class="step"><div class="si">사람</div><div class="sn">"서울 날씨 어때?"</div><div class="sd">질문</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">LLM</div><div class="sn">get_weather 호출 결정</div><div class="sd">{location:"서울"}</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step new"><div class="si">도구</div><div class="sn">실행 → 결과 반환</div><div class="sd">{22°C, 맑음}</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">LLM</div><div class="sn">최종 답변</div><div class="sd">"서울 22°C, 맑음"</div></div>
+  </div>
+  <div class="keymsg"><span class="k">핵심</span><div>도구 <b>선택·인자·호출 시점을 모델이</b> 정한다. Day5에서 NVIDIA Qwen으로 직접 돌려본다.</div></div></div>
+</section>
 <section class="slide" data-title="에이전트 루프">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>에이전트 루프</div>
-  <h2 class="s-title sm">에이전트가 도구를 쓰는 흐름</h2>
+  <h2 class="s-title sm">에이전트 루프 (Agent Loop) — 도구를 쓰는 흐름</h2>
   <div class="rule"></div>
-  <div class="body"><div class="li"><div class="num">1</div><div class="tx"><h4>발견</h4><p>연결된 서버의 도구·리소스 목록을 읽는다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>선택·호출</h4><p>질문에 맞는 도구를 골라 인자를 채워 부른다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>관찰</h4><p>결과를 받아 맥락에 넣는다. 필요하면 다시 처음으로.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>답변</h4><p>모아진 근거로 최종 답을 만든다.</p></div></div><div class="keymsg"><span class="k">연결</span><div>지난 시간의 <b>RAG 검색</b>도 이 루프의 한 스텝(도구 호출)일 뿐이다.</div></div></div>
+  <div class="body"><div class="cards c4">
+    <div class="card"><span class="n">1 · 발견</span><h3>도구 목록 읽기</h3><p>연결된 서버의 도구·리소스 목록을 받는다. (get_weather, search_news, calculate …)</p></div>
+    <div class="card"><span class="n">2 · 선택·호출</span><h3>도구 고르기</h3><p>질문에 맞는 도구를 골라 인자를 채워 부른다. get_weather({location:"서울"})</p></div>
+    <div class="card"><span class="n">3 · 관찰</span><h3>결과 받기</h3><p>결과를 받아 맥락에 넣는다. {temp:"22°C", condition:"맑음"}</p></div>
+    <div class="card"><span class="n">4 · 답변</span><h3>최종 답</h3><p>모아진 근거로 답한다. "서울은 22°C, 맑음."</p></div>
+  </div>
+  <div class="keymsg"><span class="k">반복</span><div>필요하면 다시 <b>1(발견)</b>로 — 다른 도구를 더 쓴다. 지난 시간의 RAG 검색도 이 루프의 '도구 호출' 한 스텝.</div></div></div>
 </section>
-<!-- ===== CH3 transports ===== -->
 <section class="slide section" data-title="[섹션] 전송 방식">
   <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div>
   <h2>어떻게 연결되나<br/>Transports</h2>
