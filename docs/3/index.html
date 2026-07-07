@@ -355,6 +355,30 @@
 </section>
 
 <!-- ===== USB-C ANALOGY (visual) ===== -->
+
+<section class="slide" data-title="표준이 없을 때 vs 있을 때 (MCP)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">도입</span><span class="dot"></span>N×M → M+N</div>
+  <h2 class="s-title sm">표준이 없을 때 vs 있을 때 (MCP)</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+    <div class="pane bad">
+      <h4>표준이 없을 때</h4>
+      <p>모델 M개 × 도구 N개 = <b>M×N개</b>의 맞춤 연동을 각자 만든다.</p>
+      <div class="chips" style="margin:12px 0 6px"><span class="chip">모델 A</span><span class="chip">모델 B</span><span class="chip">모델 C</span></div>
+      <div style="text-align:center;font-weight:800;color:#C9405B;margin:2px 0 6px">╳ 각자 연결 (M×N개)</div>
+      <div class="chips"><span class="chip">파일시스템</span><span class="chip">DB</span><span class="chip">웹 검색</span><span class="chip">메신저</span></div>
+      <p style="margin-top:12px;font-size:12.5px;color:var(--mut)">도구 하나 추가할 때마다 <b>모든 모델을 다시 수정</b>해야 한다.</p>
+    </div>
+    <div class="pane good">
+      <h4>표준이 있을 때 (MCP)</h4>
+      <p>도구는 <b>MCP 서버</b>로 한 번만, 앱은 <b>MCP 클라이언트</b>로 한 번만 만든다.</p>
+      <div style="font-family:var(--mono);font-size:12.5px;text-align:center;line-height:1.55;margin:12px 0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px">모델/앱 A·B·C<br>↓<br><b>MCP 클라이언트 ↔ MCP 서버</b><br>↓<br>파일시스템 · DB · 웹 검색 · 메신저</div>
+      <p style="margin-top:6px;font-size:12.5px;color:var(--mut)">도구를 추가해도 <b>모델/앱은 수정할 필요 없다</b>. 연결은 <b>M+N개</b>.</p>
+    </div>
+  </div>
+  <div class="keymsg"><span class="k">핵심</span><div>연결이 <b>M×N → M+N</b> — USB-C처럼 표준 하나로 서로 자유롭게 꽂는다.</div></div></div>
+</section>
 <section class="slide" data-title="비유 — AI를 위한 USB-C">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>비유</div>
