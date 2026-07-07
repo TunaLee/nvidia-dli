@@ -26,3 +26,6 @@ _강사전용/
 # OS / 에디터
 .DS_Store
 .gstack/
+
+# 실습 실행 시 lab이 만드는 docs/ 폴더 (dayNN 내부, 커밋 제외)
+day*/docs/
