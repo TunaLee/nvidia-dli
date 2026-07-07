@@ -583,6 +583,20 @@ def hi(): print(&quot;안녕&quot;)</code></pre></div>
   </div>
 </section>
 
+
+<section class="slide" data-title="세 프리미티브 — 호출하면 이렇게 나온다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">예시</span><span class="dot"></span>호출 → 결과</div>
+  <h2 class="s-title sm">호출하면 이렇게 나온다 — Tool · Resource · Prompt</h2>
+  <div class="rule"></div>
+  <div class="body">
+  <table class="ctable"><thead><tr><th style="width:19%">종류</th><th>클라이언트 호출</th><th style="width:33%">결과</th></tr></thead><tbody>
+    <tr><td><b>Tool</b><br><span style="color:var(--mut);font-size:12px">행동·계산</span></td><td><code>call_tool("add", {a:2, b:3})</code></td><td class="hl"><code>5</code></td></tr>
+    <tr><td><b>Resource</b><br><span style="color:var(--mut);font-size:12px">읽기 데이터</span></td><td><code>read_resource("config://status")</code></td><td class="hl"><code>{"version":"1.0","env":"dev"}</code></td></tr>
+    <tr><td><b>Prompt</b><br><span style="color:var(--mut);font-size:12px">메시지 템플릿</span></td><td><code>get_prompt("code_review", {...})</code></td><td class="hl"><code>"다음 python 코드를 리뷰… print(1)"</code></td></tr>
+  </tbody></table>
+  <div class="keymsg"><span class="k">핵심</span><div>Tool은 <b>행동의 결과값</b>, Resource는 <b>URI로 읽은 데이터</b>, Prompt는 <b>채워진 메시지</b> — 부르는 함수도 셋 다 다르다(call_tool / read_resource / get_prompt).</div></div></div>
+</section>
 <section class="slide" data-title="구분 규칙">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Tool vs Resource</div>
