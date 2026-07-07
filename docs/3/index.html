@@ -950,11 +950,16 @@ uv run mcp dev server.py
 <section class="slide" data-title="디버깅">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>디버깅</div>
-  <h2 class="s-title sm">안 될 때 확인 순서</h2>
+  <h2 class="s-title sm">디버깅 — 안 될 때 확인 순서</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>목록에 뜨나</h4><p>Inspector나 list_tools로 도구가 보이는지부터 확인.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스키마가 맞나</h4><p>타입힌트·docstring이 의도대로 스키마가 됐는지.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>예외를 읽는다</h4><p>ctx 로그·서버 콘솔에서 실제 오류 메시지 확인.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>호스트 재시작</h4><p>Desktop 등에서 안 보이면 설정·경로 확인 후 재시작.</p></div></div></div></div>
+  <div class="body"><div class="cards c4">
+    <div class="card"><span class="n">1 · 목록에 뜨나</span><h3>Inspector · list_tools</h3><p>도구가 목록에 보이는지부터 확인. 안 보이면 등록 자체가 안 된 것.</p></div>
+    <div class="card"><span class="n">2 · 스키마가 맞나</span><h3>타입힌트 · docstring</h3><p>의도대로 스키마가 됐는지 — 입력값·타입·설명이 맞게 나왔는지 확인.</p></div>
+    <div class="card"><span class="n">3 · 예외를 읽는다</span><h3>ctx 로그 · 서버 콘솔</h3><p>실제 오류 메시지 확인. ValidationError·Traceback 에서 원인이 나온다.</p></div>
+    <div class="card"><span class="n">4 · 호스트 재시작</span><h3>설정 · 경로 확인</h3><p>Desktop에서 안 보이면 config 경로·entry point·포트/stdio 확인 후 재시작.</p></div>
+  </div>
+  <div class="keymsg"><span class="k">그래도 안 되면</span><div>최소 예제로 재현 · MCP Inspector로 요청/응답 직접 테스트 · 서버 로그를 상세 레벨로. <b>작은 변경 후 바로바로 확인</b>.</div></div></div>
 </section>
-<!-- ===== CH6 security ===== -->
 <section class="slide section" data-title="[섹션] 보안 & 설계">
   <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div>
   <h2>권한과 보안</h2>
