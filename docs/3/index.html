@@ -632,6 +632,20 @@
 </section>
 
 
+
+<section class="slide" data-title="함수도 값이다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">예열</span><span class="dot"></span>데코레이터 ①</div>
+  <h2 class="s-title sm">데코레이터 이전에 — 함수도 '값'이다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">values.py</span></div><pre><code>def hello():
+    return &quot;안녕&quot;
+
+f = hello        <span class="cm"># 괄호 없이 = 함수 &#x27;자체&#x27;를 변수에 담기 (호출 아님)</span>
+print(f())       <span class="cm"># 안녕</span>
+<span class="cm"># 함수를 인자로 넘기거나, 함수를 돌려줄 수도 있다</span></code></pre></div>
+  <div class="keymsg"><span class="k">토대</span><div>함수를 값처럼 다룰 수 있어서, <b>'함수를 받아 함수를 돌려주는'</b> 데코레이터가 가능하다.</div></div></div>
+</section>
 <section class="slide" data-title="데코레이터란 — 함수를 감싸는 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">예열</span><span class="dot"></span>데코레이터</div>
@@ -663,6 +677,25 @@ def tool(func):          <span class="cm"># @mcp.tool 의 축소판</span>
 def add(a, b): return a + b
 <span class="cm"># 이제 TOOLS == {&quot;add&quot;: add} — 함수가 &#x27;등록&#x27;됐다</span></code></pre></div>
   <div class="callout mint"><div class="ci" style="font-size:18px">🔌</div><div class="ct"><h4>MCP도 똑같다</h4><p><code>@mcp.tool</code>·<code>@mcp.resource</code>·<code>@mcp.prompt</code> 는 함수를 <b>MCP 서버에 등록</b>한다. 타입힌트=스키마, docstring=설명.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="인자를 받는 데코레이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">예열</span><span class="dot"></span>데코레이터 ④</div>
+  <h2 class="s-title sm">인자를 받는 데코레이터 — @mcp.tool(...)의 정체</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">factory.py</span></div><pre><code>def repeat(n):        <span class="cm"># 1) 설정 n 을 받아서</span>
+    def deco(func):   <span class="cm"># 2) 데코레이터를 돌려주고</span>
+        def wrapper(*a, **k):
+            for _ in range(n):
+                r = func(*a, **k)
+            return r
+        return wrapper
+    return deco
+
+@repeat(3)            <span class="cm"># repeat(3) 이 먼저 실행 → 데코레이터 → hi 에 적용</span>
+def hi(): print(&quot;안녕&quot;)</code></pre></div>
+  <div class="callout mint"><div class="ci" style="font-size:18px">🔌</div><div class="ct"><h4>@mcp.tool(...) 이 바로 이것</h4><p><code>@mcp.tool(annotations={"readOnlyHint": True})</code> 처럼 <b>()가 붙으면</b> '데코레이터를 만드는 함수'다. 괄호 없는 <code>@mcp.tool</code> 과 구분.</p></div></div></div>
 </section>
 <section class="slide" data-title="FastMCP — 왜">
   <div class="coord"><b></b> / <span class="tot"></span></div>
