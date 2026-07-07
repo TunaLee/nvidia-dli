@@ -819,6 +819,54 @@ mcp = FastMCP(<span class="st">"ToolServer"</span>)
   <div class="body"><div class="cards c2"><div class="card"><span class="n">로컬</span><h3>stdio로 실행</h3><p>내 컴퓨터의 호스트가 하위 프로세스로 띄운다. 개인 도구·민감 데이터에 적합.</p></div><div class="card"><span class="n">원격</span><h3>Streamable HTTP</h3><p>서비스로 띄워 여러 사용자·호스트가 접속. 인증을 붙인다.</p></div></div><div class="keymsg"><span class="k">전환</span><div>같은 서버 코드로 <b>mcp.run()</b> ↔ <b>mcp.run(transport="streamable-http")</b>만 바꾸면 된다.</div></div></div>
 </section>
 
+
+<section class="slide" data-title="배포 사다리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="dot"></span>단계</div>
+  <h2 class="s-title sm">배포 사다리 — 노트북에서 공개 URL까지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="pipe">
+    <div class="step"><div class="si">1</div><div class="sn">in-process</div><div class="sd">노트북 Client로 검증 (지금까지)</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">2</div><div class="sn">로컬 stdio</div><div class="sd">server.py → 클라이언트에 설치 (Claude Desktop·Cursor)</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step new"><div class="si">3</div><div class="sn">원격 HTTP</div><div class="sd">transport=http 로 네트워크 노출 (사내·VPS)</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">4</div><div class="sn">클라우드</div><div class="sd">FastMCP Cloud로 공개 URL</div></div>
+  </div>
+  <div class="keymsg"><span class="k">핵심</span><div>실무는 보통 <b>②~④</b>. 오늘 미니프로젝트가 이 사다리를 그대로 밟는다.</div></div></div>
+</section>
+
+<section class="slide" data-title="실제 배포 명령 (fastmcp)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">배포</span><span class="dot"></span>명령</div>
+  <h2 class="s-title sm">실제 배포 — fastmcp 한 줄이면 클라이언트에 붙는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 1) 서버가 잘 패키징됐는지 확인</span>
+fastmcp inspect server.py
+
+<span class="cm"># 2) 실제 클라이언트에 설치 (택1)</span>
+fastmcp install claude-desktop server.py     <span class="cm"># Claude Desktop</span>
+fastmcp install cursor server.py             <span class="cm"># Cursor</span>
+fastmcp install mcp-json server.py           <span class="cm"># 설정 JSON만 생성 → 수동 등록</span>
+
+<span class="cm"># 3) 원격 HTTP 서버로 노출</span>
+fastmcp run server.py --transport http --port 8000</code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>미니프로젝트 Part 9에서 inspect · mcp-json 을 직접 실행</div></div>
+</section>
+
+<section class="slide" data-title="FastMCP Cloud (Prefect Horizon)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="dot"></span>매니지드 클라우드</div>
+  <h2 class="s-title sm">FastMCP Cloud — GitHub 연결로 60초 배포</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="callout mint" style="margin-top:8px"><div class="ci" style="font-size:18px">☁</div><div class="ct"><h4>FastMCP Cloud = Prefect Horizon</h4><p>GitHub 저장소만 연결하면 서버를 매니지드로 호스팅한다. 빌드·스케일링·URL 발급을 대신 해준다.</p></div></div>
+  <table class="ctable" style="margin-top:14px"><thead><tr><th style="width:22%">단계</th><th>내용</th></tr></thead><tbody>
+    <tr><td>1</td><td><b>horizon.prefect.io</b> 접속 · GitHub 로그인</td></tr>
+    <tr><td>2</td><td>저장소 선택 · 진입점 지정 (예: <code>main.py:mcp</code>) · requirements 자동 감지</td></tr>
+    <tr><td>3</td><td>Deploy → 약 60초 뒤 공개 URL <span class="hl">https://&lt;이름&gt;.fastmcp.app/mcp</span></td></tr>
+  </tbody></table>
+  <div class="keymsg"><span class="k">특징</span><div>개인 <b>무료</b> · <code>main</code> push마다 자동 재배포 · PR 프리뷰. 클라이언트·에이전트는 이 URL로 붙는다.</div></div></div>
+</section>
 <section class="slide" data-title="패키징">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>패키징</div>
