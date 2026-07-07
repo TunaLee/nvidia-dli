@@ -631,6 +631,39 @@
   <div class="agenda"><span>왜</span><span>tool·resource·prompt</span><span>타입힌트→스키마</span></div>
 </section>
 
+
+<section class="slide" data-title="데코레이터란 — 함수를 감싸는 함수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">예열</span><span class="dot"></span>데코레이터</div>
+  <h2 class="s-title sm">데코레이터란 — `@`는 '함수를 감싸는' 문법</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">decorator.py</span></div><pre><code>def announce(func):
+    def wrapper(*a, **k):
+        print(&quot;[호출]&quot;, func.__name__)
+        return func(*a, **k)
+    return wrapper
+
+@announce            <span class="cm"># greet = announce(greet) 와 완전히 같다</span>
+def greet(name):
+    return f&quot;안녕, {name}&quot;</code></pre></div>
+  <div class="keymsg"><span class="k">핵심</span><div><b>@announce</b> 는 <code>greet = announce(greet)</code> 의 문법 설탕 — 함수를 받아 기능을 덧입힌 새 함수로 바꾼다.</div></div></div>
+</section>
+
+<section class="slide" data-title="@mcp.tool 은 함수를 등록한다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">예열</span><span class="dot"></span>MCP와 연결</div>
+  <h2 class="s-title sm">@mcp.tool 은 함수를 '도구 목록에 등록'한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">register.py</span></div><pre><code>TOOLS = {}
+def tool(func):          <span class="cm"># @mcp.tool 의 축소판</span>
+    TOOLS[func.__name__] = func
+    return func
+
+@tool
+def add(a, b): return a + b
+<span class="cm"># 이제 TOOLS == {&quot;add&quot;: add} — 함수가 &#x27;등록&#x27;됐다</span></code></pre></div>
+  <div class="callout mint"><div class="ci" style="font-size:18px">🔌</div><div class="ct"><h4>MCP도 똑같다</h4><p><code>@mcp.tool</code>·<code>@mcp.resource</code>·<code>@mcp.prompt</code> 는 함수를 <b>MCP 서버에 등록</b>한다. 타입힌트=스키마, docstring=설명.</p></div></div></div>
+</section>
 <section class="slide" data-title="FastMCP — 왜">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>왜 FastMCP</div>
