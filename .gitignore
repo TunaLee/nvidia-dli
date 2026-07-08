@@ -11,7 +11,7 @@ qdrant_db/
 my_qdrant/
 my_docs/
 employees.csv
-executed.ipynb
+executed*.ipynb
 
 # 단, Day02 코퍼스는 커밋 대상 (학생이 노트북에서 내려받아 로딩)
 !day02/data/
@@ -29,3 +29,6 @@ _강사전용/
 
 # 실습 실행 시 lab이 만드는 docs/ 폴더 (dayNN 내부, 커밋 제외)
 day*/docs/
+
+# 실습이 open("server.py","w") 로 만드는 서버 파일 (커밋 제외)
+day*/server.py
