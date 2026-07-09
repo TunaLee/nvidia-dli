@@ -298,7 +298,7 @@
 <section class="slide" data-title="이어가기 · 3→4→5">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>이어가기</div>
-  <h2 class="s-title sm">개요·Resource를 지나 오늘은 Tool</h2>
+  <h2 class="s-title sm">개요·Resource 다음은 Tool</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>3강 — MCP 개요</h4><p>첫 서버, Tool·Resource·Prompt 구분.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>4강 — Resource</h4><p>데이터를 안전하게 ‘읽히게’.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>5강 — Tool(오늘)</h4><p>AI가 ‘행동하게’ 만든다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>Resource가 ‘읽기’였다면, Tool은 <b>‘행동’</b>이다 — 그래서 더 조심스럽고, 더 강력하다.</div></div></div>
 </section>
@@ -400,7 +400,7 @@
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>에러</div>
   <h2 class="s-title sm">모델이 스스로 고치게 만든다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane bad"><h4>✕ 불친절</h4><p>“Error 500” — 모델이 무엇을 고쳐야 할지 모른다.</p></div><div class="pane good"><h4>✓ 친절</h4><p>“k는 1~50 사이여야 합니다” — 모델이 인자를 바로 고친다.</p></div></div><div class="keymsg"><span class="k">원칙</span><div>에러 메시지는 <b>무엇이·왜 틀렸고·어떻게 고칠지</b>를 담는다. 모델을 위한 안내문이다.</div></div></div>
+  <div class="body"><div class="twopane"><div class="pane bad"><h4>✕ 불친절</h4><p>“Error 500” — 모델이 무엇을 고쳐야 할지 모른다.</p></div><div class="pane good"><h4>✓ 친절</h4><p>“k는 1~50 사이여야 합니다” — 모델이 인자를 바로 고친다.</p></div></div><div class="keymsg"><span class="k">원칙</span><div>에러 메시지는 <b>무엇이·왜 틀렸고·어떻게 고칠지</b>를 담는다. 모델을 위한 안내문이다.</div></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>Lab 7에서 LLM이 ‘긴급’→‘높음’으로 스스로 고치는 걸 실제로 본다</div></div>
 </section>
 
 
@@ -753,18 +753,51 @@ mcp = FastMCP(<span class="st">"ToolServer"</span>)
 
 <section class="slide" data-title="Lab 5 · 검색 도구">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB 5</span><span class="dot"></span>RAG</div>
-  <h2 class="s-title sm">1·2강 RAG를 도구로</h2>
+  <div class="eyebrow"><span class="tag mint">LAB 5</span><span class="dot"></span>진짜 RAG</div>
+  <h2 class="s-title sm">Day02 코퍼스로 진짜 RAG 도구</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab5.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> search_docs(query: str, k: int = 5) -> list:
-    <span class="st">"""문서를 하이브리드 검색으로 찾는다"""</span>
-    hits = hybrid_search(query, k)   <span class="cm"># 1·2강 BM25+벡터</span>
-    <span class="kw">return</span> rerank(query, hits)       <span class="cm"># 리랭커</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ search_docs 호출 → 상위 문서가 돌아오는지 확인</div></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab5_rag.py</span></div><pre><code><span class="cm"># Day02 코퍼스 → 청킹(200/20) → 임베딩(e5-small, CPU에서도 가볍다)</span>
+EMB = embed([c[<span class="st">"text"</span>] <span class="kw">for</span> c <span class="kw">in</span> CHUNKS], <span class="st">"passage"</span>)
+
+<span class="kw">@mcp.tool</span>(annotations={<span class="st">"readOnlyHint"</span>: <span class="kw">True</span>})
+<span class="kw">def</span> <span class="fn2">search_docs</span>(query: str, k: int = 3) -&gt; list:      <span class="cm"># 벡터 코사인 검색</span>
+    scores = EMB @ embed([query], <span class="st">"query"</span>)[0]
+    <span class="kw">return</span> [CHUNKS[i] <span class="kw">for</span> i <span class="kw">in</span> np.argsort(-scores)[:k]]
+
+<span class="kw">@mcp.resource</span>(<span class="st">"chunk://{cid}"</span>)               <span class="cm"># 청크 원문 = Resource</span>
+<span class="kw">def</span> <span class="fn2">chunk</span>(cid): <span class="kw">return</span> CHUNKS[int(cid)][<span class="st">"text"</span>]</code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>✅ "연차 며칠 전?" → D000 "3영업일 전" 청크가 상위 · 실무·도전은 하이브리드+리랭커(Day02)</div></div>
 </section>
+<section class="slide" data-title="Lab 8 · Sampling">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 8</span><span class="dot"></span>sampling</div>
+  <h2 class="s-title sm">서버가 클라이언트 LLM으로 답한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab8_sampling.py</span></div><pre><code><span class="kw">@mcp.tool</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn2">ask</span>(question: str, ctx: Context, k: int = 3) -&gt; str:
+    ev = <span class="fn2">retrieve</span>(question, k)                  <span class="cm"># 근거 검색(Lab 5 재사용)</span>
+    <span class="kw">return</span> (<span class="kw">await</span> ctx.sample(<span class="st">f"근거로 답하라:\n{ev}\nQ:{question}"</span>)).text
 
+<span class="cm"># 클라이언트가 sampling 요청을 Qwen으로 처리하는 핸들러</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn2">qwen_sampler</span>(messages, params, ctx): ...   <span class="cm"># → NVIDIA Qwen</span>
+<span class="kw">async</span> <span class="kw">with</span> Client(mcp, sampling_handler=qwen_sampler) <span class="kw">as</span> c:
+    <span class="kw">await</span> c.<span class="fn2">call_tool</span>(<span class="st">"ask"</span>, {<span class="st">"question"</span>: <span class="st">"연차는 며칠 전?"</span>})</code></pre></div><div class="keymsg"><span class="k">방향</span><div>Lab 7은 <b>클라이언트→서버</b>(LLM이 도구 호출), sampling은 <b>서버→클라이언트</b>(도구가 LLM에 요청). 서버는 자기 LLM 없이 클라이언트 것을 빌린다.</div></div></div>
+</section>
+<section class="slide" data-title="Lab 9 · 안전장치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 9</span><span class="dot"></span>안전장치</div>
+  <h2 class="s-title sm">삭제 전 확인 — destructiveHint + elicit</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab9_safety.py</span></div><pre><code><span class="kw">@dataclass</span>
+<span class="kw">class</span> Confirm: ok: bool                     <span class="cm"># 확인 응답 스키마</span>
 
-
+<span class="kw">@mcp.tool</span>(annotations={<span class="st">"destructiveHint"</span>: <span class="kw">True</span>})   <span class="cm"># 파괴적 도구 표시</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn2">delete_file</span>(file_id: int, ctx: Context) -&gt; str:
+    r = <span class="kw">await</span> ctx.elicit(<span class="st">f"{name} 삭제할까요?"</span>, response_type=Confirm)
+    <span class="kw">if</span> r.action != <span class="st">"accept"</span> <span class="kw">or</span> <span class="kw">not</span> r.data.ok:
+        <span class="kw">return</span> <span class="st">"취소됨 (안전장치가 막음)"</span>
+    ...                                        <span class="cm"># 확인됐을 때만 삭제</span>
+<span class="cm"># Client(mcp, elicitation_handler=...) 로 사용자에게 y/n 을 묻는다</span></code></pre></div><div class="keymsg"><span class="k">두 겹</span><div><b>destructiveHint</b>(선언) + <b>elicit</b>(실행 전 확인). 되돌릴 수 없는 도구는 <b>사람 승인</b>을 받고 나서 실행한다.</div></div></div>
+</section>
 <section class="slide" data-title="Lab 6 · 도전(선택)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">LAB 6</span><span class="dot"></span>도전(선택)</div>
