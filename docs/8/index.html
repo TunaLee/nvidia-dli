@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 08 · 하네스 — 다루기·확장·직접 만들기</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+<section class="slide cover active" data-title="표지 · Day 08">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap"><div class="kick"><span class="pill">WEEK 2 · DAY 08</span><span>HARNESS</span></div>
+  <h1>하네스<br/>다루고, 만든다</h1></div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">DAY 08</span><span class="dot"></span>AGENDA</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH1</span><h3>해부</h3><p>권한·컨텍스트·서브에이전트·훅.</p></div><div class="card"><span class="n">CH2</span><h3>컨텍스트</h3><p>유한 자원을 다루는 법(핵심).</p></div><div class="card"><span class="n">CH3~5</span><h3>확장</h3><p>스킬·플러그인·훅·MCP.</p></div><div class="card"><span class="n">CH7</span><h3>미니 하네스</h3><p>런타임을 직접 만든다.</p></div><div class="card"><span class="n">실습</span><h3>Lab 1~5</h3><p>투어→스킬→플러그인→훅→하네스.</p></div><div class="card"><span class="n">CH8</span><h3>원칙</h3><p>권한·안전.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>Claude Code를 <b>열어 만지며</b> 익히고, 마지막에 <b>미니 하네스</b>를 짠다.</div></div></div>
+</section>
+
+<section class="slide" data-title="이어가기 · 7→8">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>이어가기</div>
+  <h2 class="s-title sm">에이전트를 만들었으니, 그걸 '돌리는 것'을</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">7</div><div class="tx"><h4>7강 — 에이전트</h4><p>판단·도구·루프. 작지만 전부 이해되는 에이전트.</p></div></div><div class="li"><div class="num">8</div><div class="tx"><h4>8강 — 하네스(오늘)</h4><p>그 에이전트를 돌리는 런타임을 해부·확장·제작.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>7강의 '런타임이 대신 해준 것'이 바로 <b>하네스</b>다.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 하네스란 무엇인가">
+  <div class="ghost">00</div><div class="seyebrow">CHAPTER 00</div><h2>하네스란 무엇인가</h2>
+  <div class="agenda"><span>정의</span><span>에이전트 vs 하네스</span></div>
+</section>
+
+<section class="slide" data-title="하네스란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">하네스 = 에이전트를 돌리는 런타임</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>에이전트 루프를 <b>실제로 실행</b>하고 도구 호출을 중개</div></div><div class="v"><span class="b">→</span><div><b>권한·안전</b>을 관리 (무엇을 실행할지 사람이 개입)</div></div><div class="v"><span class="b">→</span><div><b>컨텍스트</b>를 관리 (요약·트리밍·메모리)</div></div><div class="v"><span class="b">→</span><div><b>확장점</b>을 연다 (스킬·플러그인·훅·MCP)</div></div></div><div class="keymsg"><span class="k">예</span><div><b>Claude Code / Codex</b>가 곧 하네스 — 오늘 해부하고 직접 만든다.</div></div></div>
+</section>
+
+<section class="slide" data-title="에이전트 vs 하네스">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">다시, 명확히</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>에이전트</h4><p>판단하는 <b>주체</b> — LLM+도구+루프 (7강).</p><div class="mini">무엇을 할지</div></div><div class="pane "><h4>하네스</h4><p>그 주체를 <b>돌리는 런타임</b> — 실행·권한·컨텍스트·확장.</p><div class="mini">어떻게 돌릴지</div></div></div><div class="keymsg"><span class="k">경계</span><div>7강 = 주체를 만들었다. 8강 = <b>그 주체를 프로덕션으로 감싼다</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="하네스가 대신 해주는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>해부</div>
+  <h2 class="s-title sm">직접 짜려면 끝없는 디테일</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">01</span><h3>에이전트 루프</h3><p>판단→행동→관찰 반복(7강).</p></div><div class="card"><span class="n">02</span><h3>도구·권한</h3><p>실행 중개 + 위험 작업 확인.</p></div><div class="card"><span class="n">03</span><h3>컨텍스트 관리</h3><p>요약·트리밍·메모리(CH2).</p></div><div class="card"><span class="n">04</span><h3>서브에이전트</h3><p>일을 나눠 위임(9강).</p></div><div class="card"><span class="n">05</span><h3>확장점</h3><p>스킬·플러그인·훅·MCP(CH3~5).</p></div></div><div class="keymsg"><span class="k">왜 하네스</span><div>이 전부를 매번 직접 짜지 않으려고 <b>하네스</b>를 쓴다.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] Claude Code 해부">
+  <div class="ghost">01</div><div class="seyebrow">CHAPTER 01</div><h2>Claude Code 해부</h2>
+  <div class="agenda"><span>권한</span><span>컨텍스트</span><span>서브에이전트</span><span>훅</span></div>
+</section>
+
+<section class="slide" data-title="구조 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">하네스를 이루는 조각들</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">권한</span><h3>도구 승인</h3><p>무엇을 자동/확인할지.</p></div><div class="card"><span class="n">컨텍스트</span><h3>윈도우·컴팩션</h3><p>길어지면 요약해 이어감.</p></div><div class="card"><span class="n">서브에이전트</span><h3>위임</h3><p>별도 에이전트에 일 맡김.</p></div><div class="card"><span class="n">MCP</span><h3>외부 도구</h3><p>서버를 붙여 도구 확장.</p></div><div class="card"><span class="n">슬래시</span><h3>명령</h3><p>반복 작업을 /명령으로.</p></div><div class="card"><span class="n">훅</span><h3>개입</h3><p>실행 전/후 내 코드 끼움.</p></div></div><div class="keymsg"><span class="k">오늘</span><div>이걸 <b>직접 열어보고</b>, 그다음 <b>확장</b>하고, 끝에 <b>직접 만든다</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="권한 모드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>권한</div>
+  <h2 class="s-title sm">무엇을 자동으로, 무엇을 확인받을지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>확인</b> — 도구 실행 전마다 승인 요청(기본)</div></div><div class="v"><span class="b">→</span><div><b>편집 자동승인</b> — 파일 수정은 묻지 않음</div></div><div class="v"><span class="b">→</span><div><b>계획 모드</b> — 실행 없이 <b>계획만</b> 세움(읽기 전용)</div></div><div class="v"><span class="b">→</span><div><b>자동(권한 생략)</b> — 신뢰 환경에서만, 신중히</div></div></div><div class="keymsg"><span class="k">감각</span><div>자율성과 안전의 <b>다이얼</b> — 작업 위험도에 맞춰 돌린다.</div></div></div>
+</section>
+
+<section class="slide" data-title="컨텍스트·컴팩션">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>컨텍스트</div>
+  <h2 class="s-title sm">길어지면 자동으로 요약해 이어간다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>대화가 <b>윈도우</b>를 넘치면 정확도가 떨어진다</div></div><div class="v"><span class="b">→</span><div><b>컴팩션</b> — 오래된 대화를 <b>요약</b>해 새로 시작</div></div><div class="v"><span class="b">i</span><div>결정·미해결 버그는 남기고, 중복 출력은 버린다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 수동 압축</span>
+/compact
+
+<span class="cm"># 남길 것을 지정할 수도</span>
+/compact 핵심 결정과 남은 작업 위주로</code></pre></div></div><div class="keymsg"><span class="k">연결</span><div>CH2에서 이 '컨텍스트 관리'를 <b>본격적으로</b> 판다.</div></div></div>
+</section>
+
+<section class="slide" data-title="서브에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>위임</div>
+  <h2 class="s-title sm">일을 나눠 별도 에이전트에 맡긴다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>메인이 <b>계획</b>, 서브가 <b>깊은 작업</b> 수행</div></div><div class="v"><span class="b">→</span><div>서브는 자기 컨텍스트에서 일하고 <b>요약만</b> 돌려준다</div></div><div class="v"><span class="b">→</span><div>병렬 탐색·컨텍스트 격리에 유리(9강)</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>핵심</h4><p>서브에이전트는 메인의 컨텍스트를 <b>아끼는</b> 장치 — 자세히 파도 요약만 올라온다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="슬래시 커맨드·CLAUDE.md">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지침</div>
+  <h2 class="s-title sm">반복 작업과 프로젝트 규칙을 고정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>/명령</b> — 자주 하는 작업을 명령으로 (예: /review)</div></div><div class="v"><span class="b">→</span><div><b>CLAUDE.md</b> — 프로젝트 규칙·맥락을 항상 주입</div></div><div class="v"><span class="b">→</span><div><b>/help</b> 로 사용 가능한 명령 확인</div></div></div><div class="keymsg"><span class="k">팁</span><div>CLAUDE.md는 하네스에게 주는 <b>상시 시스템 프롬프트</b>다.</div></div></div>
+</section>
+
+<section class="slide" data-title="훅·MCP (미리 보기)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>확장</div>
+  <h2 class="s-title sm">하네스에 내 코드·도구를 끼운다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>훅</h4><p>도구 실행 <b>전/후</b>에 내 스크립트 개입 → 정책 강제(CH5).</p><div class="mini">라이프사이클</div></div><div class="pane good"><h4>MCP</h4><p>외부 <b>도구 서버</b>를 붙여 능력 확장(3~5강).</p><div class="mini">도구 연결</div></div></div><div class="keymsg"><span class="k">차이</span><div>훅=<b>규칙 강제</b>, MCP=<b>도구 추가</b> — 목적이 다르다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 1 — 하네스 구조 투어">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 1 — 하네스 구조 투어</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">1</div><div class="tx"><h4>Claude Code 열어보기</h4><p>권한 모드·컨텍스트·서브에이전트·MCP·슬래시커맨드·훅을 실제로 확인한다.</p></div></div></div></div>
+</section>
+
+<section class="slide section mintbg" data-title="[섹션] 컨텍스트 엔지니어링">
+  <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div><h2>컨텍스트 엔지니어링</h2>
+  <div class="agenda"><span>유한 자원</span><span>기법 4가지</span></div>
+</section>
+
+<section class="slide" data-title="컨텍스트 = 유한 자원">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>관점</div>
+  <h2 class="s-title sm">많이 넣는다고 좋아지지 않는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>토큰이 늘수록 정확도가 떨어진다(<b>context rot</b>)</div></div><div class="v"><span class="b">→</span><div>주의(attention)는 유한 — 길수록 관계 파악이 흐려진다</div></div><div class="v"><span class="b">★</span><div>목표 — <b>가장 작은 고신호 토큰 집합</b>을 찾는 것</div></div></div><div class="keymsg"><span class="k">전환</span><div>‘다 넣기’가 아니라 <b>‘꼭 필요한 것만’</b> — 이게 컨텍스트 엔지니어링.</div></div></div>
+</section>
+
+<section class="slide" data-title="무엇이 컨텍스트를 채우나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구성</div>
+  <h2 class="s-title sm">윈도우를 두고 경쟁하는 것들</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>요소</th><th>원칙</th></tr></thead><tbody><tr><td><b>시스템 프롬프트</b></td><td>명확하게 — 너무 구체(brittle)도 너무 추상(vague)도 아니게</td></tr><tr><td><b>도구</b></td><td>기능 중복 없이, <b>토큰 효율적</b> 결과</td></tr><tr><td><b>예시(few-shot)</b></td><td>엣지 나열 말고 <b>대표 사례</b>로</td></tr><tr><td><b>히스토리</b></td><td>동적으로 <b>필요한 부분만</b></td></tr><tr><td><b>검색 결과</b></td><td>필요할 때만(just-in-time) 로드</td></tr></tbody></table><div class="keymsg"><span class="k">한 줄</span><div>각 요소가 <b>윈도우를 두고 경쟁</b>한다 — 신호 대비 토큰을 따진다.</div></div></div>
+</section>
+
+<section class="slide" data-title="기법 1 · Compaction">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">요약해서 이어간다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>한계에 다다른 대화를 <b>요약</b>해 새 윈도우로</div></div><div class="v"><span class="b">→</span><div><b>결정·미해결 버그는 보존</b>, 중복 출력은 제거</div></div><div class="v"><span class="b">→</span><div>긴 왕복 작업에서 <b>연속성</b>을 지킨다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">compaction</span></div><pre><code><span class="cm"># 대화가 길어지면</span>
+요약 = summarize(old_messages)
+messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></code></pre></div></div><div class="keymsg"><span class="k">언제</span><div>왕복이 많은 <b>긴 작업</b>에 — Claude Code의 자동 컴팩션이 이것.</div></div></div>
+</section>
+
+<section class="slide" data-title="기법 2 · 구조화된 메모">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">밖에 적어두고 다시 꺼낸다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>중요한 걸 <b>컨텍스트 밖 메모리</b>에 적는다</div></div><div class="v"><span class="b">→</span><div>예 — <b>TODO 리스트</b>, 진행 상황 노트</div></div><div class="v"><span class="b">→</span><div>장기 작업에서 <b>의존성·결정</b>을 잃지 않는다</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>비유</h4><p>머릿속에만 담지 말고 <b>수첩에 적는다</b> — 나중에 그 수첩만 다시 본다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="기법 3 · 서브에이전트 격리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">깊게 파되, 요약만 올린다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>메인은 <b>고수준 계획</b>, 서브는 <b>깊은 탐색</b></div></div><div class="v"><span class="b">→</span><div>서브는 광범위하게 보고 <b>1~2천 토큰 요약</b>만 반환</div></div><div class="v"><span class="b">→</span><div>메인 컨텍스트를 <b>깨끗하게</b> 유지</div></div></div><div class="keymsg"><span class="k">이득</span><div>복잡한 조사에서 <b>병렬 탐색 + 컨텍스트 절약</b>을 동시에.</div></div></div>
+</section>
+
+<section class="slide" data-title="기법 4 · Just-in-time">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">미리 다 넣지 말고, 필요할 때 가져온다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>전부 로드하지 말고 <b>가벼운 식별자</b>(경로·링크)만</div></div><div class="v"><span class="b">→</span><div>런타임에 도구로 <b>필요한 것만</b> 로드</div></div><div class="v"><span class="b">→</span><div>점진적 발견 — 맥락을 <b>그때그때</b> 채운다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">jit.py</span></div><pre><code><span class="cm"># 미리: 경로만</span>
+files = list_files()          <span class="cm"># 식별자만</span>
+<span class="cm"># 필요할 때: 내용</span>
+text = read(files[i])         <span class="cm"># 그때 로드</span></code></pre></div></div><div class="keymsg"><span class="k">연결</span><div>1~2강의 <b>RAG</b>가 곧 just-in-time 검색이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="기법 언제 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">상황에 맞는 컨텍스트 전략</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>기법</th><th>최적 상황</th></tr></thead><tbody><tr><td><b>Compaction</b></td><td>왕복이 많은 긴 대화</td></tr><tr><td><b>구조화 메모</b></td><td>마일스톤 있는 반복 개발</td></tr><tr><td><b>서브에이전트</b></td><td>병렬 탐색이 이득인 복잡한 조사</td></tr><tr><td><b>Just-in-time</b></td><td>동적·자주 바뀌는 데이터</td></tr></tbody></table><div class="keymsg"><span class="k">실전</span><div>하나만 쓰기보다 <b>섞어서</b> — 일부 미리, 나머지는 필요할 때.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 확장 · 스킬">
+  <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div><h2>확장 · 스킬</h2>
+  <div class="agenda"><span>노하우</span><span>SKILL.md</span></div>
+</section>
+
+<section class="slide" data-title="확장 4가지 지도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">하네스를 늘리는 네 방법</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>방법</th><th>무엇</th><th>언제</th></tr></thead><tbody><tr><td><b>스킬</b></td><td>재사용 절차·지식(SKILL.md)</td><td>‘이럴 땐 이렇게’ 노하우</td></tr><tr><td><b>플러그인</b></td><td>스킬·커맨드·훅 묶음</td><td>확장을 패키지로 공유</td></tr><tr><td><b>훅</b></td><td>라이프사이클 개입</td><td>실행 전/후 정책 강제</td></tr><tr><td><b>MCP</b></td><td>외부 도구 서버</td><td>새 도구·데이터(3~5강)</td></tr></tbody></table><div class="keymsg"><span class="k">구분</span><div>스킬=<b>노하우</b>, MCP=<b>도구</b>, 훅=<b>규칙</b>, 플러그인=<b>묶음</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="스킬 = 노하우">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>스킬</div>
+  <h2 class="s-title sm">필요할 때만 불러오는 절차</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>description</b>이 트리거 — 언제 쓸지 하네스가 판단</div></div><div class="v"><span class="b">→</span><div>본문엔 <b>절차·규칙·예시</b></div></div><div class="v"><span class="b">★</span><div>평소엔 안 읽다가 <b>필요할 때만</b> 로드(컨텍스트 절약)</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">SKILL.md</span></div><pre><code><span class="cm">---</span>
+<span class="nm">description</span>: 커밋 전 변경 요약·위험 점검.
+  diff를 검토할 때 사용.   <span class="cm"># 트리거</span>
+<span class="nm">allowed-tools</span>: Bash(git *)
+<span class="cm">---</span>
+<span class="cm"># 절차</span> ...</code></pre></div></div><div class="keymsg"><span class="k">위치</span><div>개인 <span style="font-family:var(--mono)">~/.claude/skills/</span> · 프로젝트 <span style="font-family:var(--mono)">.claude/skills/</span></div></div></div>
+</section>
+
+<section class="slide" data-title="스킬 언제 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>예</div>
+  <h2 class="s-title sm">반복되는 ‘일하는 방식’을 담는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>배포 절차</b> — 우리 팀은 이렇게 배포한다</div></div><div class="v"><span class="b">→</span><div><b>리뷰 기준</b> — 이런 관점으로 코드를 본다</div></div><div class="v"><span class="b">→</span><div><b>문서 형식</b> — 보고서는 이 틀로</div></div><div class="v"><span class="b">i</span><div>= 컨텍스트 엔지니어링 — 필요할 때만 이 노하우가 로드된다</div></div></div><div class="keymsg"><span class="k">감각</span><div>스킬 = 하네스에게 주는 <b>‘사내 매뉴얼’</b> — 상황이 오면 펼쳐본다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 2 — 스킬 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 2 — 스킬 만들기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>SKILL.md 작성</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">2</div><div class="tx"><h4>내 스킬 하나</h4><p>description으로 트리거를 잡고 본문에 절차를 담아, 하네스가 스스로 불러오게 한다.</p></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 확장 · 플러그인">
+  <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>확장 · 플러그인</h2>
+  <div class="agenda"><span>묶음</span><span>배포</span></div>
+</section>
+
+<section class="slide" data-title="플러그인 = 묶음">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>플러그인</div>
+  <h2 class="s-title sm">확장을 하나로 묶어 배포·공유</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>스킬·커맨드·훅·MCP를 <b>한 패키지</b>로</div></div><div class="v"><span class="b">→</span><div>팀에 <b>공유·재사용</b> — 같은 확장을 모두가</div></div><div class="v"><span class="b">→</span><div>매니페스트는 <b>.claude-plugin/plugin.json</b>(필수)</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">plugin/</span></div><pre><code>my-plugin/
+  .claude-plugin/
+    plugin.json     <span class="cm"># 매니페스트</span>
+  skills/greet/SKILL.md
+  hooks/hooks.json</code></pre></div></div><div class="keymsg"><span class="k">의미</span><div>일회성 설정이 아니라 <b>재사용 가능한 자산</b>으로 만든다.</div></div></div>
+</section>
+
+<section class="slide" data-title="플러그인 설치·공유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">만들고, 테스트하고, 나눈다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>로컬 테스트</b> — 개발 중 바로 붙여 확인</div></div><div class="v"><span class="b">→</span><div><b>마켓플레이스</b>로 설치·공유</div></div><div class="v"><span class="b">i</span><div>plugin.json = 이름·설명·버전·작성자</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 로컬 테스트</span>
+claude --plugin-dir ./my-plugin
+
+<span class="cm"># 마켓플레이스 설치</span>
+/plugin install my-plugin@marketplace</code></pre></div></div><div class="keymsg"><span class="k">팁</span><div>스킬 하나로 시작 → 쓸모 있으면 <b>플러그인으로 승격</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 3 — 플러그인으로 묶기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 3 — 플러그인으로 묶기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>plugin.json + skills/</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">3</div><div class="tx"><h4>패키징</h4><p>Lab 2의 스킬을 .claude-plugin 구조로 묶어 설치·공유 가능한 형태로 만든다.</p></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 확장 · 훅과 MCP">
+  <div class="ghost">05</div><div class="seyebrow">CHAPTER 05</div><h2>확장 · 훅과 MCP</h2>
+  <div class="agenda"><span>훅</span><span>MCP</span></div>
+</section>
+
+<section class="slide" data-title="훅 = 라이프사이클 개입">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>훅</div>
+  <h2 class="s-title sm">정해진 순간에 내 코드를 끼운다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>PreToolUse</b> — 도구 실행 <b>직전</b> (차단·검사)</div></div><div class="v"><span class="b">→</span><div><b>PostToolUse</b> — 실행 <b>직후</b> (로깅·후처리)</div></div><div class="v"><span class="b">→</span><div><b>UserPromptSubmit / Stop / SessionStart</b> 등</div></div><div class="v"><span class="b">★</span><div>LLM 판단이 아니라 <b>결정적으로</b> 강제된다</div></div></div><div class="keymsg"><span class="k">왜</span><div>‘알아서 하겠지’가 아니라 <b>규칙으로 못 박는</b> 장치.</div></div></div>
+</section>
+
+<section class="slide" data-title="훅 입출력">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>훅</div>
+  <h2 class="s-title sm">stdin으로 받고, 종료코드로 막는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>stdin</b>으로 이벤트 JSON(도구명·인자 등)</div></div><div class="v"><span class="b">→</span><div><b>exit 2</b> = 차단 (이유는 stderr)</div></div><div class="v"><span class="b">→</span><div>exit 0 = 통과 / JSON으로 상세 결정도 가능</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">guard.sh</span></div><pre><code>INPUT=$(cat)                       <span class="cm"># 이벤트 JSON</span>
+CMD=$(echo "$INPUT" | jq -r .tool_input.command)
+<span class="kw">if</span> echo "$CMD" | grep -q "rm -rf"; <span class="kw">then</span>
+  echo "차단" >&amp;2; <span class="kw">exit</span> 2   <span class="cm"># 실행 막기</span>
+<span class="kw">fi</span></code></pre></div></div><div class="keymsg"><span class="k">설정</span><div>.claude/settings.json 의 hooks.PreToolUse 에 matcher+command로 등록.</div></div></div>
+</section>
+
+<section class="slide" data-title="훅 실전">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정책</div>
+  <h2 class="s-title sm">훅으로 할 수 있는 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>위험 명령 차단</b> — rm -rf, 프로덕션 접근 등</div></div><div class="v"><span class="b">→</span><div><b>자동 포맷·린트</b> — 편집 후 정리</div></div><div class="v"><span class="b">→</span><div><b>감사 로그</b> — 무엇을 실행했는지 기록</div></div><div class="v"><span class="b">→</span><div><b>비밀 유출 차단</b> — 키·토큰 검사</div></div></div><div class="keymsg"><span class="k">감각</span><div>하네스의 <b>안전벨트</b>를 내가 직접 채운다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 4a — 훅으로 정책 강제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 4a — 훅으로 정책 강제</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>settings.json + guard.sh</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">4</div><div class="tx"><h4>PreToolUse 훅</h4><p>Bash 실행 전 위험 명령을 막는 훅을 만들어 붙인다.</p></div></div></div></div>
+</section>
+
+<section class="slide" data-title="MCP를 하네스에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">우리가 만든 도구를 하네스에 붙인다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>3~5강 MCP 서버가 <b>그대로 확장점</b></div></div><div class="v"><span class="b">→</span><div>연결하면 Claude Code가 그 도구를 <b>스스로 호출</b></div></div><div class="v"><span class="b">→</span><div>프로젝트 공유는 <b>.mcp.json</b></div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 등록</span>
+claude mcp add --transport stdio helper \
+  -- python day05/deploy/server.py
+claude mcp list        <span class="cm"># 확인</span></code></pre></div></div><div class="keymsg"><span class="k">구분</span><div>스킬=노하우, <b>MCP=도구</b> — 하네스는 둘 다 확장점으로 받는다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 4b — MCP 연결">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 4b — MCP 연결</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>claude mcp add</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">4</div><div class="tx"><h4>도구 늘리기</h4><p>예제 MCP 서버를 하네스에 붙여 도구를 확장하고, 실제로 호출되게 한다.</p></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 여러 하네스와 토큰 절감">
+  <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div><h2>여러 하네스와 토큰 절감</h2>
+  <div class="agenda"><span>프레임워크</span><span>토큰</span></div>
+</section>
+
+<section class="slide" data-title="하네스 지형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>지형</div>
+  <h2 class="s-title sm">하네스는 하나가 아니다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>에이전트 = 모델 + 하네스</b> — 모델 아닌 전부(도구·상태·가드레일·오케스트레이션)</div></div><div class="v"><span class="b">→</span><div><b>Claude Code · Codex · OpenCode</b> … 모두 하네스</div></div><div class="v"><span class="b">→</span><div>그 위에 <b>의견 있는 프레임워크</b>(플러그인)들이 얹힌다</div></div><div class="v"><span class="b">i</span><div>‘best-of-Agent-Harnesses’ 같은 큐레이션 리스트도 있다</div></div></div><div class="keymsg"><span class="k">관점</span><div>하네스도 <b>고르고 조합</b>하는 대상 — 오늘 대표들을 본다.</div></div></div>
+</section>
+
+<section class="slide" data-title="의견 있는 프레임워크">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프레임워크</div>
+  <h2 class="s-title sm">Claude Code 위의 3대 프레임워크</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>프레임워크</th><th>핵심 강제</th></tr></thead><tbody><tr><td><b>Superpowers</b></td><td>TDD — 실패 테스트 없이 코드 없음</td></tr><tr><td><b>GSD</b></td><td>컨텍스트 관리 — 단계별 신선한 문맥</td></tr><tr><td><b>GSTACK</b></td><td>역할 거버넌스 — 23 전문가 팀</td></tr></tbody></table><div class="keymsg"><span class="k">저자 말</span><div>‘하나가 만능은 아니다 — 자기 <b>실패 모드</b>를 아는 게 진짜 결정’.</div></div></div>
+</section>
+
+<section class="slide" data-title="Superpowers">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>TDD</div>
+  <h2 class="s-title sm">테스트로 규율을 강제한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>실패 테스트 먼저</b> — RED→GREEN→REFACTOR 우회 불가</div></div><div class="v"><span class="b">→</span><div>7단계 — 브레인스토밍→스펙→계획→실패테스트→구현→리뷰→완료</div></div><div class="v"><span class="b">→</span><div><b>task마다 새 서브에이전트</b> + 2단계 리뷰</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add obra/superpowers
+/plugin install superpowers</code></pre></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>메타</h4><p>이 강의 설계에도 superpowers의 <b>brainstorming 스킬</b>을 썼다 — 지금 쓰는 도구.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="GSTACK">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>역할</div>
+  <h2 class="s-title sm">회사처럼 — 역할을 나눠 통치</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>23 역할</b>(CEO·PM·엔지니어·QA·보안…) = 슬래시 커맨드 <b>페르소나</b></div></div><div class="v"><span class="b">→</span><div><b>순차 파이프라인</b> — Think→Plan→Build→Review→Test→Ship→Reflect</div></div><div class="v"><span class="b">i</span><div>서브에이전트가 아니라 <b>단일 세션 역할 전환</b> = 워크플로형</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/office-hours   <span class="cm"># 설계 상담</span>
+/review         <span class="cm"># 리뷰</span>
+/qa             <span class="cm"># 테스트</span></code></pre></div></div><div class="keymsg"><span class="k">성격</span><div>‘멀티에이전트’보다 <b>역할 거버넌스 워크플로</b>가 정확 — 제품 관점 검토에 강함.</div></div></div>
+</section>
+
+<section class="slide" data-title="GSD">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>컨텍스트</div>
+  <h2 class="s-title sm">맥락 손실(context rot)을 막는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>단계별 별도 오케스트레이터</b> — 각 컨텍스트 절반 이하로</div></div><div class="v"><span class="b">→</span><div>완료 후 <b>상태를 디스크에</b> 저장, 다음 단계에 인계</div></div><div class="v"><span class="b">→</span><div>긴 작업·인프라에서 <b>신선한 문맥</b> 유지</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 컨텍스트 엔지니어링을 <b>프레임워크로</b> 구현한 예.</div></div></div>
+</section>
+
+<section class="slide" data-title="어느 걸 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">‘실패 모드’에 맞춰 고른다</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>증상</th><th>추천</th></tr></thead><tbody><tr><td>어제보다 품질 저하</td><td><b>Superpowers</b> (테스트 강제)</td></tr><tr><td>첫 시간 후 저하</td><td><b>GSD</b> (신선한 문맥)</td></tr><tr><td>요청 안 한 기능 추가</td><td><b>GSTACK</b> (제품 리뷰 먼저)</td></tr></tbody></table><div class="keymsg"><span class="k">원칙</span><div>도구가 아니라 <b>내 실패 유형</b>을 먼저 안다.</div></div></div>
+</section>
+
+<section class="slide" data-title="토큰 절감 스킬">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>토큰</div>
+  <h2 class="s-title sm">덜 쓰게 만드는 스킬 — 비판적으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>ponytail</h4><p>YAGNI — <b>꼭 필요한 코드만</b>. 검증·보안·접근성은 안 자른다.</p><div class="mini">적게 짜기</div></div><div class="pane "><h4>caveman</h4><p>‘원시인 말투’로 <b>출력 압축</b>. 코드·명령·에러는 안 건드림.</p><div class="mini">적게 말하기</div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>주의</h4><p>caveman 광고는 65퍼센트 절감이지만 <b>실측 ~8.5퍼센트</b>(출력 토큰만) — 광고 수치를 그대로 믿지 말 것.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] 하네스 프레임워크 체험">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">하네스 프레임워크 체험</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Claude Code 플러그인</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">+</div><div class="tx"><h4>설치·비교</h4><p>superpowers 또는 gstack을 설치해 같은 작업을 시켜보고, 기본 Claude Code와 비교한다.</p></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 미니 하네스 직접">
+  <div class="ghost">07</div><div class="seyebrow">CHAPTER 07</div><h2>미니 하네스 직접</h2>
+  <div class="agenda"><span>레지스트리</span><span>트리밍</span><span>확장점</span></div>
+</section>
+
+<section class="slide" data-title="미니 하네스 설계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">‘미니 Claude Code’를 짠다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>도구 레지스트리</b> — 등록하고 이름으로 실행</div></div><div class="v"><span class="b">2</span><div><b>에이전트 루프</b> — 7강 루프를 얹는다</div></div><div class="v"><span class="b">3</span><div><b>컨텍스트 트리밍</b> — 길어지면 줄인다(CH2)</div></div><div class="v"><span class="b">4</span><div><b>확장점</b> — 스킬 로더를 흉내 낸다</div></div></div><div class="keymsg"><span class="k">스코프</span><div>풀 하네스가 아니라 <b>핵심 뼈대</b> — 왜 그렇게 생겼는지 몸으로 안다.</div></div></div>
+</section>
+
+<section class="slide" data-title="도구 레지스트리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">도구를 등록하고 이름으로 부른다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">harness.py</span></div><pre><code><span class="kw">class</span> MiniHarness:
+    <span class="kw">def</span> tool(self, desc, params):     <span class="cm"># 등록 데코레이터</span>
+        <span class="kw">def</span> deco(fn):
+            self.registry[fn.__name__] = fn
+            self.specs.append(spec(fn, desc, params))
+            <span class="kw">return</span> fn
+        <span class="kw">return</span> deco</code></pre></div><div class="keymsg"><span class="k">의미</span><div>Claude Code가 도구를 관리하는 방식의 <b>축소판</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="컨텍스트 트리밍">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">길어지면 system + 최근만 남긴다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>system은 유지</b>, 최근 N개만</div></div><div class="v"><span class="b">→</span><div>가운데는 버리거나 <b>요약</b>(CH2)</div></div><div class="v"><span class="b">i</span><div>이 결정이 곧 컨텍스트 엔지니어링</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trim.py</span></div><pre><code><span class="kw">def</span> trim(msgs, keep=10):
+    <span class="kw">if</span> len(msgs) &lt;= keep+1: <span class="kw">return</span> msgs
+    <span class="kw">return</span> msgs[:1] + msgs[-keep:]  <span class="cm"># system+최근</span></code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="확장점 · 스킬 로더">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">필요할 때만 노하우를 주입</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">skill.py</span></div><pre><code><span class="kw">def</span> skill(self, trigger, text):     <span class="cm"># 스킬 등록</span>
+    self.skills[trigger] = text
+
+<span class="kw">def</span> _system(self, q):                <span class="cm"># 트리거 매칭 시 주입</span>
+    extra = [t <span class="kw">for</span> k, t <span class="kw">in</span> self.skills.items() <span class="kw">if</span> k <span class="kw">in</span> q]
+    <span class="kw">return</span> base + "\n".join(extra)</code></pre></div><div class="keymsg"><span class="k">연결</span><div>Claude Code 스킬의 <b>description 트리거</b>를 소박하게 흉내 낸 것.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 5 — 미니 하네스 직접">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 5 — 미니 하네스 직접</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">5</div><div class="tx"><h4>런타임 조립</h4><p>도구 레지스트리 + 7강 루프 + 컨텍스트 트리밍 + 스킬 로더 = 미니 하네스.</p></div></div></div></div>
+</section>
+
+<section class="slide" data-title="미니 하네스 vs Claude Code">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">무엇이 더 있나</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>우리 미니 하네스</h4><p>4조각을 <b>직접</b> 짰다 — 전부 이해된다.</p><div class="mini">투명</div></div><div class="pane "><h4>Claude Code</h4><p>권한·자동 컴팩션·서브에이전트·플러그인·훅·마켓…</p><div class="mini">프로덕션</div></div></div><div class="keymsg"><span class="k">의미</span><div>차이를 <b>이름 댈 수</b> 있게 됐다 — 그게 오늘의 수확.</div></div></div>
+</section>
+
+<section class="slide" data-title="하네스 원칙">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>원칙</div>
+  <h2 class="s-title sm">권한과 안전을 손에 쥔다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>최소 권한</b> — 필요한 것만 자동, 위험은 확인</div></div><div class="v"><span class="b">→</span><div><b>훅으로 방어</b> — 위험 명령·비밀 유출을 막는다</div></div><div class="v"><span class="b">→</span><div><b>컨텍스트를 아낀다</b> — 신호 대비 토큰</div></div><div class="v"><span class="b">→</span><div><b>감사</b> — 무엇을 실행했는지 남긴다</div></div></div><div class="keymsg"><span class="k">전제</span><div>하네스는 <b>편리함과 통제</b>를 동시에 준다 — 통제를 놓지 마라.</div></div></div>
+</section>
+
+<section class="slide" data-title="오늘 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">오늘 한 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>해부했다</h4><p>권한·컨텍스트·서브에이전트·확장점 + 컨텍스트 엔지니어링.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>확장했다</h4><p>스킬·플러그인·훅·MCP로 하네스를 늘렸다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>직접 만들었다</h4><p>미니 하네스로 런타임 뼈대를 익혔다.</p></div></div></div><div class="keymsg"><span class="k">다음</span><div>하네스 하나를 다뤘으니, 이제 <b>여러 에이전트를 오케스트레이션</b>한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="용어 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>용어</div>
+  <h2 class="s-title sm">오늘의 핵심 용어</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody><tr><td><b>하네스</b></td><td>에이전트를 돌리는 런타임(Claude Code)</td></tr><tr><td><b>컨텍스트 엔지니어링</b></td><td>윈도우를 신호 위주로 관리</td></tr><tr><td><b>컴팩션</b></td><td>요약해 새 윈도우로 이어가기</td></tr><tr><td><b>스킬 / 플러그인</b></td><td>노하우 / 확장 묶음</td></tr><tr><td><b>훅</b></td><td>라이프사이클에 코드 개입(정책 강제)</td></tr></tbody></table></div>
+</section>
+
+<section class="slide section" data-title="다음 · Day 09">
+  <div class="ghost">09</div><div class="seyebrow">NEXT · DAY 09</div><h2>멀티에이전트</h2>
+  <p>오케스트레이션 패턴과 루프 엔지니어링을 배우고, 여러 에이전트로 실제 웹앱(Next.js)을 만든다.</p>
+  <div class="agenda"><span>오케스트레이션</span><span>루프 엔지니어링</span><span>웹개발</span></div>
+</section>
+
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>

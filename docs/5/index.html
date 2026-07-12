@@ -696,15 +696,11 @@ main.<span class="fn2">mount</span>(crm, namespace=<span class="st">"crm"</span>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>연결</div>
   <h2 class="s-title sm">RAG의 검색을 도구로 노출</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><p class="s-sub" style="margin-bottom:12px">1·2강의 <b style="color:var(--ink)">하이브리드 검색+리랭커</b>는 ‘연산’이라 <b style="color:var(--ink)">Tool</b>이다. 문서 원문은 Resource, 검색은 Tool.</p><div class="vlist"><div class="v"><span class="b">→</span><div>질의 처리·랭킹 = 행동 → Tool</div></div><div class="v"><span class="b">→</span><div>3강에서 만든 search_docs가 그대로 여기 온다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">search_tool.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> search_docs(query: str, k: int = 5) -> list:
-    <span class="st">"""사내 문서를 하이브리드 검색으로 찾는다"""</span>
-    hits = hybrid_search(query, k)
-    <span class="kw">return</span> rerank(query, hits)</code></pre></div></div></div>
+  <div class="body"><div class="twocol w"><div><p class="s-sub" style="margin-bottom:12px">1·2강의 <b style="color:var(--ink)">검색</b>은 ‘연산’이라 <b style="color:var(--ink)">Tool</b>, 문서 원문은 <b style="color:var(--ink)">Resource</b>. 검색을 도구로 노출한다.</p><div class="vlist"><div class="v"><span class="b">→</span><div>질의 처리·랭킹 = 행동 → Tool</div></div><div class="v"><span class="b">→</span><div><b>실습(Lab 5)은 임베딩</b> 검색 · <b>실무는 하이브리드+리랭커</b>(Day02)</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">search_tool.py</span></div><pre><code><span class="kw">@mcp.tool</span>(annotations={<span class="st">"readOnlyHint"</span>: <span class="kw">True</span>})
+<span class="kw">def</span> <span class="fn2">search_docs</span>(query, k=3):
+    <span class="kw">return</span> <span class="fn2">retrieve</span>(query, k)   <span class="cm"># 실습: 임베딩(Lab 5)</span>
+                            <span class="cm"># 실무: 하이브리드+리랭커(Day02)</span></code></pre></div></div></div>
 </section>
-
-
-
 <section class="slide" data-title="지식 서버 완성">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>완성</div>
@@ -933,6 +929,17 @@ EMB = embed([c[<span class="st">"text"</span>] <span class="kw">for</span> c <sp
 
 
 
+<section class="slide" data-title="Lab 7 · 툴콜링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">LAB 7</span><span class="dot"></span>에이전트</div>
+  <h2 class="s-title sm">LLM이 도구를 스스로 부르게 (NVIDIA Qwen)</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab7_agent.py</span></div><pre><code><span class="cm"># MCP 도구 → function 스펙 → Qwen이 스스로 호출 (Lab 5의 search_docs)</span>
+<span class="kw">await</span> run_agent(<span class="st">"연차는 며칠 전에 신청?"</span>)      <span class="cm"># LLM이 search_docs 호출 → 답</span>
+
+<span class="cm"># 자기수정: 잘못된 인자 → 친절한 에러 → LLM이 고쳐 재호출</span>
+<span class="kw">await</span> run_agent(<span class="st">"2번 작업을 '긴급' 우선순위로"</span>)   <span class="cm"># 긴급→높음 스스로 수정</span></code></pre></div><div class="keymsg"><span class="k">핵심</span><div>도구가 에러를 던지면 <b>LLM에 되돌려</b> 스스로 고친다. 도구를 <b>만드는</b> 것에서 에이전트가 <b>쓰는</b> 것으로 — 3주차 Agent로 이어진다.</div></div></div>
+</section>
 <section class="slide" data-title="트러블슈팅">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>트러블슈팅</div>
