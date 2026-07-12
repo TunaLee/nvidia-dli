@@ -285,7 +285,7 @@
 <section class="slide" data-title="목표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>목표</div>
-  <h2 class="s-title sm">직접 만든 도구로 에이전트를 움직인다</h2>
+  <h2 class="s-title sm">직접 만든 도구로 움직이는 에이전트</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>직접 도구를 만들어 MCP 서버를 구성</b>한다</div></div><div class="v"><span class="b">→</span><div>LLM은 <b>NVIDIA API(Qwen)</b></div></div><div class="v"><span class="b">★</span><div>주제는 자유 — <b>실제로 쓸 만한</b> 도구를 만드는 게 핵심</div></div></div></div><div class="formula"><div class="big">내 도구들 → MCP 서버</div><div class="big" style="color:#C792FF">→ Qwen 에이전트가 호출</div><div class="big">→ 배포</div></div></div></div>
 </section>
@@ -293,7 +293,7 @@
 <section class="slide" data-title="반드시 담을 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>필수</div>
-  <h2 class="s-title sm">이 네 가지는 꼭</h2>
+  <h2 class="s-title sm">꼭 담을 네 가지</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>여러 도구로 된 MCP 서버</h4><p>최소 하나는 행동(부작용) Tool, 하나는 읽기/검색. Inspector로 확인. (3강)</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>친절한 에러·입력 검증</h4><p>잘못된 입력에 ‘무엇을·어떻게 고쳐라’를 알려준다. (5강)</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>에이전트 데모</h4><p>Qwen이 tool-calling으로 내 도구를 골라 질문을 푸는 노트북. (5강)</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>배포</h4><p>Horizon(공개 URL) 또는 로컬 HTTP로 호출 가능하게. (5강)</p></div></div></div></div>
 </section>
@@ -301,7 +301,7 @@
 <section class="slide" data-title="더 하면 좋은 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">주제에 맞으면 녹인다 (억지 X)</h2>
+  <h2 class="s-title sm">주제에 맞는 것만 (억지 X)</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>검색을 진짜 RAG로</b> — 임베딩·하이브리드·리랭커 (1~2강)</div></div><div class="v"><span class="b">→</span><div><b>Resource + Prompt</b> — 읽기 리소스, 재사용 프롬프트, 서버 합성 (4강)</div></div><div class="v"><span class="b">→</span><div><b>똑똑한 기능</b> — 구조화 출력 · sampling · elicitation · Context · annotations (5강)</div></div></div><div class="keymsg"><span class="k">주의</span><div>다 넣지 말 것 — 주제에 <b>자연스럽게 맞는 것</b>만.</div></div></div>
 </section>
@@ -309,7 +309,7 @@
 <section class="slide" data-title="코드 뼈대 미리보기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>미리보기</div>
-  <h2 class="s-title sm">이런 모양이 된다</h2>
+  <h2 class="s-title sm">완성된 모양</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol "><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">server.py</span></div><pre><code><span class="kw">@mcp.tool</span>
 <span class="kw">def</span> add_note(text: str) -&gt; dict:
@@ -324,7 +324,7 @@
 <section class="slide" data-title="진행 흐름 (제안)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>흐름</div>
-  <h2 class="s-title sm">이 순서로 가면 편하다</h2>
+  <h2 class="s-title sm">추천 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>주제·데이터·도구 스케치</h4><p>무엇을 만들지, 도구 목록을 먼저 그린다</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구 구현 → server.py</h4><p>Inspector로 도구가 뜨는지 확인</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>에이전트 데모</h4><p>Qwen tool-calling (5강 run_agent 재활용)</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>배포</h4><p>Horizon 또는 로컬 HTTP</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>다듬기·시연</h4><p>에러·검증 보강 후 시연</p></div></div></div></div>
 </section>
@@ -332,7 +332,7 @@
 <section class="slide" data-title="주제가 막히면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>씨앗</div>
-  <h2 class="s-title sm">이런 걸 만들어도 좋다</h2>
+  <h2 class="s-title sm">만들 만한 주제들</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c2"><div class="card"><h3>리서치 비서</h3><p>웹 검색 + 결과 저장 + 요약</p></div><div class="card"><h3>나들이 플래너</h3><p>날씨(open-meteo) + 장소 + 일정</p></div><div class="card"><h3>학습 도우미</h3><p>자료 검색 + 퀴즈 + 오답 기록</p></div><div class="card"><h3>가계부 분석</h3><p>CSV 읽기 + 분류 + 통계</p></div></div><div class="keymsg"><span class="k">가장 좋은 건</span><div><b>자기가 실제로 쓸 것</b>을 만드는 것.</div></div></div>
 </section>
@@ -340,7 +340,7 @@
 <section class="slide" data-title="제출물">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>제출</div>
-  <h2 class="s-title sm">끝에 이걸 낸다</h2>
+  <h2 class="s-title sm">제출할 것</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>server.py</b> — 내가 만든 도구들</div></div><div class="v"><span class="b">→</span><div><b>에이전트 데모 노트북</b> — Qwen이 도구 호출</div></div><div class="v"><span class="b">→</span><div><b>배포 URL / 엔드포인트</b></div></div><div class="v"><span class="b">→</span><div>(짧은 시연)</div></div></div></div>
 </section>
@@ -348,7 +348,7 @@
 <section class="slide" data-title="이런 걸 신경 쓰면 좋다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CAPSTONE</span><span class="dot"></span>평가 관점</div>
-  <h2 class="s-title sm">잘 만든 도구의 감각</h2>
+  <h2 class="s-title sm">좋은 도구의 조건</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>실제로 <b>쓰고 싶은</b> 도구인가?</div></div><div class="v"><span class="b">→</span><div>도구가 <b>작고 명확</b>한가? (하나가 한 가지 일)</div></div><div class="v"><span class="b">→</span><div>이름·설명이 <b>모델이 고르기 좋게</b> 쓰였나?</div></div><div class="v"><span class="b">→</span><div>배운 걸 <b>자연스럽게</b> 녹였나?</div></div></div></div>
 </section>
