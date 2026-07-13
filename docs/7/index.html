@@ -645,6 +645,52 @@ Client(<span class="st">"https://...app/mcp"</span>)         <span class="cm"># 
   <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">5</div><div class="tx"><h4>도구 백엔드 연결</h4><p>도구 서버를 붙여, 에이전트가 검색·행동 도구를 스스로 골라 쓰게 한다. URL로도 교체 가능.</p></div></div></div></div>
 </section>
 
+<section class="slide" data-title="장난감 검색 vs 진짜 검색">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>도구의 속</div>
+  <h2 class="s-title sm">검색 도구의 속을 갈아끼운다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+    <div class="v"><span class="b">→</span><div>지금까지의 <b>search_docs</b> — 단어가 겹치는 개수를 세는 <b>장난감</b></div></div>
+    <div class="v"><span class="b">→</span><div>Day 1~2에서 만든 <b>벡터 검색</b>으로 교체</div></div>
+    <div class="v"><span class="b">★</span><div>도구 <b>이름·인자·루프는 그대로</b> — 속만 바뀐다</div></div>
+  </div>
+  <div class="keymsg"><span class="k">약속</span><div>Day 02가 예고한 <b>“에이전트의 검색 도구”</b>가 바로 이것이다.</div></div></div>
+  <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">swap.py</span></div><pre><code>mcp.<span class="fn2">remove_tool</span>(<span class="st">"search_docs"</span>)   <span class="cm"># 장난감을 뗀다</span>
+
+<span class="kw">@mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">search_docs</span>(query: <span class="kw">str</span>, k: <span class="kw">int</span> = <span class="nm">3</span>):
+    <span class="st">"""의미가 가까운 사내 문서를 찾는다"""</span>
+    qv = <span class="fn2">embed</span>([query])[<span class="nm">0</span>]
+    sims = DOC_VECS @ qv        <span class="cm"># 코사인</span>
+    <span class="kw">return</span> top_k(sims, k)</code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="Agentic RAG">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>Agentic RAG</div>
+  <h2 class="s-title sm">Agentic RAG — 검색 여부를 에이전트가 정한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+    <div class="v"><span class="b">1</span><div><b>Day 1~2</b> — 질문이 오면 검색이 <b>항상</b> 돌았다 (고정 파이프라인)</div></div>
+    <div class="v"><span class="b">2</span><div><b>지금</b> — 도구를 쥐여줬을 뿐, <b>부를지 말지는 LLM이 판단</b>한다</div></div>
+  </div>
+  <div class="cards c2" style="margin-top:18px">
+    <div class="card"><span class="n">도구 호출 0회</span><h3>“2 더하기 2는?”</h3><p>검색이 필요 없다고 판단 → 바로 답한다.</p></div>
+    <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">search_docs 호출</span><h3>“로그인이 자꾸 풀려요”</h3><p>ERR-4021을 <b>말한 적 없는데</b> 벡터 검색이 찾아온다.</p></div>
+  </div>
+  <div class="keymsg"><span class="k">한 줄</span><div>검색이 <b>파이프라인의 한 칸</b>에서 <b>에이전트가 고르는 도구</b>가 되었다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 6 — RAG를 도구로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 6 — RAG를 도구로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day07_에이전트_실습.ipynb</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">6</div><div class="tx"><h4>검색 도구를 벡터 검색으로 교체</h4><p>같은 이름으로 다시 등록해 속만 바꾼다. 그리고 검색이 필요한 질문과 필요 없는 질문을 던져, 에이전트가 <b>스스로 판단</b>하는 걸 확인한다.</p></div></div></div></div>
+</section>
+
 <section class="slide section" data-title="[섹션] 실전으로 넓히기">
   <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>실전으로 넓히기</h2>
   <div class="agenda"><span>웹검색</span><span>멀티툴</span><span>프레임워크</span></div>
@@ -738,14 +784,123 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
   <div class="body"><div class="twopane"><div class="pane good"><h4>안전</h4><p><b>한도</b>로 폭주 막고, <b>되돌릴 수 없는 행동</b>은 확인받고, <b>로그</b>로 감사.</p><div class="mini">사람이 개입할 여지를</div></div><div class="pane good"><h4>원칙</h4><p><b>단순함</b> · 계획을 <b>투명</b>하게 · 도구 <b>문서화</b>.</p><div class="mini">필요에 맞는 시스템</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>성공 = 가장 정교한 게 아니라 <b>필요에 맞는</b> 시스템을 짓는 것.</div></div></div>
 </section>
 
+<section class="slide section" data-title="[섹션] 코드 에이전트">
+  <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div><h2>코드 에이전트</h2>
+  <div class="agenda"><span>코드 도구</span><span>실행이 루프를 닫는다</span><span>샌드박스</span></div>
+</section>
+
+<section class="slide" data-title="코드 에이전트란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">코드 에이전트 = 같은 루프 + 코드 도구</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+    <div class="v"><span class="b">→</span><div>루프는 <b>한 줄도</b> 안 바뀐다</div></div>
+    <div class="v"><span class="b">→</span><div>업무 도구를 떼고 <b>코드 도구</b>를 문다</div></div>
+    <div class="v"><span class="b">★</span><div>이게 <b>Claude Code / Codex</b>의 뼈대다</div></div>
+  </div>
+  <div class="keymsg"><span class="k">한 줄</span><div>코드 에이전트는 <b>마법이 아니다</b> — 도구 25줄이면 된다.</div></div></div>
+  <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">code_tools.py</span></div><pre><code><span class="kw">@code_mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">list_files</span>() -> <span class="kw">list</span>: ...
+
+<span class="kw">@code_mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">read_file</span>(path: <span class="kw">str</span>) -> <span class="kw">str</span>: ...
+
+<span class="kw">@code_mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">write_file</span>(path, content): ...
+
+<span class="kw">@code_mcp.tool</span>
+<span class="kw">def</span> <span class="fn2">run_python</span>(path) -> <span class="kw">str</span>: ...
+  <span class="cm"># 실행하고 stdout/stderr 를 돌려준다</span></code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 7 — 미니 코드 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 7 — 미니 코드 에이전트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day07_에이전트_실습.ipynb</div>
+  <div class="biglist" style="margin-top:14px">
+    <div class="li"><div class="num">1</div><div class="tx"><h4>버그 수정 (RED → GREEN)</h4><p>실패하는 테스트를 스스로 통과시킨다 — 읽고 · 돌리고 · 고치고 · 다시 돌린다.</p></div></div>
+    <div class="li"><div class="num">2</div><div class="tx"><h4>run_python 을 빼면?</h4><p>고쳤다고 답하지만 <b>검증을 못 한다</b>.</p></div></div>
+    <div class="li"><div class="num">3</div><div class="tx"><h4>샌드박스 경계</h4><p>밖으로 나가려 하면 막힌다.</p></div></div>
+  </div></div>
+</section>
+
+<section class="slide" data-title="실행 도구가 루프를 닫는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>핵심</div>
+  <h2 class="s-title sm">실행 도구가 루프를 닫는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2">
+    <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">run_python 있음</span><h3>스스로 확인한다</h3><p>테스트를 돌려 <b>실패를 보고</b> 다시 고친다. 통과할 때까지.</p></div>
+    <div class="card" style="border-color:#F6C9D8;background:#FDEEF3"><span class="n">run_python 없음</span><h3>“완료했습니다”</h3><p>그럴듯하게 고치고 <b>당당히 답한다</b>. 맞는지는 <b>알 수 없다</b>.</p></div>
+  </div>
+  <div class="vlist" style="margin-top:16px">
+    <div class="v"><span class="b">→</span><div><b>실패했다면</b> — 에이전트는 그걸 <b>모른 채</b> ‘완료’라고 답한 것이다</div></div>
+    <div class="v"><span class="b">→</span><div><b>통과했다면</b> — <b>운이 좋았을 뿐</b>. 확인할 수단이 없던 건 똑같다</div></div>
+  </div>
+  <div class="keymsg"><span class="k">한 줄</span><div>이게 <b>챗봇과 코드 에이전트를 가르는 선</b>이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="샌드박스 — 경계는 누가 긋나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>안전</div>
+  <h2 class="s-title sm">샌드박스 — 경계는 누가 긋나</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+    <div class="v"><span class="b">→</span><div>에이전트에게 <b>파일 쓰기·코드 실행</b>을 줬다</div></div>
+    <div class="v"><span class="b">→</span><div>경계가 없으면 <b>내 디스크 전체</b>가 사정권</div></div>
+    <div class="v"><span class="b">★</span><div>우리는 <b>_safe() 한 줄</b>로 가뒀다</div></div>
+  </div>
+  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">🔒</div><div class="ct"><h4>다음 질문</h4><p>Claude Code와 Codex는 이 경계를 <b>어디에</b> 두는가? → 다음 챕터.</p></div></div></div>
+  <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">guard.py</span></div><pre><code><span class="kw">def</span> <span class="fn2">_safe</span>(path):
+    p = (SANDBOX / path).<span class="fn2">resolve</span>()
+    <span class="kw">if</span> <span class="kw">not</span> p.<span class="fn2">is_relative_to</span>(SANDBOX):
+        <span class="kw">raise</span> <span class="fn2">ValueError</span>(
+            <span class="st">"샌드박스 밖은 금지"</span>)
+    <span class="kw">return</span> p
+
+<span class="cm"># 에러는 '관찰'로 되먹여진다</span>
+<span class="cm"># → 에이전트가 스스로 포기</span></code></pre></div></div></div>
+</section>
+
+<section class="slide" data-title="믿을 수 있는 코드 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">돌아가는 것과 믿을 수 있는 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+    <div class="v"><span class="b">1</span><div><b>편집 정밀도</b> — <b>write_file</b>은 파일을 통째로 덮어쓴다. 500줄짜리에서 한 줄 고치라면 나머지를 재생성하다 망가진다</div></div>
+    <div class="v"><span class="b">2</span><div><b>컨텍스트</b> — 파일 몇 개만 읽어도 찬다. 뭘 읽을지 고르고 · 요약하고 · 버려야 한다</div></div>
+    <div class="v"><span class="b">3</span><div><b>안전</b> — 우리 가드는 경로 검사 한 줄뿐이다</div></div>
+    <div class="v"><span class="b">4</span><div><b>복구</b> — 잘못 고쳤을 때 되돌리기(git) · 무한 루프 차단 · 비용 상한</div></div>
+  </div>
+  <div class="keymsg"><span class="k">한 줄</span><div><b>작동하는</b> 코드 에이전트는 쉽고, <b>믿을 수 있는</b> 코드 에이전트는 어렵다 — 그 격차가 <b>하네스</b>(8강)다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 8 — 모델 스위칭">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 8 — 모델 스위칭 벤치</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day07_에이전트_실습.ipynb</div>
+  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">8</div><div class="tx"><h4>루프도 과제도 그대로, 모델만 바꾼다</h4><p>같은 버그를 Qwen · DeepSeek · GPT-OSS · Kimi 로 각각 고치게 하고 <b>성공 여부 · 시간</b>을 표로 비교한다.</p></div></div></div>
+  <div class="vlist" style="margin-top:14px">
+    <div class="v"><span class="b">→</span><div><b>루프는 모델과 무관</b> — 같은 코드가 전부 돌아간다</div></div>
+    <div class="v"><span class="b">→</span><div>약한 모델은 도구를 엉뚱하게 부르거나 <b>max_steps</b>에 걸린다</div></div>
+    <div class="v"><span class="b">★</span><div>코드 에이전트에선 <b>모델 선택이 곧 성능</b>이다</div></div>
+  </div></div>
+</section>
+
 <section class="slide section" data-title="[섹션] 프로덕션 하네스">
-  <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div><h2>프로덕션 하네스</h2>
+  <div class="ghost">07</div><div class="seyebrow">CHAPTER 07</div><h2>프로덕션 하네스</h2>
   <div class="agenda"><span>Claude Code / Codex</span><span>비교</span></div>
 </section>
 
 <section class="slide" data-title="프로덕션 에이전트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실전</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실전</div>
   <h2 class="s-title sm">프로덕션 에이전트</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>Claude Code / Codex</b> = 프로덕션급 에이전트</div></div><div class="v"><span class="b">→</span><div>우리가 만든 것과 <b>뼈대는 같다</b> — 판단·도구·루프</div></div><div class="v"><span class="b">→</span><div>다른 건 <b>규모</b> — 계획·컨텍스트·권한·서브에이전트</div></div></div><div class="keymsg"><span class="k">메타</span><div>여기서부터 <b>Claude Code/Codex로 작업</b>한다 — 에이전트로 에이전트를 만든다.</div></div></div>
@@ -753,16 +908,50 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
 
 <section class="slide" data-title="에이전트 vs 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구분</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>구분</div>
   <h2 class="s-title sm">에이전트 vs 하네스</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane"><div class="pane good"><h4>에이전트 (오늘)</h4><p>판단하는 <b>주체</b>. 작지만 전부 이해된다.</p><div class="mini">투명 · 내가 통제</div></div><div class="pane"><h4>하네스 (8강)</h4><p>에이전트를 <b>돌리는 런타임</b> — 컨텍스트·권한·확장.</p><div class="mini">Claude Code가 곧 하네스</div></div></div><div class="keymsg"><span class="k">다음</span><div>이 차이를 채우는 게 <b>하네스</b> — 8강에서 해부·확장한다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 6 — 프로덕션과 비교">
+<section class="slide" data-title="Claude Code vs Codex — 신뢰 경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>제품 비교</div>
+  <h2 class="s-title sm">Claude Code vs ChatGPT Codex</h2>
+  <div class="rule"></div>
+  <div class="body">
+  <table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <thead><tr style="color:var(--mut);text-align:left;">
+      <th style="padding:9px 10px;"></th>
+      <th style="padding:9px 10px;">Claude Code</th>
+      <th style="padding:9px 10px;">ChatGPT Codex</th>
+    </tr></thead>
+    <tbody>
+      <tr style="border-top:1px solid var(--line);">
+        <td style="padding:10px;color:var(--mut);">기본 실행 위치</td>
+        <td style="padding:10px;">내 머신 (로컬 우선)</td>
+        <td style="padding:10px;">클라우드 샌드박스 (repo 클론)</td></tr>
+      <tr style="border-top:1px solid var(--line);background:var(--wash-2);">
+        <td style="padding:10px;color:var(--violet);font-weight:800;">신뢰 경계</td>
+        <td style="padding:10px;"><b>사람이 게이트</b><br><span style="color:var(--mut);font-size:13px;">권한 모드로 승인</span></td>
+        <td style="padding:10px;"><b>환경이 게이트</b><br><span style="color:var(--mut);font-size:13px;">OS 커널 샌드박스</span></td></tr>
+      <tr style="border-top:1px solid var(--line);">
+        <td style="padding:10px;color:var(--mut);">상호작용</td>
+        <td style="padding:10px;">대화형 — 끼어들어 조종</td>
+        <td style="padding:10px;">과제 위임 → diff · PR 수령</td></tr>
+      <tr style="border-top:1px solid var(--line);">
+        <td style="padding:10px;color:var(--mut);">프로젝트 지시</td>
+        <td style="padding:10px;"><code>CLAUDE.md</code></td>
+        <td style="padding:10px;"><code>AGENTS.md</code></td></tr>
+    </tbody>
+  </table>
+  <div class="keymsg" style="margin-top:16px"><span class="k">축</span><div>같은 에이전트 루프다 — 갈리는 건 <b>신뢰 경계를 어디에 두는가</b>. 우리는 <b>_safe() 한 줄</b>로 그었다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 9 — Claude Code / Codex 병행">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 6 — 프로덕션과 비교</h2>
+  <h2 class="s-title sm">Lab 9 — Claude Code / Codex 병행</h2>
   <div class="rule"></div>
   <div class="body"><div class="lab-badge"><span class="sq"></span>Claude Code / Codex</div>
   <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">6</div><div class="tx"><h4>같은 과제, 다른 에이전트</h4><p>내 루프에 시킨 과제를 Claude Code에도 시키고 계획·도구선택·컨텍스트·권한을 관찰한다.</p></div></div></div></div>
@@ -770,7 +959,7 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
 
 <section class="slide" data-title="오늘 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 정리</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>에이전트를 이해했다</h4><p>LLM+도구+루프. 워크플로와 구분, 언제 쓰는지.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>직접 만들었다</h4><p>루프·종료·안전·메모리·자기수정 + 내 MCP.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>넓히고 비교했다</h4><p>웹검색·멀티툴 + 프로덕션(Claude Code) 비교.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>작지만 <b>전부 이해되는 에이전트</b>를 만들었다 — 다음은 이걸 돌리는 <b>하네스</b>.</div></div></div>
@@ -778,7 +967,7 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
 
 <section class="slide" data-title="용어 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>용어</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>용어</div>
   <h2 class="s-title sm">오늘의 핵심 용어</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody><tr><td><b>Agent</b></td><td>LLM+도구+루프 (어원 agere=행하다)</td></tr><tr><td><b>ReAct</b></td><td>Reason+Act — 생각·행동·관찰 반복</td></tr><tr><td><b>function calling</b></td><td>모델이 구조화된 도구 호출을 반환</td></tr><tr><td><b>self-correction</b></td><td>에러를 되먹여 스스로 고침</td></tr><tr><td><b>plan-execute</b></td><td>계획 먼저, 그다음 실행</td></tr><tr><td><b>LangGraph</b></td><td>루프를 상태 그래프로 짜는 프레임워크</td></tr></tbody></table></div>
