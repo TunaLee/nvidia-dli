@@ -529,6 +529,23 @@ messages = [{<span class="st">"role"</span>: <span class="st">"system"</span>, <
 A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
 </section>
 
+<section class="slide" data-title="병렬 호출 vs 순차 의존">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">병렬 호출 vs 순차 의존</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2">
+    <div class="card"><span class="n">루프 1회</span><h3>병렬 호출</h3><p>“추가하고 목록 보여줘” — 도구 두 개를 <b>한 번에</b> 부르면 끝. 순차 판단이 <b>아니다</b>.</p></div>
+    <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">루프 2회 이상</span><h3>순차 의존</h3><p>“<b>마지막</b> 할 일의 우선순위를 높음으로” — <b>id를 알아낸 뒤</b>라야 다음 도구를 부를 수 있다.</p></div>
+  </div>
+  <div class="code sm" style="margin-top:16px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trace</span></div><pre><code>  [루프 <span class="nm">1</span>] list_tasks({})              <span class="cm"># 여기서 id를 알아낸다</span>
+  [루프 <span class="nm">2</span>] set_priority({<span class="st">'task_id'</span>: <span class="nm">3</span>, ...})   <span class="cm"># ← 앞 결과가 있어야 가능</span>
+
+→ 도구를 부른 루프 <span class="nm">2</span>회
+<span class="st">✅ 진짜 멀티스텝 — 앞 결과를 보고 '다음' 도구를 정했다</span></code></pre></div>
+  <div class="keymsg" style="margin-top:14px"><span class="k">확인법</span><div>루프가 <b>2회 이상</b> 돌았는지 세어보라 — 실습의 <code>report()</code>가 판정해준다.</div></div></div>
+</section>
+
 <section class="slide" data-title="[실습] Lab 2 — 루프 승격">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
@@ -544,6 +561,33 @@ A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
   <h2 class="s-title sm">Plan-and-Execute</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>즉흥(ReAct) 대신 <b>먼저 계획</b>을 세우게</div></div><div class="v"><span class="b">→</span><div>계획 → 단계별 실행 → (막히면) 재계획</div></div><div class="v"><span class="b">★</span><div>긴 작업에서 <b>갈피를 덜 잃는다</b> (LangGraph 튜토리얼 패턴)</div></div></div></div><div class="pipe q"><div class="step"><div class="si">1</div><div class="sn">계획</div><div class="sd">단계 나열</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">실행</div><div class="sd">하나씩</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">재계획</div><div class="sd">필요시</div></div></div></div><div class="keymsg"><span class="k">선택</span><div>짧은 일은 ReAct(즉흥), 긴 일은 plan-execute(선계획) — 상황에 맞게.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 2.5 — Plan-and-Execute">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 2.5 — Plan-and-Execute</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div>
+  <div class="lab-badge"><span class="sq"></span>Day07_에이전트_실습.ipynb</div>
+  <div class="vlist" style="margin-top:14px">
+    <div class="v"><span class="b">1</span><div><b>계획</b> — 단계를 먼저 나열시킨다</div></div>
+    <div class="v"><span class="b">2</span><div><b>실행</b> — 계획을 얹고 평소의 ReAct 루프를 돈다</div></div>
+    <div class="v"><span class="b">★</span><div>계획 단계엔 <b>tools 를 넘기지 않는다</b></div></div>
+  </div>
+  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">⚠️</div><div class="ct"><h4>도구를 주면?</h4><p>모델이 계획을 세우는 대신 <b>그냥 실행해버린다</b>. 그래서 계획 호출엔 도구를 빼는 게 핵심.</p></div></div></div>
+  <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">plan_execute.py</span></div><pre><code><span class="kw">async def</span> <span class="fn2">plan_and_execute</span>(question):
+    <span class="cm"># ① 계획 — tools 를 '안' 넘긴다</span>
+    plan = llm.chat.completions.<span class="fn2">create</span>(
+        model=LLM_MODEL,
+        messages=[{<span class="st">"role"</span>: <span class="st">"system"</span>,
+          <span class="st">"content"</span>: <span class="st">"단계를 나열하라. 실행 금지."</span>},
+          {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: question}],
+    ).choices[<span class="nm">0</span>].message.content
+
+    <span class="cm"># ② 실행 — 계획을 얹고 ReAct 루프</span>
+    <span class="kw">return await</span> <span class="fn2">run_agent</span>(
+        <span class="st">f"[계획]\n{plan}\n\n[요청] {question}"</span>)</code></pre></div></div></div>
 </section>
 
 <section class="slide" data-title="메모리 붙이기">
@@ -680,6 +724,26 @@ Client(<span class="st">"https://...app/mcp"</span>)         <span class="cm"># 
     <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">search_docs 호출</span><h3>“로그인이 자꾸 풀려요”</h3><p>ERR-4021을 <b>말한 적 없는데</b> 벡터 검색이 찾아온다.</p></div>
   </div>
   <div class="keymsg"><span class="k">한 줄</span><div>검색이 <b>파이프라인의 한 칸</b>에서 <b>에이전트가 고르는 도구</b>가 되었다.</div></div></div>
+</section>
+
+<section class="slide" data-title="벡터 검색의 한계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">벡터 검색의 한계 — 정확 토큰</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+    <div class="v"><span class="b">→</span><div><b>의미형</b> 질의는 잘 찾는다 — “네트워크가 안 될 때”</div></div>
+    <div class="v"><span class="b">→</span><div><b>정확 토큰</b>은 못 찾는다 — <code>ERR-5010</code></div></div>
+    <div class="v"><span class="b">★</span><div>두 문장이 거의 같아 임베딩이 <b>숫자를 구분 못 한다</b></div></div>
+  </div>
+  <div class="callout mint" style="margin-top:14px"><div class="ci" style="font-size:18px">🔗</div><div class="ct"><h4>그래서 Day 02가 있었다</h4><p>정확 토큰에는 <b>BM25(키워드)</b>가 필요하다 — <b>하이브리드 검색</b>이 존재하는 이유.</p></div></div></div>
+  <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실측</span></div><pre><code>[<span class="st">"ERR-5010"</span>]
+   <span class="nm">0.670</span>  err4021   <span class="cm"># ← 1등이 틀렸다</span>
+   <span class="nm">0.511</span>  err5010   <span class="cm"># ← 정답이 2등</span>
+
+[<span class="st">"네트워크가 안 될 때"</span>]
+   <span class="nm">0.354</span>  err5010   <span class="cm"># ← 의미형은 정답</span>
+   <span class="nm">0.265</span>  remote</code></pre></div></div></div>
 </section>
 
 <section class="slide" data-title="[실습] Lab 6 — RAG를 도구로">
