@@ -575,7 +575,7 @@ A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
     <div class="v"><span class="b">2</span><div><b>실행</b> — 계획을 얹고 평소의 ReAct 루프를 돈다</div></div>
     <div class="v"><span class="b">★</span><div>계획 단계엔 <b>tools 를 넘기지 않는다</b></div></div>
   </div>
-  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">⚠️</div><div class="ct"><h4>도구를 주면?</h4><p>모델이 계획을 세우는 대신 <b>그냥 실행해버린다</b>. 그래서 계획 호출엔 도구를 빼는 게 핵심.</p></div></div></div>
+  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">📊</div><div class="ct"><h4>실측 — Qwen 5회씩</h4><p>도구 <b>안 줌</b> → 계획 5/5. 도구 <b>줌</b> → “계획만 세워라”를 무시하고 <b>실행 5/5</b>. <code>tool_choice="none"</code> → 계획 0/5, <b>&lt;tool_call&gt; 원문 유출</b>.</p></div></div></div>
   <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">plan_execute.py</span></div><pre><code><span class="kw">async def</span> <span class="fn2">plan_and_execute</span>(question):
     <span class="cm"># ① 계획 — tools 를 '안' 넘긴다</span>
     plan = llm.chat.completions.<span class="fn2">create</span>(
