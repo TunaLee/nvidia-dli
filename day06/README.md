@@ -54,12 +54,35 @@
 
 ---
 
-## 제출물
+## 제출 방법
 
-- `server.py` — 내가 만든 도구들로 구성된 MCP 서버
-- **에이전트 데모 노트북** — NVIDIA Qwen이 그 도구를 호출
-- **배포 URL / 엔드포인트**
-- (짧은 시연)
+프로젝트를 아래 구조의 **디렉터리**로 만들어 제출한다. (폴더 zip 또는 GitHub repo 링크)
+
+```
+내프로젝트/
+├── server.py          # MCP 서버 — 내가 만든 도구들
+├── client.py          # 에이전트 — NVIDIA Qwen이 도구를 호출
+├── requirements.txt   # 의존성 (fastmcp, openai 등 실제 쓴 것만)
+├── README.md          # 주제 한 줄 · (배포했다면) 공개 URL · 실행법
+└── .env.example       # 키 '이름'만 (예: NVIDIA_API_KEY=)
+```
+
+**각 파일에 담을 것**
+- `server.py` — FastMCP 서버. 도구 최소 2개(읽기 1개+, 행동/부작용 1개+), 잘못된 입력엔 친절한 에러.
+- `client.py` — Qwen이 tool-calling으로 `server.py`의 도구를 골라 쓰는 에이전트 루프. `if __name__ == "__main__":` 로 바로 실행되게.
+- `requirements.txt` — `pip freeze` 말고 실제 쓴 것만.
+- `README.md` — 무엇을 하는 도구인지, 실행 명령, (배포 시) 공개 URL.
+
+**넣지 말 것**
+- `.env` (실제 키) — 절대 금지. 키 이름만 `.env.example` 에.
+- `.venv/`, `__pycache__/`, 대용량 데이터
+
+**내기 전 자가 점검**
+- [ ] `fastmcp inspect server.py` 로 도구가 뜬다
+- [ ] `python client.py` 가 오류 없이 끝까지 돌아 답을 낸다 (E2E)
+- [ ] 잘못된 입력에 친절한 에러가 난다
+- [ ] `.env` 는 빼고 `.env.example` 만 넣었다
+- [ ] README 에 주제·실행법(·배포 URL)이 있다
 
 ---
 
