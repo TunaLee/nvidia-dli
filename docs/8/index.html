@@ -293,7 +293,7 @@
 <section class="slide" data-title="이어가기 · 7→8">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>이어가기</div>
-  <h2 class="s-title sm">에이전트를 만들었으니, 그걸 '돌리는 것'을</h2>
+  <h2 class="s-title sm">에이전트에서 하네스로</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">7</div><div class="tx"><h4>7강 — 에이전트</h4><p>판단·도구·루프. 작지만 전부 이해되는 에이전트.</p></div></div><div class="li"><div class="num">8</div><div class="tx"><h4>8강 — 하네스(오늘)</h4><p>그 에이전트를 돌리는 런타임을 해부·확장·제작.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>7강의 '런타임이 대신 해준 것'이 바로 <b>하네스</b>다.</div></div></div>
 </section>
@@ -314,7 +314,7 @@
 <section class="slide" data-title="에이전트 vs 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구분</div>
-  <h2 class="s-title sm">다시, 명확히</h2>
+  <h2 class="s-title sm">에이전트와 하네스의 구분</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane"><div class="pane good"><h4>에이전트</h4><p>판단하는 <b>주체</b> — LLM+도구+루프 (7강).</p><div class="mini">무엇을 할지</div></div><div class="pane "><h4>하네스</h4><p>그 주체를 <b>돌리는 런타임</b> — 실행·권한·컨텍스트·확장.</p><div class="mini">어떻게 돌릴지</div></div></div><div class="keymsg"><span class="k">경계</span><div>7강 = 주체를 만들었다. 8강 = <b>그 주체를 프로덕션으로 감싼다</b>.</div></div></div>
 </section>
@@ -322,7 +322,7 @@
 <section class="slide" data-title="하네스가 대신 해주는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>해부</div>
-  <h2 class="s-title sm">직접 짜려면 끝없는 디테일</h2>
+  <h2 class="s-title sm">하네스가 대신 해주는 것</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n">01</span><h3>에이전트 루프</h3><p>판단→행동→관찰 반복(7강).</p></div><div class="card"><span class="n">02</span><h3>도구·권한</h3><p>실행 중개 + 위험 작업 확인.</p></div><div class="card"><span class="n">03</span><h3>컨텍스트 관리</h3><p>요약·트리밍·메모리(CH2).</p></div><div class="card"><span class="n">04</span><h3>서브에이전트</h3><p>일을 나눠 위임(9강).</p></div><div class="card"><span class="n">05</span><h3>확장점</h3><p>스킬·플러그인·훅·MCP(CH3~5).</p></div></div><div class="keymsg"><span class="k">왜 하네스</span><div>이 전부를 매번 직접 짜지 않으려고 <b>하네스</b>를 쓴다.</div></div></div>
 </section>
@@ -335,7 +335,7 @@
 <section class="slide" data-title="구조 한눈에">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
-  <h2 class="s-title sm">하네스를 이루는 조각들</h2>
+  <h2 class="s-title sm">하네스의 구성 요소</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n">권한</span><h3>도구 승인</h3><p>무엇을 자동/확인할지.</p></div><div class="card"><span class="n">컨텍스트</span><h3>윈도우·컴팩션</h3><p>길어지면 요약해 이어감.</p></div><div class="card"><span class="n">서브에이전트</span><h3>위임</h3><p>별도 에이전트에 일 맡김.</p></div><div class="card"><span class="n">MCP</span><h3>외부 도구</h3><p>서버를 붙여 도구 확장.</p></div><div class="card"><span class="n">슬래시</span><h3>명령</h3><p>반복 작업을 /명령으로.</p></div><div class="card"><span class="n">훅</span><h3>개입</h3><p>실행 전/후 내 코드 끼움.</p></div></div><div class="keymsg"><span class="k">오늘</span><div>이걸 <b>직접 열어보고</b>, 그다음 <b>확장</b>하고, 끝에 <b>직접 만든다</b>.</div></div></div>
 </section>
@@ -343,7 +343,7 @@
 <section class="slide" data-title="권한 모드">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>권한</div>
-  <h2 class="s-title sm">무엇을 자동으로, 무엇을 확인받을지</h2>
+  <h2 class="s-title sm">권한 모드</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>확인</b> — 도구 실행 전마다 승인 요청(기본)</div></div><div class="v"><span class="b">→</span><div><b>편집 자동승인</b> — 파일 수정은 묻지 않음</div></div><div class="v"><span class="b">→</span><div><b>계획 모드</b> — 실행 없이 <b>계획만</b> 세움(읽기 전용)</div></div><div class="v"><span class="b">→</span><div><b>자동(권한 생략)</b> — 신뢰 환경에서만, 신중히</div></div></div><div class="keymsg"><span class="k">감각</span><div>자율성과 안전의 <b>다이얼</b> — 작업 위험도에 맞춰 돌린다.</div></div></div>
 </section>
@@ -351,7 +351,7 @@
 <section class="slide" data-title="컨텍스트·컴팩션">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>컨텍스트</div>
-  <h2 class="s-title sm">길어지면 자동으로 요약해 이어간다</h2>
+  <h2 class="s-title sm">컨텍스트 컴팩션</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>대화가 <b>윈도우</b>를 넘치면 정확도가 떨어진다</div></div><div class="v"><span class="b">→</span><div><b>컴팩션</b> — 오래된 대화를 <b>요약</b>해 새로 시작</div></div><div class="v"><span class="b">i</span><div>결정·미해결 버그는 남기고, 중복 출력은 버린다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 수동 압축</span>
 /compact
@@ -363,7 +363,7 @@
 <section class="slide" data-title="서브에이전트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>위임</div>
-  <h2 class="s-title sm">일을 나눠 별도 에이전트에 맡긴다</h2>
+  <h2 class="s-title sm">서브에이전트</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>메인이 <b>계획</b>, 서브가 <b>깊은 작업</b> 수행</div></div><div class="v"><span class="b">→</span><div>서브는 자기 컨텍스트에서 일하고 <b>요약만</b> 돌려준다</div></div><div class="v"><span class="b">→</span><div>병렬 탐색·컨텍스트 격리에 유리(9강)</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>핵심</h4><p>서브에이전트는 메인의 컨텍스트를 <b>아끼는</b> 장치 — 자세히 파도 요약만 올라온다.</p></div></div></div>
 </section>
@@ -371,7 +371,7 @@
 <section class="slide" data-title="슬래시 커맨드·CLAUDE.md">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지침</div>
-  <h2 class="s-title sm">반복 작업과 프로젝트 규칙을 고정</h2>
+  <h2 class="s-title sm">슬래시 커맨드와 CLAUDE.md</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>/명령</b> — 자주 하는 작업을 명령으로 (예: /review)</div></div><div class="v"><span class="b">→</span><div><b>CLAUDE.md</b> — 프로젝트 규칙·맥락을 항상 주입</div></div><div class="v"><span class="b">→</span><div><b>/help</b> 로 사용 가능한 명령 확인</div></div></div><div class="keymsg"><span class="k">팁</span><div>CLAUDE.md는 하네스에게 주는 <b>상시 시스템 프롬프트</b>다.</div></div></div>
 </section>
@@ -379,7 +379,7 @@
 <section class="slide" data-title="훅·MCP (미리 보기)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>확장</div>
-  <h2 class="s-title sm">하네스에 내 코드·도구를 끼운다</h2>
+  <h2 class="s-title sm">훅과 MCP (미리 보기)</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane"><div class="pane good"><h4>훅</h4><p>도구 실행 <b>전/후</b>에 내 스크립트 개입 → 정책 강제(CH5).</p><div class="mini">라이프사이클</div></div><div class="pane good"><h4>MCP</h4><p>외부 <b>도구 서버</b>를 붙여 능력 확장(3~5강).</p><div class="mini">도구 연결</div></div></div><div class="keymsg"><span class="k">차이</span><div>훅=<b>규칙 강제</b>, MCP=<b>도구 추가</b> — 목적이 다르다.</div></div></div>
 </section>
@@ -401,7 +401,7 @@
 <section class="slide" data-title="컨텍스트 = 유한 자원">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>관점</div>
-  <h2 class="s-title sm">많이 넣는다고 좋아지지 않는다</h2>
+  <h2 class="s-title sm">컨텍스트는 유한 자원</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>토큰이 늘수록 정확도가 떨어진다(<b>context rot</b>)</div></div><div class="v"><span class="b">→</span><div>주의(attention)는 유한 — 길수록 관계 파악이 흐려진다</div></div><div class="v"><span class="b">★</span><div>목표 — <b>가장 작은 고신호 토큰 집합</b>을 찾는 것</div></div></div><div class="keymsg"><span class="k">전환</span><div>‘다 넣기’가 아니라 <b>‘꼭 필요한 것만’</b> — 이게 컨텍스트 엔지니어링.</div></div></div>
 </section>
@@ -409,7 +409,7 @@
 <section class="slide" data-title="무엇이 컨텍스트를 채우나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구성</div>
-  <h2 class="s-title sm">윈도우를 두고 경쟁하는 것들</h2>
+  <h2 class="s-title sm">무엇이 컨텍스트를 채우나</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>요소</th><th>원칙</th></tr></thead><tbody><tr><td><b>시스템 프롬프트</b></td><td>명확하게 — 너무 구체(brittle)도 너무 추상(vague)도 아니게</td></tr><tr><td><b>도구</b></td><td>기능 중복 없이, <b>토큰 효율적</b> 결과</td></tr><tr><td><b>예시(few-shot)</b></td><td>엣지 나열 말고 <b>대표 사례</b>로</td></tr><tr><td><b>히스토리</b></td><td>동적으로 <b>필요한 부분만</b></td></tr><tr><td><b>검색 결과</b></td><td>필요할 때만(just-in-time) 로드</td></tr></tbody></table><div class="keymsg"><span class="k">한 줄</span><div>각 요소가 <b>윈도우를 두고 경쟁</b>한다 — 신호 대비 토큰을 따진다.</div></div></div>
 </section>
@@ -417,7 +417,7 @@
 <section class="slide" data-title="기법 1 · Compaction">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">요약해서 이어간다</h2>
+  <h2 class="s-title sm">기법 1 — Compaction</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>한계에 다다른 대화를 <b>요약</b>해 새 윈도우로</div></div><div class="v"><span class="b">→</span><div><b>결정·미해결 버그는 보존</b>, 중복 출력은 제거</div></div><div class="v"><span class="b">→</span><div>긴 왕복 작업에서 <b>연속성</b>을 지킨다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">compaction</span></div><pre><code><span class="cm"># 대화가 길어지면</span>
 요약 = summarize(old_messages)
@@ -427,7 +427,7 @@ messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></
 <section class="slide" data-title="기법 2 · 구조화된 메모">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">밖에 적어두고 다시 꺼낸다</h2>
+  <h2 class="s-title sm">기법 2 — 구조화된 메모</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>중요한 걸 <b>컨텍스트 밖 메모리</b>에 적는다</div></div><div class="v"><span class="b">→</span><div>예 — <b>TODO 리스트</b>, 진행 상황 노트</div></div><div class="v"><span class="b">→</span><div>장기 작업에서 <b>의존성·결정</b>을 잃지 않는다</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>비유</h4><p>머릿속에만 담지 말고 <b>수첩에 적는다</b> — 나중에 그 수첩만 다시 본다.</p></div></div></div>
 </section>
@@ -435,7 +435,7 @@ messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></
 <section class="slide" data-title="기법 3 · 서브에이전트 격리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">깊게 파되, 요약만 올린다</h2>
+  <h2 class="s-title sm">기법 3 — 서브에이전트 격리</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>메인은 <b>고수준 계획</b>, 서브는 <b>깊은 탐색</b></div></div><div class="v"><span class="b">→</span><div>서브는 광범위하게 보고 <b>1~2천 토큰 요약</b>만 반환</div></div><div class="v"><span class="b">→</span><div>메인 컨텍스트를 <b>깨끗하게</b> 유지</div></div></div><div class="keymsg"><span class="k">이득</span><div>복잡한 조사에서 <b>병렬 탐색 + 컨텍스트 절약</b>을 동시에.</div></div></div>
 </section>
@@ -443,7 +443,7 @@ messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></
 <section class="slide" data-title="기법 4 · Just-in-time">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">미리 다 넣지 말고, 필요할 때 가져온다</h2>
+  <h2 class="s-title sm">기법 4 — Just-in-time 로딩</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>전부 로드하지 말고 <b>가벼운 식별자</b>(경로·링크)만</div></div><div class="v"><span class="b">→</span><div>런타임에 도구로 <b>필요한 것만</b> 로드</div></div><div class="v"><span class="b">→</span><div>점진적 발견 — 맥락을 <b>그때그때</b> 채운다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">jit.py</span></div><pre><code><span class="cm"># 미리: 경로만</span>
 files = list_files()          <span class="cm"># 식별자만</span>
@@ -454,7 +454,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="기법 언제 쓰나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">상황에 맞는 컨텍스트 전략</h2>
+  <h2 class="s-title sm">기법 선택 가이드</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>기법</th><th>최적 상황</th></tr></thead><tbody><tr><td><b>Compaction</b></td><td>왕복이 많은 긴 대화</td></tr><tr><td><b>구조화 메모</b></td><td>마일스톤 있는 반복 개발</td></tr><tr><td><b>서브에이전트</b></td><td>병렬 탐색이 이득인 복잡한 조사</td></tr><tr><td><b>Just-in-time</b></td><td>동적·자주 바뀌는 데이터</td></tr></tbody></table><div class="keymsg"><span class="k">실전</span><div>하나만 쓰기보다 <b>섞어서</b> — 일부 미리, 나머지는 필요할 때.</div></div></div>
 </section>
@@ -467,7 +467,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="확장 4가지 지도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>지도</div>
-  <h2 class="s-title sm">하네스를 늘리는 네 방법</h2>
+  <h2 class="s-title sm">확장 4가지 지도</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>방법</th><th>무엇</th><th>언제</th></tr></thead><tbody><tr><td><b>스킬</b></td><td>재사용 절차·지식(SKILL.md)</td><td>‘이럴 땐 이렇게’ 노하우</td></tr><tr><td><b>플러그인</b></td><td>스킬·커맨드·훅 묶음</td><td>확장을 패키지로 공유</td></tr><tr><td><b>훅</b></td><td>라이프사이클 개입</td><td>실행 전/후 정책 강제</td></tr><tr><td><b>MCP</b></td><td>외부 도구 서버</td><td>새 도구·데이터(3~5강)</td></tr></tbody></table><div class="keymsg"><span class="k">구분</span><div>스킬=<b>노하우</b>, MCP=<b>도구</b>, 훅=<b>규칙</b>, 플러그인=<b>묶음</b>.</div></div></div>
 </section>
@@ -475,7 +475,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="스킬 = 노하우">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>스킬</div>
-  <h2 class="s-title sm">필요할 때만 불러오는 절차</h2>
+  <h2 class="s-title sm">스킬 = 노하우</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>description</b>이 트리거 — 언제 쓸지 하네스가 판단</div></div><div class="v"><span class="b">→</span><div>본문엔 <b>절차·규칙·예시</b></div></div><div class="v"><span class="b">★</span><div>평소엔 안 읽다가 <b>필요할 때만</b> 로드(컨텍스트 절약)</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">SKILL.md</span></div><pre><code><span class="cm">---</span>
 <span class="nm">description</span>: 커밋 전 변경 요약·위험 점검.
@@ -488,7 +488,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="스킬 언제 쓰나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>예</div>
-  <h2 class="s-title sm">반복되는 ‘일하는 방식’을 담는다</h2>
+  <h2 class="s-title sm">스킬을 쓸 때</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>배포 절차</b> — 우리 팀은 이렇게 배포한다</div></div><div class="v"><span class="b">→</span><div><b>리뷰 기준</b> — 이런 관점으로 코드를 본다</div></div><div class="v"><span class="b">→</span><div><b>문서 형식</b> — 보고서는 이 틀로</div></div><div class="v"><span class="b">i</span><div>= 컨텍스트 엔지니어링 — 필요할 때만 이 노하우가 로드된다</div></div></div><div class="keymsg"><span class="k">감각</span><div>스킬 = 하네스에게 주는 <b>‘사내 매뉴얼’</b> — 상황이 오면 펼쳐본다.</div></div></div>
 </section>
@@ -510,7 +510,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="플러그인 = 묶음">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>플러그인</div>
-  <h2 class="s-title sm">확장을 하나로 묶어 배포·공유</h2>
+  <h2 class="s-title sm">플러그인 = 확장 묶음</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>스킬·커맨드·훅·MCP를 <b>한 패키지</b>로</div></div><div class="v"><span class="b">→</span><div>팀에 <b>공유·재사용</b> — 같은 확장을 모두가</div></div><div class="v"><span class="b">→</span><div>매니페스트는 <b>.claude-plugin/plugin.json</b>(필수)</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">plugin/</span></div><pre><code>my-plugin/
   .claude-plugin/
@@ -522,7 +522,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="플러그인 설치·공유">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
-  <h2 class="s-title sm">만들고, 테스트하고, 나눈다</h2>
+  <h2 class="s-title sm">플러그인 설치와 공유</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>로컬 테스트</b> — 개발 중 바로 붙여 확인</div></div><div class="v"><span class="b">→</span><div><b>마켓플레이스</b>로 설치·공유</div></div><div class="v"><span class="b">i</span><div>plugin.json = 이름·설명·버전·작성자</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 로컬 테스트</span>
 claude --plugin-dir ./my-plugin
@@ -548,7 +548,7 @@ claude --plugin-dir ./my-plugin
 <section class="slide" data-title="훅 = 라이프사이클 개입">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>훅</div>
-  <h2 class="s-title sm">정해진 순간에 내 코드를 끼운다</h2>
+  <h2 class="s-title sm">훅 = 라이프사이클 개입</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>PreToolUse</b> — 도구 실행 <b>직전</b> (차단·검사)</div></div><div class="v"><span class="b">→</span><div><b>PostToolUse</b> — 실행 <b>직후</b> (로깅·후처리)</div></div><div class="v"><span class="b">→</span><div><b>UserPromptSubmit / Stop / SessionStart</b> 등</div></div><div class="v"><span class="b">★</span><div>LLM 판단이 아니라 <b>결정적으로</b> 강제된다</div></div></div><div class="keymsg"><span class="k">왜</span><div>‘알아서 하겠지’가 아니라 <b>규칙으로 못 박는</b> 장치.</div></div></div>
 </section>
@@ -556,7 +556,7 @@ claude --plugin-dir ./my-plugin
 <section class="slide" data-title="훅 입출력">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>훅</div>
-  <h2 class="s-title sm">stdin으로 받고, 종료코드로 막는다</h2>
+  <h2 class="s-title sm">훅의 입출력</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>stdin</b>으로 이벤트 JSON(도구명·인자 등)</div></div><div class="v"><span class="b">→</span><div><b>exit 2</b> = 차단 (이유는 stderr)</div></div><div class="v"><span class="b">→</span><div>exit 0 = 통과 / JSON으로 상세 결정도 가능</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">guard.sh</span></div><pre><code>INPUT=$(cat)                       <span class="cm"># 이벤트 JSON</span>
 CMD=$(echo "$INPUT" | jq -r .tool_input.command)
@@ -568,7 +568,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
 <section class="slide" data-title="훅 실전">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정책</div>
-  <h2 class="s-title sm">훅으로 할 수 있는 것</h2>
+  <h2 class="s-title sm">훅 실전 사례</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>위험 명령 차단</b> — rm -rf, 프로덕션 접근 등</div></div><div class="v"><span class="b">→</span><div><b>자동 포맷·린트</b> — 편집 후 정리</div></div><div class="v"><span class="b">→</span><div><b>감사 로그</b> — 무엇을 실행했는지 기록</div></div><div class="v"><span class="b">→</span><div><b>비밀 유출 차단</b> — 키·토큰 검사</div></div></div><div class="keymsg"><span class="k">감각</span><div>하네스의 <b>안전벨트</b>를 내가 직접 채운다.</div></div></div>
 </section>
@@ -585,7 +585,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
 <section class="slide" data-title="MCP를 하네스에">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>연결</div>
-  <h2 class="s-title sm">우리가 만든 도구를 하네스에 붙인다</h2>
+  <h2 class="s-title sm">MCP를 하네스에 연결</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>3~5강 MCP 서버가 <b>그대로 확장점</b></div></div><div class="v"><span class="b">→</span><div>연결하면 Claude Code가 그 도구를 <b>스스로 호출</b></div></div><div class="v"><span class="b">→</span><div>프로젝트 공유는 <b>.mcp.json</b></div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code><span class="cm"># 등록</span>
 claude mcp add --transport stdio helper \
@@ -610,7 +610,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="하네스 지형">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>지형</div>
-  <h2 class="s-title sm">하네스는 하나가 아니다</h2>
+  <h2 class="s-title sm">하네스 지형</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>에이전트 = 모델 + 하네스</b> — 모델 아닌 전부(도구·상태·가드레일·오케스트레이션)</div></div><div class="v"><span class="b">→</span><div><b>Claude Code · Codex · OpenCode</b> … 모두 하네스</div></div><div class="v"><span class="b">→</span><div>그 위에 <b>의견 있는 프레임워크</b>(플러그인)들이 얹힌다</div></div><div class="v"><span class="b">i</span><div>‘best-of-Agent-Harnesses’ 같은 큐레이션 리스트도 있다</div></div></div><div class="keymsg"><span class="k">관점</span><div>하네스도 <b>고르고 조합</b>하는 대상 — 오늘 대표들을 본다.</div></div></div>
 </section>
@@ -626,7 +626,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="Superpowers">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>TDD</div>
-  <h2 class="s-title sm">테스트로 규율을 강제한다</h2>
+  <h2 class="s-title sm">Superpowers</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>실패 테스트 먼저</b> — RED→GREEN→REFACTOR 우회 불가</div></div><div class="v"><span class="b">→</span><div>7단계 — 브레인스토밍→스펙→계획→실패테스트→구현→리뷰→완료</div></div><div class="v"><span class="b">→</span><div><b>task마다 새 서브에이전트</b> + 2단계 리뷰</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add obra/superpowers
 /plugin install superpowers</code></pre></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>메타</h4><p>이 강의 설계에도 superpowers의 <b>brainstorming 스킬</b>을 썼다 — 지금 쓰는 도구.</p></div></div></div>
@@ -635,7 +635,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="GSTACK">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>역할</div>
-  <h2 class="s-title sm">회사처럼 — 역할을 나눠 통치</h2>
+  <h2 class="s-title sm">GSTACK</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>23 역할</b>(CEO·PM·엔지니어·QA·보안…) = 슬래시 커맨드 <b>페르소나</b></div></div><div class="v"><span class="b">→</span><div><b>순차 파이프라인</b> — Think→Plan→Build→Review→Test→Ship→Reflect</div></div><div class="v"><span class="b">i</span><div>서브에이전트가 아니라 <b>단일 세션 역할 전환</b> = 워크플로형</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/office-hours   <span class="cm"># 설계 상담</span>
 /review         <span class="cm"># 리뷰</span>
@@ -645,7 +645,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="GSD">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>컨텍스트</div>
-  <h2 class="s-title sm">맥락 손실(context rot)을 막는다</h2>
+  <h2 class="s-title sm">GSD</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>단계별 별도 오케스트레이터</b> — 각 컨텍스트 절반 이하로</div></div><div class="v"><span class="b">→</span><div>완료 후 <b>상태를 디스크에</b> 저장, 다음 단계에 인계</div></div><div class="v"><span class="b">→</span><div>긴 작업·인프라에서 <b>신선한 문맥</b> 유지</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 컨텍스트 엔지니어링을 <b>프레임워크로</b> 구현한 예.</div></div></div>
 </section>
@@ -653,7 +653,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="어느 걸 쓰나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">‘실패 모드’에 맞춰 고른다</h2>
+  <h2 class="s-title sm">어느 프레임워크를 고르나</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>증상</th><th>추천</th></tr></thead><tbody><tr><td>어제보다 품질 저하</td><td><b>Superpowers</b> (테스트 강제)</td></tr><tr><td>첫 시간 후 저하</td><td><b>GSD</b> (신선한 문맥)</td></tr><tr><td>요청 안 한 기능 추가</td><td><b>GSTACK</b> (제품 리뷰 먼저)</td></tr></tbody></table><div class="keymsg"><span class="k">원칙</span><div>도구가 아니라 <b>내 실패 유형</b>을 먼저 안다.</div></div></div>
 </section>
@@ -661,7 +661,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="토큰 절감 스킬">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>토큰</div>
-  <h2 class="s-title sm">덜 쓰게 만드는 스킬 — 비판적으로</h2>
+  <h2 class="s-title sm">토큰 절감 스킬</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane"><div class="pane good"><h4>ponytail</h4><p>YAGNI — <b>꼭 필요한 코드만</b>. 검증·보안·접근성은 안 자른다.</p><div class="mini">적게 짜기</div></div><div class="pane "><h4>caveman</h4><p>‘원시인 말투’로 <b>출력 압축</b>. 코드·명령·에러는 안 건드림.</p><div class="mini">적게 말하기</div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>주의</h4><p>caveman 광고는 65퍼센트 절감이지만 <b>실측 ~8.5퍼센트</b>(출력 토큰만) — 광고 수치를 그대로 믿지 말 것.</p></div></div></div>
 </section>
@@ -683,7 +683,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="미니 하네스 설계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>설계</div>
-  <h2 class="s-title sm">‘미니 Claude Code’를 짠다</h2>
+  <h2 class="s-title sm">미니 하네스 설계</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>도구 레지스트리</b> — 등록하고 이름으로 실행</div></div><div class="v"><span class="b">2</span><div><b>에이전트 루프</b> — 7강 루프를 얹는다</div></div><div class="v"><span class="b">3</span><div><b>컨텍스트 트리밍</b> — 길어지면 줄인다(CH2)</div></div><div class="v"><span class="b">4</span><div><b>확장점</b> — 스킬 로더를 흉내 낸다</div></div></div><div class="keymsg"><span class="k">스코프</span><div>풀 하네스가 아니라 <b>핵심 뼈대</b> — 왜 그렇게 생겼는지 몸으로 안다.</div></div></div>
 </section>
@@ -691,7 +691,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="도구 레지스트리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">도구를 등록하고 이름으로 부른다</h2>
+  <h2 class="s-title sm">도구 레지스트리</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">harness.py</span></div><pre><code><span class="kw">class</span> MiniHarness:
     <span class="kw">def</span> tool(self, desc, params):     <span class="cm"># 등록 데코레이터</span>
@@ -705,7 +705,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="컨텍스트 트리밍">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">길어지면 system + 최근만 남긴다</h2>
+  <h2 class="s-title sm">컨텍스트 트리밍</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>system은 유지</b>, 최근 N개만</div></div><div class="v"><span class="b">→</span><div>가운데는 버리거나 <b>요약</b>(CH2)</div></div><div class="v"><span class="b">i</span><div>이 결정이 곧 컨텍스트 엔지니어링</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trim.py</span></div><pre><code><span class="kw">def</span> trim(msgs, keep=10):
     <span class="kw">if</span> len(msgs) &lt;= keep+1: <span class="kw">return</span> msgs
@@ -715,7 +715,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="확장점 · 스킬 로더">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">필요할 때만 노하우를 주입</h2>
+  <h2 class="s-title sm">확장점 — 스킬 로더</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">skill.py</span></div><pre><code><span class="kw">def</span> skill(self, trigger, text):     <span class="cm"># 스킬 등록</span>
     self.skills[trigger] = text
@@ -737,7 +737,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="미니 하네스 vs Claude Code">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>비교</div>
-  <h2 class="s-title sm">무엇이 더 있나</h2>
+  <h2 class="s-title sm">미니 하네스 vs Claude Code</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane"><div class="pane good"><h4>우리 미니 하네스</h4><p>4조각을 <b>직접</b> 짰다 — 전부 이해된다.</p><div class="mini">투명</div></div><div class="pane "><h4>Claude Code</h4><p>권한·자동 컴팩션·서브에이전트·플러그인·훅·마켓…</p><div class="mini">프로덕션</div></div></div><div class="keymsg"><span class="k">의미</span><div>차이를 <b>이름 댈 수</b> 있게 됐다 — 그게 오늘의 수확.</div></div></div>
 </section>
@@ -745,7 +745,7 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="하네스 원칙">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>원칙</div>
-  <h2 class="s-title sm">권한과 안전을 손에 쥔다</h2>
+  <h2 class="s-title sm">하네스 설계 원칙</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>최소 권한</b> — 필요한 것만 자동, 위험은 확인</div></div><div class="v"><span class="b">→</span><div><b>훅으로 방어</b> — 위험 명령·비밀 유출을 막는다</div></div><div class="v"><span class="b">→</span><div><b>컨텍스트를 아낀다</b> — 신호 대비 토큰</div></div><div class="v"><span class="b">→</span><div><b>감사</b> — 무엇을 실행했는지 남긴다</div></div></div><div class="keymsg"><span class="k">전제</span><div>하네스는 <b>편리함과 통제</b>를 동시에 준다 — 통제를 놓지 마라.</div></div></div>
 </section>
@@ -753,9 +753,9 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="오늘 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">오늘 한 것</h2>
+  <h2 class="s-title sm">오늘 정리</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>해부했다</h4><p>권한·컨텍스트·서브에이전트·확장점 + 컨텍스트 엔지니어링.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>확장했다</h4><p>스킬·플러그인·훅·MCP로 하네스를 늘렸다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>직접 만들었다</h4><p>미니 하네스로 런타임 뼈대를 익혔다.</p></div></div></div><div class="keymsg"><span class="k">다음</span><div>하네스 하나를 다뤘으니, 이제 <b>여러 에이전트를 오케스트레이션</b>한다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>해부했다</h4><p>권한·컨텍스트·서브에이전트·확장점 + 컨텍스트 엔지니어링.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>확장했다</h4><p>스킬·플러그인·훅·MCP로 하네스를 늘렸다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>직접 만들었다</h4><p>미니 하네스로 런타임 뼈대를 익혔다.</p></div></div></div><div class="keymsg"><span class="k">다음</span><div>하네스 하나에서 <b>여러 에이전트의 오케스트레이션</b>으로.</div></div></div>
 </section>
 
 <section class="slide" data-title="용어 정리">
