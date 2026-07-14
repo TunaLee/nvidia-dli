@@ -685,19 +685,20 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 <section class="slide" data-title="의견 있는 프레임워크">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프레임워크</div>
-  <h2 class="s-title sm">Claude Code 위의 3대 프레임워크</h2>
+  <h2 class="s-title sm">Claude Code 위의 프레임워크들</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>프레임워크</th><th>핵심 강제</th></tr></thead><tbody><tr><td><b>Superpowers</b></td><td>TDD — 실패 테스트 없이 코드 없음</td></tr><tr><td><b>GSD</b></td><td>컨텍스트 관리 — 단계별 신선한 문맥</td></tr><tr><td><b>GSTACK</b></td><td>역할 거버넌스 — 23 전문가 팀</td></tr></tbody></table><div class="keymsg"><span class="k">저자 말</span><div>‘하나가 만능은 아니다 — 자기 <b>실패 모드</b>를 아는 게 진짜 결정’.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>프레임워크</th><th>핵심 강제</th><th>성격</th></tr></thead><tbody><tr><td><b>GSTACK</b></td><td>역할 거버넌스 — 전문가 페르소나 파이프라인</td><td>단일 세션 · <b>오늘</b></td></tr><tr><td><b>Superpowers</b></td><td>TDD — 실패 테스트 없이 코드 없음</td><td>서브에이전트 · <b>9강</b></td></tr><tr><td><b>GSD</b></td><td>단계별 신선한 문맥</td><td>서브에이전트 · <b>9강</b></td></tr></tbody></table><div class="keymsg"><span class="k">갈래</span><div>오늘은 <b>혼자 쓰는 하네스</b>. 팀을 스폰하는 Superpowers·GSD는 <b>멀티에이전트라 9강</b>에서 돌린다.</div></div></div>
 </section>
 
-<section class="slide" data-title="Superpowers">
+
+<section class="slide" data-title="멀티에이전트 프레임워크 예고">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>TDD</div>
-  <h2 class="s-title sm">Superpowers</h2>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>9강 예고</div>
+  <h2 class="s-title sm">팀을 스폰하는 것들은 9강에서</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>실패 테스트 먼저</b> — RED→GREEN→REFACTOR 우회 불가</div></div><div class="v"><span class="b">→</span><div>7단계 — 브레인스토밍→스펙→계획→실패테스트→구현→리뷰→완료</div></div><div class="v"><span class="b">→</span><div><b>task마다 새 서브에이전트</b> + 2단계 리뷰</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add obra/superpowers
-/plugin install superpowers</code></pre></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>메타</h4><p>이 강의 설계에도 superpowers의 <b>brainstorming 스킬</b>을 썼다 — 지금 쓰는 도구.</p></div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>Superpowers</b> — 실패 테스트 먼저. task마다 <b>새 서브에이전트</b> + 2단계 리뷰.</div></div><div class="v"><span class="b">→</span><div><b>GSD</b> — 스테이지마다 얇은 오케스트레이터가 <b>전문 서브에이전트를 새로 스폰</b>. 각자 깨끗한 컨텍스트.</div></div><div class="v"><span class="b">★</span><div>둘 다 <b>서브에이전트를 여러 개 띄운다</b> — 그래서 멀티에이전트(9강) 재료다.</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>메타</h4><p>이 강의 설계에도 <b>superpowers의 brainstorming 스킬</b>을 썼다 — 지금 쓰는 도구가 곧 교재다.</p></div></div></div>
 </section>
+
 
 <section class="slide" data-title="GSTACK">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -709,21 +710,23 @@ claude mcp list        <span class="cm"># 확인</span></code></pre></div></div>
 /qa             <span class="cm"># 테스트</span></code></pre></div></div><div class="keymsg"><span class="k">성격</span><div>‘멀티에이전트’보다 <b>역할 거버넌스 워크플로</b>가 정확 — 제품 관점 검토에 강함.</div></div></div>
 </section>
 
-<section class="slide" data-title="GSD">
+<section class="slide" data-title="GSD의 발상 (개념)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>컨텍스트</div>
-  <h2 class="s-title sm">GSD</h2>
+  <h2 class="s-title sm">문맥을 새로 갈아끼운다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>단계별 별도 오케스트레이터</b> — 각 컨텍스트 절반 이하로</div></div><div class="v"><span class="b">→</span><div>완료 후 <b>상태를 디스크에</b> 저장, 다음 단계에 인계</div></div><div class="v"><span class="b">→</span><div>긴 작업·인프라에서 <b>신선한 문맥</b> 유지</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 컨텍스트 엔지니어링을 <b>프레임워크로</b> 구현한 예.</div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>한 세션을 길게 끌면 <b>뒤로 갈수록 품질이 떨어진다</b>.</div></div><div class="v"><span class="b">→</span><div>GSD는 <b>단계마다 서브에이전트를 새로</b> 띄우고, 끝난 상태는 <b>디스크에 저장해 인계</b>한다.</div></div><div class="v"><span class="b">★</span><div>그래서 <b>50번째 작업도 1번째와 같은 품질</b>을 노린다.</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 <b>컨텍스트 엔지니어링</b>을 프레임워크로 구현한 예다. 설치·실행은 <b>9강</b>.</div></div></div>
 </section>
+
 
 <section class="slide" data-title="어느 걸 쓰나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">어느 프레임워크를 고르나</h2>
+  <h2 class="s-title sm">증상으로 고른다</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>증상</th><th>추천</th></tr></thead><tbody><tr><td>어제보다 품질 저하</td><td><b>Superpowers</b> (테스트 강제)</td></tr><tr><td>첫 시간 후 저하</td><td><b>GSD</b> (신선한 문맥)</td></tr><tr><td>요청 안 한 기능 추가</td><td><b>GSTACK</b> (제품 리뷰 먼저)</td></tr></tbody></table><div class="keymsg"><span class="k">원칙</span><div>도구가 아니라 <b>내 실패 유형</b>을 먼저 안다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>증상</th><th>처방</th></tr></thead><tbody><tr><td>요청 안 한 기능을 자꾸 덧붙인다</td><td><b>GSTACK</b> — 제품 리뷰를 먼저 태운다</td></tr><tr><td>출력이 장황하다 · 토큰이 샌다</td><td><b>ponytail · caveman</b> — 적게 짜고 적게 말한다</td></tr><tr><td>어제보다 품질이 떨어진다</td><td><b>Superpowers</b> (9강) — 테스트를 강제한다</td></tr><tr><td>한 시간 지나면 헛소리를 한다</td><td><b>GSD</b> (9강) — 문맥을 새로 갈아끼운다</td></tr></tbody></table><div class="keymsg"><span class="k">원칙</span><div>도구가 아니라 <b>내 실패 유형</b>을 먼저 안다.</div></div></div>
 </section>
+
 
 <section class="slide" data-title="토큰 절감 스킬">
   <div class="coord"><b></b> / <span class="tot"></span></div>
