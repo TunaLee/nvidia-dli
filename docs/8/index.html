@@ -725,6 +725,14 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>위험 명령 차단</b> — rm -rf, 프로덕션 접근 등</div></div><div class="v"><span class="b">→</span><div><b>자동 포맷·린트</b> — 편집 후 정리</div></div><div class="v"><span class="b">→</span><div><b>감사 로그</b> — 무엇을 실행했는지 기록</div></div><div class="v"><span class="b">→</span><div><b>비밀 유출 차단</b> — 키·토큰 검사</div></div></div><div class="keymsg"><span class="k">감각</span><div>하네스의 <b>안전벨트</b>를 내가 직접 채운다.</div></div></div>
 </section>
 
+<section class="slide" data-title="[실습] Lab 2 — 내 하네스 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 2 — 스킬 · 훅 · 플러그인을 손으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>스킬 1개</h4><p>프로젝트 규약을 <code>skills/our-rules/SKILL.md</code>로. <b>프론트매터 + 마크다운</b>이 전부다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>훅 1개</h4><p><code>hooks/guard.mjs</code> — <code>.env</code>·<code>id_rsa</code> 접근을 <b>exit 2</b>로 차단. <b>부탁이 아니라 강제</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>플러그인으로 묶기</h4><p><code>harness/.claude-plugin/plugin.json</code> → <code>claude plugin validate ./harness</code></p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>켜고 확인</h4><p><code>claude --plugin-dir ./harness</code> → <code>.env</code>를 건드리게 시켜본다. <b>막히면 성공.</b></p></div></div></div></div></div>
+</section>
+
 <section class="slide section" data-title="[섹션] 보안 게이트">
   <div class="ghost">06</div><div class="seyebrow">CHAPTER 06</div><h2>보안 게이트</h2>
   <div class="agenda"><span>삼성</span><span>EchoLeak</span><span>Replit</span></div>
@@ -770,10 +778,10 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">Claude Code 내장 · 설치 불필요</h4><div class="vlist"><div class="v"><span class="b">→</span><div><code>/code-review</code> — diff의 정확성·버그</div></div><div class="v"><span class="b">→</span><div><code>/security-review</code> — 취약점 전담 스캔</div></div><div class="v"><span class="b">→</span><div><code>/plan</code> — 읽기전용 계획 (수정 0)</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">gstack · 플러그인 설치</h4><div class="vlist"><div class="v"><span class="b">→</span><div><code>/cso</code> — CSO 페르소나 보안 점검</div></div><div class="v"><span class="b">→</span><div><code>/qa</code> — 브라우저 행동 테스트</div></div><div class="v"><span class="b">→</span><div><code>/ship</code> — 검증 후 출시</div></div></div></div></div></div><div class="keymsg"><span class="k">리스크 티어</span><div>낮음 <code>/code-review</code>·<code>/qa</code> | 중간 +<code>/security-review</code> | 높음 +<code>/cso</code> · <b>사람 최종 승인</b></div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 2 — 심어둔 결함 찾기">
+<section class="slide" data-title="[실습] Lab 3 — 심어둔 결함 찾기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 2 — 회수율로 측정한다</h2>
+  <h2 class="s-title sm">Lab 3 — 회수율로 측정한다</h2>
   <div class="rule"></div>
   <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>/review 단독 → 회수율 기록</h4><p>Lab 1에서 클론한 그 buggy-request 레포 그대로. <b>찾은 결함 수를 적는다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>/cso 추가 → 재측정</h4><p>보안 특화 점검을 더해 다시 측정 — <b>회수율 변화</b>를 본다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>테스트 · /qa 추가 → 재측정</h4><p>런타임에서만 드러나는 결함(off-by-one · 상태 전이)을 잡는다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>원리 — 변수를 하나씩만</h4><p>어떤 조합이 회수율을 올리는지는 <b>직접 측정해 비교</b>한다. 감이 아니라 숫자로.</p></div></div></div></div></div>
 </section>
@@ -897,10 +905,10 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
     <span class="kw">return</span> base + "\n".join(extra)</code></pre></div><div class="keymsg"><span class="k">연결</span><div>Claude Code 스킬의 <b>description 트리거</b>를 소박하게 흉내 낸 것.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 3 — 미니 하네스 직접">
+<section class="slide" data-title="[실습] Lab 4 — 미니 하네스 직접">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 3 — 미니 하네스 직접</h2>
+  <h2 class="s-title sm">Lab 4 — 미니 하네스 직접</h2>
   <div class="rule"></div>
   <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div>
   <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">5</div><div class="tx"><h4>런타임 조립</h4><p>도구 레지스트리 + 7강 루프 + 컨텍스트 트리밍 + 스킬 로더 = 미니 하네스.</p></div></div></div></div>
@@ -1098,12 +1106,12 @@ return new Response(
   <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">Day08 — 뼈대 (혼자)</h4><div class="vlist"><div class="v"><span class="b">→</span><div>Next.js 프로젝트 생성 (스크래치)</div></div><div class="v"><span class="b">→</span><div>Neon DB 연결 · Prisma 스키마 · 마이그레이션</div></div><div class="v"><span class="b">→</span><div><code>.env</code>에 NVIDIA 키 · <b>서버에서만</b> 사용</div></div><div class="v"><span class="b">→</span><div>채팅 UI + API Route + <b>스트리밍</b></div></div><div class="v"><span class="b">✓</span><div>브라우저에서 <b>Qwen과 대화</b>된다</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">Day09 — 완성 (팀으로)</h4><div class="vlist"><div class="v"><span class="b">→</span><div>내가 지은 <b>오케스트레이터</b>로 병렬 구현</div></div><div class="v"><span class="b">→</span><div>chunk 1 — MCP 클라이언트 (도구 목록)</div></div><div class="v"><span class="b">→</span><div>chunk 2 — 에이전트 루프 (도구 호출)</div></div><div class="v"><span class="b">→</span><div>chunk 3 — <b>도구 승인 UI</b> (권한 게이트)</div></div><div class="v"><span class="b">→</span><div>chunk 4 — 대화·도구호출 영속화</div></div><div class="v"><span class="b">✓</span><div><b>진짜 MCP 호스트</b>가 된다</div></div></div></div></div></div><div class="keymsg"><span class="k">왜 이 순서</span><div>혼자 못 짓는 걸 팀으로 짓는 게 아니다. <b>혼자 지은 것 위에</b> 팀을 붙인다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 4 — 앱 뼈대 스크래치 빌드">
+<section class="slide" data-title="[실습] Lab 5 — 내 하네스로 앱 뼈대">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 4 — Qwen과 대화되는 웹앱까지</h2>
+  <h2 class="s-title sm">Lab 5 — 내가 만든 하네스를 켜고 짓는다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>프로젝트 생성 · Neon 연결</h4><p><code>create-next-app</code> → Neon에서 DB 만들고 <code>DATABASE_URL</code>·<code>NVIDIA_API_KEY</code>를 <code>.env</code>에.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>Prisma 스키마 → 마이그레이션</h4><p>Conversation · Message 모델을 쓰고 <code>prisma migrate dev</code>로 실제 테이블 생성.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>API Route + 스트리밍</h4><p>NVIDIA Qwen을 <b>서버에서만</b> 부르고, 토큰을 흘려보낸다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>채팅 UI</h4><p>입력 → 스트리밍 응답이 타이핑되듯 나온다. <b>여기까지가 오늘</b>.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>내 하네스를 켠다</h4><p><code>claude --plugin-dir ./harness</code> — 방금 만든 규약 스킬과 훅이 붙은 채로 시작한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스크래치부터</h4><p><code>create-next-app</code> → <b>Neon</b> 연결 → <code>prisma migrate</code>로 실제 테이블.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>NVIDIA Qwen 스트리밍</h4><p>API Route에서 <b>서버 전용</b> 키로 Qwen을 부르고 토큰을 흘려보낸다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>훅이 지키는 걸 본다</h4><p>에이전트가 <code>.env</code>를 커밋하려 하면 <b>내 훅이 막는다</b>. 오늘 만든 게 오늘 일한다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>확인</h4><p>브라우저에서 <b>Qwen과 대화</b>된다. 프론트에 키가 없다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="하네스 원칙">

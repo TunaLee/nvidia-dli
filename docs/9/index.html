@@ -648,12 +648,40 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="agenda"><span>orchestrate</span><span>권한</span><span>hook</span></div>
 </section>
 
-<section class="slide" data-title="BUILD YOUR OWN">
+<section class="slide" data-title="두 갈래 — 받아 쓰나, 찍어내나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>왜 직접</div>
-  <h2 class="s-title sm">받아 쓰면 빠르지만 블랙박스다</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>갈래</div>
+  <h2 class="s-title sm">기성 하네스와 메타 하네스</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>먼저 설치해 본다</b> — Superpowers · gstack이 어떻게 움직이는지 관찰.</div></div><div class="v"><span class="b">→</span><div>그다음 <b>같은 구조를 직접 짓는다</b>.</div></div><div class="v"><span class="b">★</span><div>@planner → @coder ×N (worktree) → @reviewer → @tester</div></div></div></div><div><div class="cards c3"><div class="card"><span class="n">LAB A</span><h3>오케스트레이터</h3><p>orchestrate — 순서 지휘 + worktree</p></div><div class="card"><span class="n">LAB B</span><h3>서브에이전트</h3><p>역할별 최소권한 + .env hook</p></div><div class="card"><span class="n">LAB C</span><h3>패키징</h3><p>harness 플러그인으로 묶기</p></div></div></div></div><div class="keymsg"><span class="k">목표</span><div>블랙박스를 열어 <b>내 손으로 재현</b>한다 — 그래야 고칠 수 있다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">① 받아 쓴다 — 스트릭트 하네스</h4><div class="vlist"><div class="v"><span class="b">→</span><div><b>Superpowers</b> — 방법론이 코드로 강제된다.</div></div><div class="v"><span class="b">→</span><div>brainstorm → plan → <b>실패 테스트</b> → 구현 → 리뷰. <b>건너뛰기 차단</b>.</div></div><div class="v"><span class="b">✕</span><div>내 도메인에 안 맞아도 <b>못 바꾼다</b>. 블랙박스.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">② 찍어낸다 — 메타 하네스</h4><div class="vlist"><div class="v"><span class="b">→</span><div>도메인 한 줄 → <b>에이전트 팀 + 스킬</b>을 생성한다.</div></div><div class="v"><span class="b">→</span><div>생성된 <code>.claude/agents/</code>·<code>skills/</code>를 <b>열어서 고친다</b>.</div></div><div class="v"><span class="b">★</span><div><b>어제 손으로 만들어봤으니 읽힌다</b> — 스킬은 마크다운, 훅은 exit 2.</div></div></div></div></div></div><div class="keymsg"><span class="k">오늘</span><div><b>둘 다 해본다.</b> 강제가 주는 것과 뺏는 것을 겪고, 그다음 내 팀을 찍어낸다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 1 — Superpowers 스트릭트 체험">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 1 — 강제되는 하네스를 겪는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>/plugin marketplace add obra/superpowers-marketplace</code> → <code>/plugin install superpowers</code></p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>같은 과제를 시킨다</h4><p>어제 앱에 기능 하나를 추가시킨다 — 예: 대화 삭제 기능.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>강제를 관찰한다</h4><p>brainstorm → plan → <b>실패 테스트가 먼저</b> → 구현 → 리뷰. <b>task마다 새 서브에이전트</b>가 뜨는지 본다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>우회를 시도한다</h4><p>"테스트 건너뛰고 바로 구현해" — <b>막히는지</b> 확인한다. 그게 Hard Gate다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>판정</h4><p>강제가 <b>준 것</b>(품질·일관성)과 <b>뺏은 것</b>(속도·자유)을 적는다.</p></div></div></div></div></div>
+</section>
+
+<section class="slide" data-title="메타 하네스 — 팀을 찍어낸다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타</div>
+  <h2 class="s-title sm">도메인 한 줄에서 팀이 나온다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add revfactory/harness
+/plugin install harness
+
+/harness "MCP 호스트 웹앱 개발팀 —
+  Next.js · Prisma · MCP · 에이전트 루프"</code></pre></div></div><div><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>생성된다</h4><p><code>.claude/agents/</code> — 역할별 서브에이전트<br/><code>.claude/skills/</code> — 그들이 쓸 절차</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>연다</h4><p><b>어제 손으로 만들어봤으니 읽힌다.</b> 프론트매터 · tools · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>고친다</h4><p>권한을 좁히고(<code>tools</code>), 어제 만든 <code>guard.mjs</code> 훅을 붙인다.</p></div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>Superpowers는 <b>남의 방법론</b>, 메타 하네스는 <b>내 도메인의 팀</b>. 찍어내고 <b>내가 손본다</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 2 — 메타 하네스로 내 팀 구축">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 2 — 멀티에이전트 하네스를 짓는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>찍어낸다</h4><p><code>/harness "MCP 호스트 웹앱 개발팀"</code> — 에이전트 팀 + 스킬이 생성된다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>해부한다</h4><p><code>.claude/agents/*.md</code>를 연다. name · description(트리거) · <b>tools(= 권한 경계)</b> · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>손본다</h4><p>@reviewer는 <code>Read,Grep,Glob</code>만 — <b>못 고치게</b>. @coder는 자기 worktree만. <b>tools가 곧 경계</b>다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>어제 훅을 붙인다</h4><p>Day08의 <code>guard.mjs</code>를 이 하네스에 넣는다 — <code>.env</code>는 <b>누가 시켜도</b> 못 건드린다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>검증</h4><p><code>claude plugin validate</code> → 팀이 뜨는지 확인.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="LAB A · Coder ×N — 워크트리">
@@ -766,14 +794,6 @@ claude --plugin-dir ./harness
 # 또는 marketplace.json → /plugin install</code></pre></div></div></div><div class="keymsg"><span class="k">완성</span><div>오늘 손으로 지은 것 — orchestrate 리드 · 역할 서브에이전트 4 · worktree 병렬 · guard.mjs 게이트 · <b>harness 플러그인</b>.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 1 — 내 오케스트레이터 짓기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 1 — 직접 쓴 지휘자로 한 번에</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>입힌다</h4><p>orchestrate 스킬 + @planner/@coder/@reviewer/@tester + guard.mjs 훅을 만들어 <code>harness/</code>로 묶는다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>돌려본다</h4><p><code>/harness:orchestrate 작업 상태 전이 추가</code> — 계획 → 승인 → 병렬 구현 → 리뷰 → 검증이 순서대로 도는지 본다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>게이트 확인</h4><p><code>.env</code>에 접근시키면 hook이 <b>exit 2로 차단</b>하는지 확인한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>원리</h4><p>받아 쓴 게 아니라 <b>내가 지은 팀</b>이다 — 그래서 고칠 수 있다.</p></div></div></div></div></div>
-</section>
-
 <section class="slide" data-title="호스트를 chunk로 쪼갠다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>분해</div>
@@ -796,12 +816,12 @@ claude --plugin-dir ./harness
 사람 승인 대기 → @coder 4명 병렬 (각자 worktree)</code></pre></div><div class="keymsg"><span class="k">왜 병렬이 되나</span><div>네 조각이 <b>파일이 안 겹친다</b> — 판단 3문의 ①(병렬 분해 가능)을 통과한다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 2 — MCP 호스트 완성 (핵심)">
+<section class="slide" data-title="[실습] Lab 3 — MCP 호스트 완성 (핵심)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 2 — 팀으로 호스트를 완성한다</h2>
+  <h2 class="s-title sm">Lab 3 — 내가 찍어낸 팀으로 완성한다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>어제 뼈대 위에서 시작</h4><p>Day08에서 만든 Next.js + Neon + 스트리밍 채팅 앱을 연다. <b>보일러플레이트가 아니라 내가 지은 것</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스펙 → 분해 → 승인</h4><p><code>/harness:spec</code>으로 prd를 쓰고, <code>/harness:orchestrate</code>가 <b>chunk 4개</b>로 쪼갠다. 계획을 <b>사람이 승인</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>@coder 4명 병렬</h4><p>각자 worktree에서 TDD로 구현 — MCP 클라이언트 · 에이전트 루프 · <b>승인 UI</b> · 영속화.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>게이트 통과 후 병합</h4><p>@reviewer(읽기전용) · @tester(검증) → 통과한 worktree만 병합. <code>.env</code> 건드리면 <b>훅이 차단</b>.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>행동으로 검증</h4><p>브라우저에서 <b>도구를 부르는 대화</b>를 시키고, <b>승인 버튼</b>을 눌러본다. 거부도 해본다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>어제 뼈대 위에서</h4><p>Day08에서 <b>내 하네스로</b> 지은 Next.js+Neon+Qwen 앱을 연다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스펙 → 분해 → 승인</h4><p><code>/harness:spec</code> → prd → 오케스트레이터가 <b>chunk 4개</b>로 분해 → <b>사람이 승인</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>@coder 병렬</h4><p>MCP 클라이언트 · <b>에이전트 루프</b>(7강) · <b>도구 승인 UI</b>(8강) · 영속화 — 각자 worktree.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>게이트</h4><p>@reviewer(읽기전용) → @tester(검증) → 통과한 것만 병합. <code>.env</code> 건드리면 <b>내 훅이 차단</b>.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>행동으로 검증</h4><p>도구를 부르는 대화 → <b>승인 버튼</b>을 누르고, <b>거부</b>도 해본다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="완성 — 내가 만든 호스트">
