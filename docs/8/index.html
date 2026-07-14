@@ -645,6 +645,14 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
   <div class="agenda"><span>4가지</span><span>스킬·훅</span><span>강제</span></div>
 </section>
 
+<section class="slide" data-title="배경 — CLAUDE.md만으로 부족한 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">룰 파일 하나로는 안 되는 네 가지</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>상황</th><th>CLAUDE.md의 한계</th><th>그래서 필요한 것</th></tr></thead><tbody><tr><td>긴 절차를 담고 싶다</td><td>항상 로드된다 — 안 쓸 때도 <b>토큰을 먹는다</b></td><td><b>스킬</b> — 필요할 때만 본문을 연다</td></tr><tr><td>반드시 막아야 한다</td><td><b>따르기를 기대하는 문서</b>일 뿐 — 무시될 수 있다</td><td><b>훅</b> — 도구 호출을 코드로 차단</td></tr><tr><td>팀에 배포하고 싶다</td><td>파일을 복사해 돌린다 — 버전이 갈린다</td><td><b>플러그인</b> — 묶어서 설치</td></tr><tr><td>외부 시스템을 붙이고 싶다</td><td>문서로는 DB를 못 읽는다</td><td><b>MCP</b> — 도구 서버 (3~5강)</td></tr></tbody></table><div class="keymsg"><span class="k">정리</span><div>CLAUDE.md는 <b>항상 켜진 규칙</b>이라 만능이 아니다. 나머지 네 가지가 각각 그 빈틈을 메운다.</div></div></div>
+</section>
+
 <section class="slide" data-title="확장 4가지 지도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지도</div>
@@ -810,6 +818,14 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="agenda"><span>가격</span><span>5가지 레버</span><span>예외</span></div>
 </section>
 
+<section class="slide" data-title="배경 — 왜 토큰이 문제가 됐나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">챗봇과 에이전트는 비용 구조가 다르다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">챗봇</h4><div class="vlist"><div class="v"><span class="b">→</span><div>질문 하나 = <b>호출 한 번</b></div></div><div class="v"><span class="b">→</span><div>컨텍스트는 대화 몇 줄</div></div><div class="v"><span class="b">→</span><div>비용이 눈에 안 띈다</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">에이전트</h4><div class="vlist"><div class="v"><span class="b">→</span><div>작업 하나에 <b>도구를 부를 때마다 LLM 왕복</b></div></div><div class="v"><span class="b">→</span><div>왕복마다 <b>컨텍스트 전체가 다시 간다</b> — 파일·도구결과·대화 전부</div></div><div class="v"><span class="b">→</span><div>멀티에이전트면 <b>약 15배</b></div></div><div class="v"><span class="b">✕</span><div>프로토타입에선 안 보이다가 <b>실무에서 터진다</b></div></div></div></div></div></div><div class="keymsg"><span class="k">게다가</span><div>비용만의 문제가 아니다. <b>길수록 느리고, 길수록 품질이 떨어진다</b> — 앞 챕터에서 본 그대로.</div></div></div>
+</section>
+
 <section class="slide" data-title="모델 가격과 특성">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>가격</div>
@@ -877,6 +893,17 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
 <section class="slide section" data-title="[섹션] 미니 하네스 직접">
   <div class="ghost">08</div><div class="seyebrow">CHAPTER 08</div><h2>미니 하네스 직접</h2>
   <div class="agenda"><span>레지스트리</span><span>트리밍</span><span>스킬 로더</span></div>
+</section>
+
+<section class="slide" data-title="배경 — 왜 직접 만들어보나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">잘 돌지만 안이 안 보인다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>지금까지 Claude Code를 <b>썼다</b>. 잘 돌아간다.</div></div><div class="v"><span class="b">?</span><div>그런데 — <b>스킬은 언제 로드되나</b>? 컨텍스트는 어떻게 잘리나? 도구는 어떻게 등록되나?</div></div><div class="v"><span class="b">★</span><div>직접 짜보면 안다. 하네스는 결국 <b>네 조각</b>이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">하네스의 최소 구성</span></div><pre><code>1. 도구 레지스트리   무엇을 부를 수 있나
+2. 에이전트 루프     판단 → 도구 → 관찰 → 반복
+3. 컨텍스트 트리밍   길어지면 무엇을 버리나
+4. 확장점(스킬 로더) 필요할 때 무엇을 끼우나</code></pre></div></div></div><div class="keymsg"><span class="k">그리고</span><div>여기서 만들어봐야 <b>9강에서 메타 하네스가 생성한 코드를 읽을 수 있다</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="미니 하네스 설계">
