@@ -332,6 +332,24 @@
   <div class="agenda"><span>권한</span><span>컨텍스트</span><span>서브에이전트</span><span>훅</span></div>
 </section>
 
+<section class="slide" data-title="설치와 인증">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">두 에이전트를 켠다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code</span></div><pre><code># PowerShell — 네이티브(자동 업데이트)
+irm https://claude.ai/install.ps1 | iex
+
+claude --version
+claude doctor
+cd C:\myproject
+claude</code></pre></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Codex</span></div><pre><code>npm install -g @openai/codex
+
+cd C:\myproject
+codex</code></pre></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>계정</h4><p>Claude Code는 <b>무료 플랜으로 못 쓴다</b> (Pro·Max·Team·Console 필요). Codex는 ChatGPT 유료 또는 API 키. <b>강의에서 쓰던 NVIDIA Qwen 키와는 별개다.</b></p></div></div></div>
+</section>
+
+
 <section class="slide" data-title="구조 한눈에">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
