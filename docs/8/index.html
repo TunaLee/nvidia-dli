@@ -529,6 +529,46 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
   <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">2</div><div class="tx"><h4>내 스킬 하나</h4><p>description으로 트리거를 잡고 본문에 절차를 담아, 하네스가 스스로 불러오게 한다.</p></div></div></div></div>
 </section>
 
+<section class="slide" data-title="스킬을 찍어낸다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>메타</div>
+  <h2 class="s-title sm">스킬을 만드는 스킬</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>writing-skills</b> — 스킬 쓰는 법을 아는 스킬. 시키면 SKILL.md를 지어준다.</div></div><div class="v"><span class="b">→</span><div>만들고 끝이 아니라 <b>열어본다</b> — 프론트매터(name·description) + 본문 마크다운.</div></div><div class="v"><span class="b">★</span><div>스킬의 정체는 <b>사람이 읽는 파일</b>이다. 마법이 아니다.</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.claude/skills/our-rules/SKILL.md</span></div><pre><code>---
+name: our-rules
+description: 우리 프로젝트 규약. 코드를
+  쓰기 전에 읽는다.
+---
+
+- 도구는 @mcp.tool 로 등록한다
+- 에러는 친절한 메시지로 raise 한다
+- 테스트 없이 커밋하지 않는다</code></pre></div></div><div class="keymsg"><span class="k">해부</span><div>생성된 SKILL.md를 <b>직접 연다</b> — 이게 확장의 실체다.</div></div></div>
+</section>
+
+
+<section class="slide" data-title="하네스를 찍어낸다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>메타 팩토리</div>
+  <h2 class="s-title sm">하네스를 만드는 하네스</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>revfactory/harness</b> — 도메인 한 줄을 주면 <b>에이전트 팀 + 그들이 쓸 스킬</b>을 생성한다.</div></div><div class="v"><span class="b">→</span><div>결과물은 <code>.claude/agents/</code> · <code>.claude/skills/</code> 파일들.</div></div><div class="v"><span class="b">→</span><div>Codex 쪽 포트는 <b>meta-harness</b>.</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add revfactory/harness
+/plugin install harness
+
+# 도메인 한 줄 → 팀 + 스킬 생성
+/harness "사내 문서 RAG 서비스"</code></pre></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="ct"><h4>여기선 만들고, 돌리는 건 9강</h4><p>찍어낸 <b>팀을 실제로 굴리는 건 멀티에이전트</b>라 Day09에서 한다. 오늘은 <b>무엇이 만들어졌는지 파일을 연다</b>.</p></div></div></div>
+</section>
+
+
+<section class="slide" data-title="[실습] 메타 팩토리로 찍어내고 해부">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">찍어내고 · 열어보고 · 판정한다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div>
+  <div class="biglist" style="margin-top:12px"><div class="li"><div class="num">1</div><div class="tx"><h4>입힌다</h4><p><code>writing-skills</code>로 "우리 프로젝트 규약" 스킬을 생성한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>돌려본다</h4><p>같은 요청을 스킬 <b>있을 때 / 없을 때</b> 각각 시켜 출력을 비교한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>원리</h4><p>생성된 SKILL.md를 연다 — <b>확장 = 마크다운 + 프론트매터.</b> harness로 팀까지 찍어내 <code>.claude/</code>를 들여다본다.</p></div></div></div></div>
+</section>
+
+
 <section class="slide section" data-title="[섹션] 확장 · 플러그인">
   <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>확장 · 플러그인</h2>
   <div class="agenda"><span>묶음</span><span>배포</span></div>
