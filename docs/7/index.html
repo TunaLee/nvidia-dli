@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">DAY 07</span><span class="dot"></span>AGENDA</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><h3>CH0 · 에이전트란</h3><p>어원·정의. 에이전트 vs 워크플로.</p></div><div class="card"><h3>CH1 · 핵심 개념</h3><p>계획·기억·도구, ReAct.</p></div><div class="card"><h3>CH2 · 직접 만들기</h3><p>루프를 손으로 짠다 (실습 중심).</p></div><div class="card"><h3>CH3 · 도구 물리기</h3><p>MCP를 도구 백엔드로.</p></div><div class="card"><h3>CH4 · 실전 확장</h3><p>웹검색·멀티툴·프레임워크.</p></div><div class="card"><h3>CH5~6 · 원칙·프로덕션</h3><p>한계·안전, Claude Code.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>개념은 <b>핵심만</b>, 나머지는 <b>직접 코드로</b> 만들며 익힌다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><h3>CH0 · 에이전트란</h3><p>어원·정의. 에이전트 vs 워크플로.</p></div><div class="card"><h3>CH1 · 핵심 개념</h3><p>계획·기억·도구, ReAct.</p></div><div class="card"><h3>CH2 · 직접 만들기</h3><p>루프를 손으로 짠다 (실습 중심).</p></div><div class="card"><h3>CH3 · 도구 물리기</h3><p>MCP를 도구 백엔드로.</p></div><div class="card"><h3>CH4 · 실전 확장</h3><p>웹검색·멀티툴·프레임워크.</p></div><div class="card"><h3>CH5~6 · 원칙·코드 에이전트</h3><p>한계·안전·샌드박스.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>개념은 <b>핵심만</b>, 나머지는 <b>직접 코드로</b> 만들며 익힌다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 5→6→7">
@@ -867,7 +867,7 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
   <div class="body"><div class="twocol w2"><div><div class="vlist">
     <div class="v"><span class="b">→</span><div>루프는 <b>한 줄도</b> 안 바뀐다</div></div>
     <div class="v"><span class="b">→</span><div>업무 도구를 떼고 <b>코드 도구</b>를 문다</div></div>
-    <div class="v"><span class="b">★</span><div>이게 <b>Claude Code / Codex</b>의 뼈대다</div></div>
+    <div class="v"><span class="b">★</span><div>프로덕션 <b>코드 에이전트</b>도 이 뼈대다</div></div>
   </div>
   <div class="keymsg"><span class="k">한 줄</span><div>코드 에이전트는 <b>마법이 아니다</b> — 도구 25줄이면 된다.</div></div></div>
   <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">code_tools.py</span></div><pre><code><span class="kw">@code_mcp.tool</span>
@@ -923,7 +923,7 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
     <div class="v"><span class="b">→</span><div>경계가 없으면 <b>내 디스크 전체</b>가 사정권</div></div>
     <div class="v"><span class="b">★</span><div>우리는 <b>_safe() 한 줄</b>로 가뒀다</div></div>
   </div>
-  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">🔒</div><div class="ct"><h4>다음 질문</h4><p>Claude Code와 Codex는 이 경계를 <b>어디에</b> 두는가? → 다음 챕터.</p></div></div></div>
+  <div class="callout amber" style="margin-top:14px"><div class="ci" style="font-size:18px">🔒</div><div class="ct"><h4>원칙</h4><p>이 경계를 <b>어디에</b> 둘지 정하는 게 프로덕션 코드 에이전트의 핵심이다.</p></div></div></div>
   <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">guard.py</span></div><pre><code><span class="kw">def</span> <span class="fn2">_safe</span>(path):
     p = (SANDBOX / path).<span class="fn2">resolve</span>()
     <span class="kw">if</span> <span class="kw">not</span> p.<span class="fn2">is_relative_to</span>(SANDBOX):
@@ -963,81 +963,17 @@ g.add_edge(<span class="st">"tools"</span>, <span class="st">"model"</span>)    
   </div></div>
 </section>
 
-<section class="slide section" data-title="[섹션] 프로덕션 하네스">
-  <div class="ghost">07</div><div class="seyebrow">CHAPTER 07</div><h2>프로덕션 하네스</h2>
-  <div class="agenda"><span>Claude Code / Codex</span><span>비교</span></div>
-</section>
-
-<section class="slide" data-title="프로덕션 에이전트">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실전</div>
-  <h2 class="s-title sm">프로덕션 에이전트</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>Claude Code / Codex</b> = 프로덕션급 에이전트</div></div><div class="v"><span class="b">→</span><div>우리가 만든 것과 <b>뼈대는 같다</b> — 판단·도구·루프</div></div><div class="v"><span class="b">→</span><div>다른 건 <b>규모</b> — 계획·컨텍스트·권한·서브에이전트</div></div></div><div class="keymsg"><span class="k">메타</span><div>여기서부터 <b>Claude Code/Codex로 작업</b>한다 — 에이전트로 에이전트를 만든다.</div></div></div>
-</section>
-
-<section class="slide" data-title="에이전트 vs 하네스">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>구분</div>
-  <h2 class="s-title sm">에이전트 vs 하네스</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane good"><h4>에이전트 (오늘)</h4><p>판단하는 <b>주체</b>. 작지만 전부 이해된다.</p><div class="mini">투명 · 내가 통제</div></div><div class="pane"><h4>하네스 (8강)</h4><p>에이전트를 <b>돌리는 런타임</b> — 컨텍스트·권한·확장.</p><div class="mini">Claude Code가 곧 하네스</div></div></div><div class="keymsg"><span class="k">다음</span><div>이 차이를 채우는 게 <b>하네스</b> — 8강에서 해부·확장한다.</div></div></div>
-</section>
-
-<section class="slide" data-title="Claude Code vs Codex — 신뢰 경계">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>제품 비교</div>
-  <h2 class="s-title sm">Claude Code vs ChatGPT Codex</h2>
-  <div class="rule"></div>
-  <div class="body">
-  <table style="width:100%;border-collapse:collapse;font-size:14px;">
-    <thead><tr style="color:var(--mut);text-align:left;">
-      <th style="padding:9px 10px;"></th>
-      <th style="padding:9px 10px;">Claude Code</th>
-      <th style="padding:9px 10px;">ChatGPT Codex</th>
-    </tr></thead>
-    <tbody>
-      <tr style="border-top:1px solid var(--line);">
-        <td style="padding:10px;color:var(--mut);">기본 실행 위치</td>
-        <td style="padding:10px;">내 머신 (로컬 우선)</td>
-        <td style="padding:10px;">클라우드 샌드박스 (repo 클론)</td></tr>
-      <tr style="border-top:1px solid var(--line);background:var(--wash-2);">
-        <td style="padding:10px;color:var(--violet);font-weight:800;">신뢰 경계</td>
-        <td style="padding:10px;"><b>사람이 게이트</b><br><span style="color:var(--mut);font-size:13px;">권한 모드로 승인</span></td>
-        <td style="padding:10px;"><b>환경이 게이트</b><br><span style="color:var(--mut);font-size:13px;">OS 커널 샌드박스</span></td></tr>
-      <tr style="border-top:1px solid var(--line);">
-        <td style="padding:10px;color:var(--mut);">상호작용</td>
-        <td style="padding:10px;">대화형 — 끼어들어 조종</td>
-        <td style="padding:10px;">과제 위임 → diff · PR 수령</td></tr>
-      <tr style="border-top:1px solid var(--line);">
-        <td style="padding:10px;color:var(--mut);">프로젝트 지시</td>
-        <td style="padding:10px;"><code>CLAUDE.md</code></td>
-        <td style="padding:10px;"><code>AGENTS.md</code></td></tr>
-    </tbody>
-  </table>
-  <div class="keymsg" style="margin-top:16px"><span class="k">축</span><div>같은 에이전트 루프다 — 갈리는 건 <b>신뢰 경계를 어디에 두는가</b>. 우리는 <b>_safe() 한 줄</b>로 그었다.</div></div></div>
-</section>
-
-<section class="slide" data-title="[실습] Lab 9 — Claude Code / Codex 병행">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 9 — Claude Code / Codex 병행</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Claude Code / Codex</div>
-  <div class="biglist" style="margin-top:16px"><div class="li"><div class="num">6</div><div class="tx"><h4>같은 과제, 다른 에이전트</h4><p>내 루프에 시킨 과제를 Claude Code에도 시키고 계획·도구선택·컨텍스트·권한을 관찰한다.</p></div></div></div></div>
-</section>
-
 <section class="slide" data-title="오늘 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 정리</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>에이전트를 이해했다</h4><p>LLM+도구+루프. 워크플로와 구분, 언제 쓰는지.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>직접 만들었다</h4><p>루프·종료·안전·메모리·자기수정 + 내 MCP.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>넓히고 비교했다</h4><p>웹검색·멀티툴 + 프로덕션(Claude Code) 비교.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>작지만 <b>전부 이해되는 에이전트</b>를 만들었다 — 다음은 이걸 돌리는 <b>하네스</b>.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>에이전트를 이해했다</h4><p>LLM+도구+루프. 워크플로와 구분, 언제 쓰는지.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>직접 만들었다</h4><p>루프·종료·안전·메모리·자기수정 + 내 MCP.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>넓혔다</h4><p>웹검색·멀티툴·RAG 도구화·코드 에이전트·모델 스위칭.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>작지만 <b>전부 이해되는 에이전트</b>를 만들었다 — 다음은 이걸 돌리는 <b>하네스</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="용어 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>용어</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>용어</div>
   <h2 class="s-title sm">오늘의 핵심 용어</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody><tr><td><b>Agent</b></td><td>LLM+도구+루프 (어원 agere=행하다)</td></tr><tr><td><b>ReAct</b></td><td>Reason+Act — 생각·행동·관찰 반복</td></tr><tr><td><b>function calling</b></td><td>모델이 구조화된 도구 호출을 반환</td></tr><tr><td><b>self-correction</b></td><td>에러를 되먹여 스스로 고침</td></tr><tr><td><b>plan-execute</b></td><td>계획 먼저, 그다음 실행</td></tr><tr><td><b>LangGraph</b></td><td>루프를 상태 그래프로 짜는 프레임워크</td></tr></tbody></table></div>
