@@ -544,7 +544,12 @@ codex</code></pre></div></div><div class="callout amber"><div class="ci"><svg vi
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 1 — buggy-request 레포로 CLAUDE.md</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>클론 → /init</h4><p><code>git clone .../buggy-request</code> → <code>claude</code> → <code>/init</code>로 초안 자동 생성.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>/memory로 로드 확인 + 5섹션 정리</h4><p>스택 · 디렉토리 · 명령어 · 룰 · <b>하지 말 것</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>같은 태스크를 전/후로 실행</h4><p>"테스트 1개 추가해줘" — CLAUDE.md <b>없이 / 있이</b> 비교한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>빗나간 부분 → 룰 한 줄로 환원</h4><p>"any 썼네" → 하지 말 것에 추가. <b>완벽한 룰 파일이 목표가 아니다.</b></p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div class="code sm" style="margin-top:10px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>git clone https://github.com/TunaLee/buggy-request.git
+cd buggy-request
+claude
+
+&gt; /init      # 코드베이스 분석 → CLAUDE.md 초안 생성
+&gt; /memory    # 로드된 룰 파일 확인</code></pre></div><div style="margin-top:10px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>클론 → /init</h4><p>초안이 자동 생성된다. 이미 있으면 덮어쓰지 않고 개선 제안.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>/memory로 로드 확인 + 5섹션 정리</h4><p>스택 · 디렉토리 · 명령어 · 룰 · <b>하지 말 것</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>같은 태스크를 전/후로 실행</h4><p>"테스트 1개 추가해줘" — CLAUDE.md <b>없이 / 있이</b> 비교한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>빗나간 부분 → 룰 한 줄로 환원</h4><p>"any 썼네" → 하지 말 것에 추가. <b>완벽한 룰 파일이 목표가 아니다.</b></p></div></div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 컨텍스트 엔지니어링">
@@ -775,7 +780,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 3 — 회수율로 측정한다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>/review 단독 → 회수율 기록</h4><p>Lab 1에서 클론한 그 buggy-request 레포 그대로. <b>찾은 결함 수를 적는다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>/cso 추가 → 재측정</h4><p>보안 특화 점검을 더해 다시 측정 — <b>회수율 변화</b>를 본다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>테스트 · /qa 추가 → 재측정</h4><p>런타임에서만 드러나는 결함(off-by-one · 상태 전이)을 잡는다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>원리 — 변수를 하나씩만</h4><p>어떤 조합이 회수율을 올리는지는 <b>직접 측정해 비교</b>한다. 감이 아니라 숫자로.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>/review 단독 → 회수율 기록</h4><p>Lab 1에서 클론한 <code>buggy-request</code> 레포 그대로 (다시 안 받아도 된다). <b>찾은 결함 수를 적는다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>/cso 추가 → 재측정</h4><p>보안 특화 점검을 더해 다시 측정 — <b>회수율 변화</b>를 본다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>테스트 · /qa 추가 → 재측정</h4><p>런타임에서만 드러나는 결함(off-by-one · 상태 전이)을 잡는다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>원리 — 변수를 하나씩만</h4><p>어떤 조합이 회수율을 올리는지는 <b>직접 측정해 비교</b>한다. 감이 아니라 숫자로.</p></div></div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 토큰 경제학">
