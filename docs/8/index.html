@@ -298,7 +298,7 @@
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>7강 — <b>에이전트 = LLM + 도구 + 루프</b>를 손으로 짰다.</div></div><div class="v"><span class="b">→</span><div>그 루프를 <b>프로덕션 규모로 돌리는 런타임</b>이 하네스다.</div></div><div class="v"><span class="b">★</span><div>오늘 — 그 하네스에 <b>룰·검증·연결</b>을 채운다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>$ claude
 &gt; /init          # 룰 파일 초안
 &gt; /security-review # 보안 게이트
-&gt; /mcp           # 사내 시스템 연결</code></pre></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>모델은 그대로다. <b>하네스가 결과를 가른다.</b></div></div></div>
+&gt; /mcp           # 사내 시스템 연결</code></pre></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>같은 모델이라도 <b>하네스에 따라 결과가 달라진다</b>.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 하네스란">
@@ -655,7 +655,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>배포 절차</b> — 우리 팀은 이렇게 배포한다</div></div><div class="v"><span class="b">→</span><div><b>리뷰 기준</b> — 이런 관점으로 코드를 본다</div></div><div class="v"><span class="b">→</span><div><b>문서 형식</b> — 보고서는 이 틀로</div></div><div class="v"><span class="b">i</span><div>= 컨텍스트 엔지니어링 — 필요할 때만 이 노하우가 로드된다</div></div></div><div class="keymsg"><span class="k">감각</span><div>스킬 = 하네스에게 주는 <b>‘사내 매뉴얼’</b> — 상황이 오면 펼쳐본다.</div></div></div>
 </section>
 
-<section class="slide" data-title="스킬을 찍어낸다">
+<section class="slide" data-title="스킬 생성 스킬">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타</div>
   <h2 class="s-title sm">스킬을 만드는 스킬</h2>
@@ -672,7 +672,7 @@ description: 우리 프로젝트 규약. 코드를
 </section>
 
 
-<section class="slide" data-title="하네스를 찍어낸다">
+<section class="slide" data-title="메타 팩토리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타 팩토리</div>
   <h2 class="s-title sm">하네스를 만드는 하네스</h2>
@@ -681,7 +681,7 @@ description: 우리 프로젝트 규약. 코드를
 /plugin install harness
 
 # 도메인 한 줄 → 팀 + 스킬 생성
-/harness "사내 문서 RAG 서비스"</code></pre></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="ct"><h4>여기선 만들고, 돌리는 건 9강</h4><p>찍어낸 <b>팀을 실제로 굴리는 건 멀티에이전트</b>라 Day09에서 한다. 오늘은 <b>무엇이 만들어졌는지 파일을 연다</b>.</p></div></div></div>
+/harness "사내 문서 RAG 서비스"</code></pre></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="ct"><h4>여기선 만들고, 돌리는 건 9강</h4><p>생성한 팀을 실제로 실행하는 건 멀티에이전트 영역이라 Day09에서 다룬다. 오늘은 무엇이 만들어졌는지 파일을 확인하는 데까지.</p></div></div></div>
 </section>
 
 
@@ -694,7 +694,7 @@ description: 우리 프로젝트 규약. 코드를
   .claude-plugin/
     plugin.json     <span class="cm"># 매니페스트</span>
   skills/greet/SKILL.md
-  hooks/hooks.json</code></pre></div></div><div class="keymsg"><span class="k">의미</span><div>일회성 설정이 아니라 <b>재사용 가능한 자산</b>으로 만든다.</div></div></div>
+  hooks/hooks.json</code></pre></div></div><div class="keymsg"><span class="k">정리</span><div>일회성 설정이 아니라 <b>재사용 가능한 자산</b>으로 만든다.</div></div></div>
 </section>
 
 <section class="slide" data-title="훅 = 라이프사이클 개입">
@@ -879,7 +879,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
             self.registry[fn.__name__] = fn
             self.specs.append(spec(fn, desc, params))
             <span class="kw">return</span> fn
-        <span class="kw">return</span> deco</code></pre></div><div class="keymsg"><span class="k">의미</span><div>Claude Code가 도구를 관리하는 방식의 <b>축소판</b>.</div></div></div>
+        <span class="kw">return</span> deco</code></pre></div><div class="keymsg"><span class="k">정리</span><div>Claude Code가 도구를 관리하는 방식의 <b>축소판</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="컨텍스트 트리밍">
@@ -919,7 +919,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>비교</div>
   <h2 class="s-title sm">미니 하네스 vs Claude Code</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane good"><h4>우리 미니 하네스</h4><p>4조각을 <b>직접</b> 짰다 — 전부 이해된다.</p><div class="mini">투명</div></div><div class="pane "><h4>Claude Code</h4><p>권한·자동 컴팩션·서브에이전트·플러그인·훅·마켓…</p><div class="mini">프로덕션</div></div></div><div class="keymsg"><span class="k">의미</span><div>차이를 <b>이름 댈 수</b> 있게 됐다 — 그게 오늘의 수확.</div></div></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>우리 미니 하네스</h4><p>4조각을 <b>직접</b> 짰다 — 전부 이해된다.</p><div class="mini">투명</div></div><div class="pane "><h4>Claude Code</h4><p>권한·자동 컴팩션·서브에이전트·플러그인·훅·마켓…</p><div class="mini">프로덕션</div></div></div><div class="keymsg"><span class="k">정리</span><div>차이를 <b>이름 댈 수</b> 있게 됐다 — 그게 오늘의 수확.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 풀스택 기초">
@@ -932,7 +932,7 @@ CMD=$(echo "$INPUT" | jq -r .tool_input.command)
   <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>동기</div>
   <h2 class="s-title sm">에이전트를 남이 쓰게 하려면</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>지금까지 에이전트는 <b>내 터미널·노트북</b>에서만 돌았다.</div></div><div class="v"><span class="b">→</span><div>남이 쓰려면? <b>브라우저로 열 수 있어야</b> 한다.</div></div><div class="v"><span class="b">★</span><div>그리고 <b>Claude Code가 바로 그런 앱</b>이다 — MCP 호스트.</div></div></div></div><div><div class="cards c3"><div class="card"><span class="n">Day05</span><h3>MCP 서버</h3><p>붙일 대상을 만들었다</p></div><div class="card"><span class="n">Day07</span><h3>에이전트 루프</h3><p>호스트의 심장을 짰다</p></div><div class="card"><span class="n">Day08</span><h3>권한·컨텍스트</h3><p>호스트가 하는 일을 배웠다</p></div></div></div></div><div class="keymsg"><span class="k">오늘·내일</span><div>그 부품들을 모아 <b>MCP 호스트 웹앱</b>을 만든다 — 지금 쓰고 있는 그 도구를, 직접.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>지금까지 에이전트는 <b>내 터미널·노트북</b>에서만 돌았다.</div></div><div class="v"><span class="b">→</span><div>남이 쓰려면? <b>브라우저로 열 수 있어야</b> 한다.</div></div><div class="v"><span class="b">★</span><div>그리고 <b>Claude Code가 바로 그런 앱</b>이다 — MCP 호스트.</div></div></div></div><div><div class="cards c3"><div class="card"><span class="n">Day05</span><h3>MCP 서버</h3><p>붙일 대상을 만들었다</p></div><div class="card"><span class="n">Day07</span><h3>에이전트 루프</h3><p>호스트의 심장을 짰다</p></div><div class="card"><span class="n">Day08</span><h3>권한·컨텍스트</h3><p>호스트가 하는 일을 배웠다</p></div></div></div></div><div class="keymsg"><span class="k">오늘·내일</span><div>이 부품들을 모아 <b>MCP 호스트 웹앱</b>을 만든다. 이틀 내내 쓰고 있는 Claude Code가 바로 이 MCP 호스트다.</div></div></div>
 </section>
 
 <section class="slide" data-title="브라우저 vs 서버">
@@ -1076,7 +1076,7 @@ return new Response(
   <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>정의</div>
   <h2 class="s-title sm">지금 쓰고 있는 그 도구를 만든다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Claude Code가 곧 MCP 호스트다</b> — 이틀째 그걸 쓰고 있다.</div></div><div class="v"><span class="b">→</span><div>호스트가 하는 일: <b>LLM을 부르고 · MCP 도구를 붙이고 · 루프를 돌고 · 권한을 묻는다</b>.</div></div><div class="v"><span class="b">★</span><div>그 네 가지를 <b>웹앱으로</b> 만든다.</div></div></div></div><div><div class="cards c2"><div class="card"><span class="n">루프</span><h3>7강</h3><p>판단 → 도구 → 관찰</p></div><div class="card"><span class="n">도구</span><h3>5강</h3><p>MCP 서버를 붙인다</p></div><div class="card"><span class="n">권한</span><h3>8강</h3><p>실행 전에 승인을 묻는다</p></div><div class="card"><span class="n">팀</span><h3>9강</h3><p>오케스트레이터로 확장</p></div></div></div></div><div class="keymsg"><span class="k">의미</span><div>블랙박스를 열어본 게 아니라 — <b>블랙박스를 만든다</b>.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Claude Code가 곧 MCP 호스트다</b> — 이틀째 그걸 쓰고 있다.</div></div><div class="v"><span class="b">→</span><div>호스트가 하는 일: <b>LLM을 부르고 · MCP 도구를 붙이고 · 루프를 돌고 · 권한을 묻는다</b>.</div></div><div class="v"><span class="b">★</span><div>그 네 가지를 <b>웹앱으로</b> 만든다.</div></div></div></div><div><div class="cards c2"><div class="card"><span class="n">루프</span><h3>7강</h3><p>판단 → 도구 → 관찰</p></div><div class="card"><span class="n">도구</span><h3>5강</h3><p>MCP 서버를 붙인다</p></div><div class="card"><span class="n">권한</span><h3>8강</h3><p>실행 전에 승인을 묻는다</p></div><div class="card"><span class="n">팀</span><h3>9강</h3><p>오케스트레이터로 확장</p></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>블랙박스를 열어본 게 아니라 — <b>블랙박스를 만든다</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="아키텍처">
@@ -1109,9 +1109,9 @@ return new Response(
 <section class="slide" data-title="[실습] Lab 5 — 내 하네스로 앱 뼈대">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 5 — 내가 만든 하네스를 켜고 짓는다</h2>
+  <h2 class="s-title sm">Lab 5 — 직접 만든 하네스를 적용해 개발한다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>내 하네스를 켠다</h4><p><code>claude --plugin-dir ./harness</code> — 방금 만든 규약 스킬과 훅이 붙은 채로 시작한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스크래치부터</h4><p><code>create-next-app</code> → <b>Neon</b> 연결 → <code>prisma migrate</code>로 실제 테이블.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>NVIDIA Qwen 스트리밍</h4><p>API Route에서 <b>서버 전용</b> 키로 Qwen을 부르고 토큰을 흘려보낸다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>훅이 지키는 걸 본다</h4><p>에이전트가 <code>.env</code>를 커밋하려 하면 <b>내 훅이 막는다</b>. 오늘 만든 게 오늘 일한다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>확인</h4><p>브라우저에서 <b>Qwen과 대화</b>된다. 프론트에 키가 없다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day08_하네스_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>내 하네스를 켠다</h4><p><code>claude --plugin-dir ./harness</code> — 방금 만든 규약 스킬과 훅이 적용된 상태로 시작한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스크래치부터</h4><p><code>create-next-app</code> → <b>Neon</b> 연결 → <code>prisma migrate</code>로 실제 테이블.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>NVIDIA Qwen 스트리밍</h4><p>API Route에서 <b>서버 전용</b> 키로 Qwen을 부르고 토큰을 흘려보낸다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>훅이 실제로 막는지 확인</h4><p>에이전트가 <code>.env</code>를 커밋하려 하면 직접 만든 훅이 차단한다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>확인</h4><p>브라우저에서 <b>Qwen과 대화</b>된다. 프론트에 키가 없다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="하네스 원칙">

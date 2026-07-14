@@ -648,12 +648,12 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="agenda"><span>orchestrate</span><span>권한</span><span>hook</span></div>
 </section>
 
-<section class="slide" data-title="두 갈래 — 받아 쓰나, 찍어내나">
+<section class="slide" data-title="두 갈래 — 기성 하네스와 메타 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>갈래</div>
   <h2 class="s-title sm">기성 하네스와 메타 하네스</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">① 받아 쓴다 — 스트릭트 하네스</h4><div class="vlist"><div class="v"><span class="b">→</span><div><b>Superpowers</b> — 방법론이 코드로 강제된다.</div></div><div class="v"><span class="b">→</span><div>brainstorm → plan → <b>실패 테스트</b> → 구현 → 리뷰. <b>건너뛰기 차단</b>.</div></div><div class="v"><span class="b">✕</span><div>내 도메인에 안 맞아도 <b>못 바꾼다</b>. 블랙박스.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">② 찍어낸다 — 메타 하네스</h4><div class="vlist"><div class="v"><span class="b">→</span><div>도메인 한 줄 → <b>에이전트 팀 + 스킬</b>을 생성한다.</div></div><div class="v"><span class="b">→</span><div>생성된 <code>.claude/agents/</code>·<code>skills/</code>를 <b>열어서 고친다</b>.</div></div><div class="v"><span class="b">★</span><div><b>어제 손으로 만들어봤으니 읽힌다</b> — 스킬은 마크다운, 훅은 exit 2.</div></div></div></div></div></div><div class="keymsg"><span class="k">오늘</span><div><b>둘 다 해본다.</b> 강제가 주는 것과 뺏는 것을 겪고, 그다음 내 팀을 찍어낸다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">① 기성 하네스 — Superpowers</h4><div class="vlist"><div class="v"><span class="b">→</span><div><b>Superpowers</b> — 방법론이 코드로 강제된다.</div></div><div class="v"><span class="b">→</span><div>brainstorm → plan → <b>실패 테스트</b> → 구현 → 리뷰. <b>건너뛰기 차단</b>.</div></div><div class="v"><span class="b">✕</span><div>내 도메인에 안 맞아도 <b>못 바꾼다</b>. 블랙박스.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">② 메타 하네스 — 팀 생성</h4><div class="vlist"><div class="v"><span class="b">→</span><div>도메인 설명 한 줄을 주면 <b>에이전트 팀과 스킬</b>을 생성한다.</div></div><div class="v"><span class="b">→</span><div>생성된 <code>.claude/agents/</code>·<code>skills/</code>를 <b>열어서 고친다</b>.</div></div><div class="v"><span class="b">★</span><div>어제 직접 만들어봤기 때문에 생성된 파일을 읽고 고칠 수 있다.</div></div></div></div></div></div><div class="keymsg"><span class="k">오늘</span><div>두 방식을 모두 실습한다. 먼저 강제되는 하네스를 겪어보고, 그다음 우리 도메인에 맞는 팀을 생성한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="[실습] Lab 1 — Superpowers 스트릭트 체험">
@@ -664,16 +664,16 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>/plugin marketplace add obra/superpowers-marketplace</code> → <code>/plugin install superpowers</code></p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>같은 과제를 시킨다</h4><p>어제 앱에 기능 하나를 추가시킨다 — 예: 대화 삭제 기능.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>강제를 관찰한다</h4><p>brainstorm → plan → <b>실패 테스트가 먼저</b> → 구현 → 리뷰. <b>task마다 새 서브에이전트</b>가 뜨는지 본다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>우회를 시도한다</h4><p>"테스트 건너뛰고 바로 구현해" — <b>막히는지</b> 확인한다. 그게 Hard Gate다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>판정</h4><p>강제가 <b>준 것</b>(품질·일관성)과 <b>뺏은 것</b>(속도·자유)을 적는다.</p></div></div></div></div></div>
 </section>
 
-<section class="slide" data-title="메타 하네스 — 팀을 찍어낸다">
+<section class="slide" data-title="메타 하네스 — 팀 생성">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타</div>
-  <h2 class="s-title sm">도메인 한 줄에서 팀이 나온다</h2>
+  <h2 class="s-title sm">도메인 설명에서 에이전트 팀이 생성된다</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add revfactory/harness
 /plugin install harness
 
 /harness "MCP 호스트 웹앱 개발팀 —
-  Next.js · Prisma · MCP · 에이전트 루프"</code></pre></div></div><div><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>생성된다</h4><p><code>.claude/agents/</code> — 역할별 서브에이전트<br/><code>.claude/skills/</code> — 그들이 쓸 절차</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>연다</h4><p><b>어제 손으로 만들어봤으니 읽힌다.</b> 프론트매터 · tools · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>고친다</h4><p>권한을 좁히고(<code>tools</code>), 어제 만든 <code>guard.mjs</code> 훅을 붙인다.</p></div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>Superpowers는 <b>남의 방법론</b>, 메타 하네스는 <b>내 도메인의 팀</b>. 찍어내고 <b>내가 손본다</b>.</div></div></div>
+  Next.js · Prisma · MCP · 에이전트 루프"</code></pre></div></div><div><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>생성된다</h4><p><code>.claude/agents/</code> — 역할별 서브에이전트<br/><code>.claude/skills/</code> — 그들이 쓸 절차</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>연다</h4><p>어제 직접 만들어봤기 때문에 읽을 수 있다. 프론트매터 · tools · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>고친다</h4><p>권한을 좁히고(<code>tools</code>), 어제 만든 <code>guard.mjs</code> 훅을 붙인다.</p></div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>Superpowers는 정해진 방법론을 강제하고, 메타 하네스는 도메인에 맞는 팀을 생성해 <b>직접 수정할 수 있게</b> 한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="[실습] Lab 2 — 메타 하네스로 내 팀 구축">
@@ -681,7 +681,7 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 2 — 멀티에이전트 하네스를 짓는다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>찍어낸다</h4><p><code>/harness "MCP 호스트 웹앱 개발팀"</code> — 에이전트 팀 + 스킬이 생성된다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>해부한다</h4><p><code>.claude/agents/*.md</code>를 연다. name · description(트리거) · <b>tools(= 권한 경계)</b> · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>손본다</h4><p>@reviewer는 <code>Read,Grep,Glob</code>만 — <b>못 고치게</b>. @coder는 자기 worktree만. <b>tools가 곧 경계</b>다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>어제 훅을 붙인다</h4><p>Day08의 <code>guard.mjs</code>를 이 하네스에 넣는다 — <code>.env</code>는 <b>누가 시켜도</b> 못 건드린다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>검증</h4><p><code>claude plugin validate</code> → 팀이 뜨는지 확인.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>팀 생성</h4><p><code>/harness "MCP 호스트 웹앱 개발팀"</code> — 에이전트 팀 + 스킬이 생성된다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>해부한다</h4><p><code>.claude/agents/*.md</code>를 연다. name · description(트리거) · <b>tools(= 권한 경계)</b> · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>손본다</h4><p>@reviewer는 <code>Read,Grep,Glob</code>만 — <b>못 고치게</b>. @coder는 자기 worktree만. <b>tools가 곧 경계</b>다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>어제 훅을 붙인다</h4><p>Day08의 <code>guard.mjs</code>를 이 하네스에 넣는다 — <code>.env</code>는 <b>누가 시켜도</b> 못 건드린다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>검증</h4><p><code>claude plugin validate</code> → 팀이 뜨는지 확인.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="LAB A · Coder ×N — 워크트리">
@@ -791,7 +791,7 @@ process.exit(0);</code></pre></div></div><div><div class="vlist"><div class="v">
 claude --plugin-dir ./harness
 
 # 팀원은 --plugin-dir 한 줄
-# 또는 marketplace.json → /plugin install</code></pre></div></div></div><div class="keymsg"><span class="k">완성</span><div>오늘 손으로 지은 것 — orchestrate 리드 · 역할 서브에이전트 4 · worktree 병렬 · guard.mjs 게이트 · <b>harness 플러그인</b>.</div></div></div>
+# 또는 marketplace.json → /plugin install</code></pre></div></div></div><div class="keymsg"><span class="k">완성</span><div>오늘 직접 만든 것 — orchestrate 리드 · 역할 서브에이전트 4 · worktree 병렬 · guard.mjs 게이트 · <b>harness 플러그인</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="호스트를 chunk로 쪼갠다">
@@ -821,15 +821,15 @@ claude --plugin-dir ./harness
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 3 — 내가 찍어낸 팀으로 완성한다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>어제 뼈대 위에서</h4><p>Day08에서 <b>내 하네스로</b> 지은 Next.js+Neon+Qwen 앱을 연다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스펙 → 분해 → 승인</h4><p><code>/harness:spec</code> → prd → 오케스트레이터가 <b>chunk 4개</b>로 분해 → <b>사람이 승인</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>@coder 병렬</h4><p>MCP 클라이언트 · <b>에이전트 루프</b>(7강) · <b>도구 승인 UI</b>(8강) · 영속화 — 각자 worktree.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>게이트</h4><p>@reviewer(읽기전용) → @tester(검증) → 통과한 것만 병합. <code>.env</code> 건드리면 <b>내 훅이 차단</b>.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>행동으로 검증</h4><p>도구를 부르는 대화 → <b>승인 버튼</b>을 누르고, <b>거부</b>도 해본다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>어제 뼈대 위에서</h4><p>Day08에서 직접 만든 하네스를 적용해 개발한 Next.js + Neon + Qwen 앱을 연다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스펙 → 분해 → 승인</h4><p><code>/harness:spec</code> → prd → 오케스트레이터가 <b>chunk 4개</b>로 분해 → <b>사람이 승인</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>@coder 병렬</h4><p>MCP 클라이언트 · <b>에이전트 루프</b>(7강) · <b>도구 승인 UI</b>(8강) · 영속화 — 각자 worktree.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>게이트</h4><p>@reviewer(읽기전용) → @tester(검증) → 통과한 것만 병합. <code>.env</code> 건드리면 <b>내 훅이 차단</b>.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>행동으로 검증</h4><p>도구를 부르는 대화 → <b>승인 버튼</b>을 누르고, <b>거부</b>도 해본다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="완성 — 내가 만든 호스트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>결과</div>
-  <h2 class="s-title sm">Claude Code를 이틀 쓰고, 그걸 만들었다</h2>
+  <h2 class="s-title sm">이틀간 사용한 도구의 내부를 직접 구현했다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강 것이다</h4><p>내가 지은 오케스트레이터가 <b>네 조각을 병렬로</b> 지었다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div><b>블랙박스를 연 게 아니라, 블랙박스를 만들었다.</b></div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강 것이다</h4><p>내가 지은 오케스트레이터가 <b>네 조각을 병렬로</b> 지었다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>이틀간 사용한 Claude Code가 내부에서 무엇을 하는지, 직접 만들어보며 확인했다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 평가와 비용">
@@ -919,7 +919,7 @@ claude --plugin-dir ./harness
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>마무리</div>
   <h2 class="s-title sm">무엇을 가져가나</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">구조</span><h3>블랙박스를 열었다</h3><p>받아 쓰지 않고 직접 지었다 — 그래서 고칠 수 있다.</p></div><div class="card"><span class="n">통제</span><h3>코드를 다 안 읽어도</h3><p>위임 계약 + 검증 게이트로 통제한다.</p></div><div class="card"><span class="n">확산</span><h3>숫자로 설득한다</h3><p>회수율 · 토큰/태스크 · 리드타임.</p></div></div><div class="keymsg"><span class="k">한 줄</span><div>모델은 계속 좋아진다. <b>하네스는 내가 만든다.</b></div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">구조</span><h3>블랙박스를 열었다</h3><p>받아 쓰지 않고 직접 지었다 — 그래서 고칠 수 있다.</p></div><div class="card"><span class="n">통제</span><h3>코드를 다 안 읽어도</h3><p>위임 계약 + 검증 게이트로 통제한다.</p></div><div class="card"><span class="n">확산</span><h3>숫자로 설득한다</h3><p>회수율 · 토큰/태스크 · 리드타임.</p></div></div><div class="keymsg"><span class="k">한 줄</span><div>모델 성능은 계속 오른다. 그 위에 얹는 하네스는 각 팀이 직접 만들어야 한다.</div></div></div>
 </section>
 
 
