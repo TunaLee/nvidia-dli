@@ -402,6 +402,15 @@ codex</code></pre></div></div><div class="callout amber"><div class="ci"><svg vi
   <div class="body"><div class="twopane"><div class="pane good"><h4>훅</h4><p>도구 실행 <b>전/후</b>에 내 스크립트 개입 → 정책 강제(CH5).</p><div class="mini">라이프사이클</div></div><div class="pane good"><h4>MCP</h4><p>외부 <b>도구 서버</b>를 붙여 능력 확장(3~5강).</p><div class="mini">도구 연결</div></div></div><div class="keymsg"><span class="k">차이</span><div>훅=<b>규칙 강제</b>, MCP=<b>도구 추가</b> — 목적이 다르다.</div></div></div>
 </section>
 
+<section class="slide" data-title="Codex 대응표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>대응</div>
+  <h2 class="s-title sm">같은 일을 Codex로 하면</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>하는 일</th><th>Claude Code</th><th>Codex</th></tr></thead><tbody><tr><td>프로젝트 지침</td><td><code>CLAUDE.md</code></td><td><code>AGENTS.md</code></td></tr><tr><td>권한·경계</td><td>권한 모드 (Shift+Tab)</td><td>승인 모드 · 샌드박스 (<code>/permissions</code>)</td></tr><tr><td>외부 도구</td><td><code>claude mcp add</code></td><td><code>codex mcp add</code></td></tr><tr><td>헤드리스</td><td><code>claude -p</code></td><td><code>codex exec</code></td></tr><tr><td>스킬 · 플러그인 · 훅</td><td>있음</td><td><b>없음</b></td></tr></tbody></table><div class="keymsg"><span class="k">원리</span><div>루프는 같다. 갈리는 건 <b>확장을 어떤 원시요소로 주느냐</b> — 그래서 스킬·훅은 Claude Code에만 있다.</div></div></div>
+</section>
+
+
 <section class="slide" data-title="[실습] Lab 1 — 하네스 구조 투어">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
