@@ -554,7 +554,29 @@ claude
 
 <section class="slide section" data-title="[섹션] 컨텍스트 엔지니어링">
   <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>컨텍스트 엔지니어링</h2>
-  <div class="agenda"><span>유한 자원</span><span>compaction</span><span>격리</span><span>JIT</span></div>
+  <div class="agenda"><span>배경</span><span>compaction</span><span>격리</span><span>JIT</span></div>
+</section>
+
+<section class="slide" data-title="배경 — 프롬프트에서 컨텍스트로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">무엇이 달라졌나</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">단발 질의응답 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>내가 쓴 <b>프롬프트 한 덩어리</b>가 입력의 전부였다.</div></div><div class="v"><span class="b">→</span><div>잘 쓰는 법 = <b>프롬프트 엔지니어링</b>.</div></div><div class="v"><span class="b">→</span><div>대화가 끝나면 컨텍스트도 끝났다.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">에이전트 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>루프가 돌면서 <b>도구 결과·파일 내용·에러</b>가 계속 쌓인다.</div></div><div class="v"><span class="b">→</span><div>내가 안 써도 <b>컨텍스트가 저절로 자란다</b>.</div></div><div class="v"><span class="b">★</span><div>이제 문제는 <b>무엇을 남기고 무엇을 버리느냐</b>다.</div></div></div></div></div></div><div class="keymsg"><span class="k">그래서</span><div>프롬프트를 잘 쓰는 것만으로 부족해졌다. <b>컨텍스트를 관리하는 일</b>이 별도의 기술이 됐다.</div></div></div>
+</section>
+
+<section class="slide" data-title="윈도우는 커졌는데 왜 문제인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>역설</div>
+  <h2 class="s-title sm">다 넣으면 되는 게 아니다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>컨텍스트 윈도우는 계속 커졌다 — 수만 토큰에서 <b>수십만·백만</b>까지.</div></div><div class="v"><span class="b">✕</span><div>그런데 <b>넣을 수 있다고 다 넣으면 오히려 나빠진다</b>.</div></div><div class="v"><span class="b">→</span><div><b>lost in the middle</b> — 긴 입력의 <b>가운데</b>에 둔 정보를 모델이 잘 못 쓴다.</div></div><div class="v"><span class="b">→</span><div><b>context rot</b> — 길어질수록 관계 파악이 흐려지고 앞서 본 규칙을 잊는다.</div></div><div class="v"><span class="b">→</span><div>비용 — 매 턴마다 <b>전체를 다시 보낸다</b>. 길수록 매 턴이 비싸진다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">에이전트 한 세션의 실제 컨텍스트</span></div><pre><code>system  프롬프트 · 룰(CLAUDE.md)
++ tools  도구 스펙 전부
++ 파일    read_file 로 읽은 내용
++ 결과    도구 호출 결과 (에러 포함)
++ 대화    지금까지의 모든 턴
+
+= 루프가 돌수록 계속 커진다</code></pre></div></div></div><div class="keymsg"><span class="k">전환</span><div>질문이 바뀐다 — <b>무엇을 넣을까</b>가 아니라 <b>무엇을 빼도 되는가</b>.</div></div></div>
 </section>
 
 <section class="slide" data-title="컨텍스트 = 유한 자원">
@@ -620,7 +642,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 
 <section class="slide section" data-title="[섹션] 확장 — 스킬 · 플러그인 · 훅">
   <div class="ghost">05</div><div class="seyebrow">CHAPTER 05</div><h2>확장 — 스킬 · 플러그인 · 훅</h2>
-  <div class="agenda"><span>4가지</span><span>찍어내기</span><span>강제</span></div>
+  <div class="agenda"><span>4가지</span><span>스킬·훅</span><span>강제</span></div>
 </section>
 
 <section class="slide" data-title="확장 4가지 지도">
