@@ -525,6 +525,37 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
 "이 프로젝트용 하네스 구성해줘"</code></pre></div></div><div class="keymsg"><span class="k">의미</span><div>오케스트레이션 <b>설계 자체를 위임</b> — .claude/agents·skills가 생성된다.</div></div></div>
 </section>
 
+<section class="slide" data-title="Superpowers 설치·실행">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">Superpowers — 테스트를 강제하는 팀</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>실패 테스트 먼저</b> — RED→GREEN→REFACTOR 우회 불가.</div></div><div class="v"><span class="b">→</span><div>브레인스토밍→스펙→계획→테스트→구현→리뷰 <b>7단계</b>.</div></div><div class="v"><span class="b">→</span><div><b>task마다 새 서브에이전트</b> + 2단계 리뷰 = 멀티에이전트.</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code</span></div><pre><code>/plugin marketplace add obra/superpowers
+/plugin install superpowers</code></pre></div></div><div class="keymsg"><span class="k">언제</span><div><b>품질이 어제보다 떨어질 때</b> — 테스트를 강제해 되돌린다.</div></div></div>
+</section>
+
+
+<section class="slide" data-title="GSD 설치·실행">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">GSD — 문맥을 새로 갈아끼우는 팀</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>스테이지마다 <b>얇은 오케스트레이터가 전문 서브에이전트를 새로 스폰</b>.</div></div><div class="v"><span class="b">→</span><div>각 서브에이전트가 <b>깨끗한 컨텍스트</b> — 50번째 작업도 1번째 품질.</div></div><div class="v"><span class="b">★</span><div><b>Codex에도 설치된다</b> — 같은 프레임워크, 다른 하네스.</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>npx get-shit-done-cc --claude --local
+
+<span class="cm"># 같은 프레임워크를 Codex에도</span>
+npx get-shit-done-cc --codex</code></pre></div></div><div class="keymsg"><span class="k">언제</span><div><b>한 시간 지나면 헛소리를 할 때</b> — 긴 작업·인프라 작업.</div></div></div>
+</section>
+
+
+<section class="slide" data-title="멀티 하네스 — 어느 걸 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">증상으로 고른다</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>상황</th><th>처방</th><th>이유</th></tr></thead><tbody><tr><td>구현이 자꾸 깨진다 · 품질 저하</td><td><b>Superpowers</b></td><td>실패 테스트를 먼저 강제</td></tr><tr><td>긴 작업에서 뒤로 갈수록 헛소리</td><td><b>GSD</b></td><td>단계마다 신선한 컨텍스트</td></tr><tr><td>제품 관점 검토가 필요</td><td><b>GSTACK</b> (8강)</td><td>역할 파이프라인 · 단일 세션</td></tr><tr><td>내 도메인 전용 팀이 필요</td><td><b>harness</b> (8강에서 찍어냄)</td><td>도메인 → 에이전트 팀 생성</td></tr></tbody></table><div class="keymsg"><span class="k">원칙</span><div>도구가 아니라 <b>내 실패 유형</b>을 먼저 안다. 8강에서 <b>찍어낸 팀</b>을 여기서 <b>돌린다</b>.</div></div></div>
+</section>
+
+
 <section class="slide" data-title="[실습] 실습 2 — 메타 하네스로 팀 구축">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
