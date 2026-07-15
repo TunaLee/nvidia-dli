@@ -729,6 +729,15 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>구현·QA</b> — <code>/qa</code>(브라우저 QA+수정) · <code>/browse</code> · <code>/review</code>(PR 리뷰) · <code>/investigate</code> · <code>/health</code></div></div><div class="v"><span class="b">→</span><div><b>배포</b> — <code>/ship</code>(테스트→커밋→PR) · <code>/land-and-deploy</code> · <code>/canary</code></div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>디자인</b> — <code>/design-consultation</code> · <code>/design-review</code>(AI 슬롭 점검) · <code>/design-shotgun</code></div></div><div class="v"><span class="b">→</span><div><b>문서·기타</b> — <code>/document-generate</code> · <code>/make-pdf</code> · <code>/scrape</code> · <code>/retro</code> · <code>/context-save</code></div></div><div class="v"><span class="b">→</span><div>iOS 전용 스킬(<code>/ios-qa</code> 등)도 있다.</div></div></div></div></div><div class="keymsg"><span class="k">언제</span><div>실제로 QA하고, 배포하고, 디자인·문서까지 <b>팀처럼 골라 쓸 때</b>. 자동 발동이 아니라 <code>/명령</code>으로 호출한다.</div></div></div>
 </section>
 
+<section class="slide" data-title="GSD (개요)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>개요</div>
+  <h2 class="s-title sm">단계마다 문맥을 갈아끼우는 프레임워크</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>스펙 주도 + 컨텍스트 엔지니어링</b>. 스테이지마다 전문 서브에이전트를 새로 스폰한다.</div></div><div class="v"><span class="b">→</span><div>각 서브에이전트가 <b>깨끗한 컨텍스트</b>에서 시작 — 50번째 작업도 1번째와 같은 품질을 노린다.</div></div><div class="v"><span class="b">→</span><div>끝난 상태는 디스크에 저장해 다음 단계로 인계.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설치 (참고 — 크로스 런타임)</span></div><pre><code>npx get-shit-done-cc --claude --local
+npx get-shit-done-cc --codex</code></pre></div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>이 강의에선 개요만</h4><p>GSD는 <b>개념만 소개</b>한다. 실제 설치·실행은 Superpowers·메타 하네스로 대신한다. GSD의 발상(단계별 신선한 문맥)은 8강 <b>컨텍스트 엔지니어링</b>과 이어진다.</p></div></div><div class="keymsg"><span class="k">언제</span><div>긴 작업·인프라에서 <b>뒤로 갈수록 품질이 떨어질 때</b> — 문맥을 새로 갈아끼워 막는다.</div></div></div>
+</section>
+
 <section class="slide" data-title="진영별 멀티에이전트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>지형</div>
