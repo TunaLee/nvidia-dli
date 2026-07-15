@@ -63,6 +63,8 @@ git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~
 
 핵심 발상은 **"스타트업 개발 팀의 역할을 페르소나로 제공한다"**. CEO·디자이너·EM·QA·CSO가 각자 관점으로 검토·실행한다. 자동 발동이 아니라 `/명령`으로 골라 부른다.
 
+> **각 명령은 단순 별칭이 아니라 역할 전환이다.** `/cso`를 부르면 Claude가 "보안 책임자(CSO)" 관점으로 바뀌어, 기능보다 보안 평가를 우선한다. (wikidocs 06-1)
+
 ### 계획·리뷰 (역할 관점)
 - **/office-hours** — YC 오피스아워 모드. 강제 질문으로 요구사항을 끌어내 설계 문서를 만든다.
 - **/spec** — 모호한 의도를 5단계로 정밀한 실행 가능 스펙으로.
@@ -133,3 +135,19 @@ git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~
 **둘 다 쓸 수 있다.** Superpowers로 개발 규율을 잡고, gstack의 역할 스킬로 제품·디자인·배포를 검토하는 식으로 보완한다.
 
 > 규모 기준: 소(한 시간)=직접 · 중(반나절)=gstack · 대(며칠)=gstack + Superpowers.
+
+## 셋을 겹쳐 쓰기 — Triple Crown
+
+큰 프로젝트에서는 하나로 부족하다. 셋을 층으로 나눠 겹쳐 쓴다. (wikidocs 07-4 "Triple Crown 전략")
+
+| 도구 | 맡는 층 | 대표 |
+|---|---|---|
+| **Superpowers** | 품질 관리 | 테스트·검증을 강제 |
+| **GSD** | 프로젝트·컨텍스트 관리 | 단계마다 신선한 문맥 |
+| **gstack** | 가상 팀 | 역할별 검토·실행 |
+
+흐름: **계획**(gstack `/spec` · GSD) → **구현**(Superpowers TDD, 병렬) → **검증**(gstack `/qa` · Superpowers 검증). 셋이 서로 다른 층을 맡아 계획·구현·검증이 매끄럽게 이어진다.
+
+---
+
+*참고: wikidocs "클로드 코드 멀티에이전트 팀 자동화 완성 가이드" 06-1(gstack)·06-2(superpowers)·07-4(Triple Crown). 스킬 목록은 실제 설치본(로컬) 기준으로 작성.*
