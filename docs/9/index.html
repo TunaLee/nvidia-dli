@@ -476,6 +476,29 @@ app = create_supervisor(
 ).compile()</code></pre></div></div><div class="keymsg"><span class="k">순서</span><div>7~9강 = <b>원리 → 직접 → 프레임워크</b>. 이제 남의 얘기가 아니다.</div></div></div>
 </section>
 
+<section class="slide" data-title="MCP vs A2A">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>프로토콜</div>
+  <h2 class="s-title sm">도구용 프로토콜과 에이전트용 프로토콜</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>MCP</th><th>A2A</th></tr></thead><tbody><tr><td>잇는 대상</td><td>에이전트 ↔ <b>도구·데이터</b></td><td>에이전트 ↔ <b>에이전트</b></td></tr><tr><td>구조</td><td>호스트-클라이언트-서버</td><td>에이전트 간 직접 통신</td></tr><tr><td>쓰는 곳</td><td>한 앱이 도구를 붙일 때 (5강)</td><td>서로 다른 시스템·벤더의 에이전트가 협업할 때</td></tr><tr><td>주체</td><td>Anthropic</td><td>Google → Linux Foundation</td></tr></tbody></table><div class="keymsg"><span class="k">관계</span><div>둘은 경쟁이 아니라 <b>보완</b>이다. 도구 접근은 MCP, 에이전트끼리는 A2A — 층이 다르다.</div></div></div>
+</section>
+
+<section class="slide" data-title="A2A 구조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>프로토콜</div>
+  <h2 class="s-title sm">에이전트가 서로를 발견하고 태스크를 주고받는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Agent Card</b> — 능력·스킬·인증 요구를 적은 JSON. <code>/.well-known/agent-card.json</code>에 공개.</div></div><div class="v"><span class="b">→</span><div><b>Task</b> — 작업 단위. <code>submitted → working → completed / failed</code> 상태를 가진다.</div></div><div class="v"><span class="b">→</span><div><b>Message · Part · Artifact</b> — 대화 턴, 내용 조각(텍스트·파일·데이터), 결과물.</div></div><div class="v"><span class="b">★</span><div>전송은 <b>HTTP 위</b>에서 JSON-RPC 2.0 · REST · gRPC 중 택일. 스트리밍은 <b>SSE</b>.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">에이전트를 부르는 흐름</span></div><pre><code>1. GET  {상대}/.well-known/agent-card.json
+     → 능력·엔드포인트·인증 확인
+
+2. POST {엔드포인트}   (JSON-RPC: message/send)
+     → Task 생성
+
+3. SSE 스트림으로 상태·산출물 수신
+     working → … → completed</code></pre></div></div></div><div class="keymsg"><span class="k">우리 앱과의 관계</span><div>우리 오케스트레이터는 <b>한 프로세스 안</b>이라 A2A가 필요 없다. A2A는 <b>시스템 경계를 넘을 때</b> — 다른 회사가 운영하는 에이전트를 호출할 때 쓴다.</div></div></div>
+</section>
+
 <section class="slide section" data-title="[섹션] 위임과 격리">
   <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div><h2>위임과 격리</h2>
   <div class="agenda"><span>서브에이전트</span><span>위임 계약</span><span>worktree</span></div>
@@ -674,6 +697,14 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
 /qa · /ship · /retro</code></pre></div></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg></div><div class="ct"><h4>설치</h4><p>Claude Code는 <code>git clone .../gstack ~/.claude/skills/gstack &amp;&amp; ./setup</code>, Codex는 <code>npx gstack-codex init</code>로 설치한다. 두 도구 모두 지원한다.</p></div></div></div>
 </section>
 
+<section class="slide" data-title="진영별 멀티에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>지형</div>
+  <h2 class="s-title sm">도구마다 멀티에이전트 경로가 있다</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>진영</th><th>도구</th><th>멀티에이전트 방법</th></tr></thead><tbody><tr><td>Anthropic</td><td><b>Claude Code</b></td><td>Superpowers · gstack · revfactory/harness (agent teams)</td></tr><tr><td>OpenAI</td><td><b>Codex</b></td><td>Superpowers(크로스) · <b>meta-harness</b>(SaehwanPark 포트)</td></tr><tr><td>Google</td><td><b>Antigravity</b></td><td>네이티브 병렬 서브에이전트 스쿼드</td></tr></tbody></table><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>Google Antigravity</h4><p>Gemini CLI가 2026년 6월 <b>Antigravity CLI</b>(<code>agy</code>)로 전환됐다. researcher · planner · coder · reviewer · ops 같은 역할의 <b>서브에이전트 스쿼드</b>를 각자 격리 샌드박스에서 병렬 실행한다. <code>/goal</code> · <code>/schedule</code> 슬래시 명령을 쓴다.</p></div></div></div>
+</section>
+
 <section class="slide" data-title="같은 작업, 다른 명령어">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>비교</div>
@@ -723,8 +754,14 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타</div>
   <h2 class="s-title sm">도메인 설명에서 팀으로</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code>/plugin marketplace add revfactory/harness
-/plugin install harness
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code># 병렬 서브에이전트 활성화 (필수)
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+
+# Claude Code
+/plugin marketplace add revfactory/harness
+/plugin install harness@harness-marketplace
+
+# Codex — 포트: SaehwanPark/meta-harness
 
 /harness "MCP 호스트 웹앱 개발팀 —
   Next.js · Prisma · MCP · 에이전트 루프"</code></pre></div></div><div><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>생성된다</h4><p><code>.claude/agents/</code> — 역할별 서브에이전트<br/><code>.claude/skills/</code> — 그들이 쓸 절차</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>연다</h4><p>어제 직접 만들어봤기 때문에 읽을 수 있다. 프론트매터 · tools · 역할 프롬프트.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>고친다</h4><p>권한을 좁히고(<code>tools</code>), 어제 만든 <code>guard.mjs</code> 훅을 붙인다.</p></div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>Superpowers는 정해진 방법론을 강제하고, 메타 하네스는 도메인에 맞는 팀을 생성해 <b>직접 수정할 수 있게</b> 한다.</div></div></div>
@@ -772,7 +809,15 @@ git worktree remove .claude/worktrees/&lt;id&gt;</code></pre></div></div><div><d
   ③ @reviewer 읽기전용 검수 (스펙 준수 + 코드 품질)
   ④ @tester 전체 검증 게이트
 · 검증 실패 → 담당 에이전트로 되돌림
-· "부탁"이 아니라 "순서"</code></pre></div><div class="keymsg"><span class="k">도구 무관</span><div>SKILL.md와 에이전트 정의는 특정 도구 전용이 아니다. 같은 orchestrate 스킬을 <b>Claude Code와 Codex 양쪽</b>에서 그대로 쓴다. 리드는 위임만 하고, 실패한 태스크는 담당 에이전트로 되돌린다.</div></div></div>
+· "부탁"이 아니라 "순서"</code></pre></div><div class="keymsg"><span class="k">주의</span><div>이 스킬은 흐름을 <b>설명</b>할 뿐, 그것만으로 병렬 실행이 강제되지는 않는다(다음 장). SKILL.md·에이전트 정의는 도구 무관이라 <b>Claude Code와 Codex 양쪽</b>에서 로드된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="스킬의 한계와 실제 강제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>현실</div>
+  <h2 class="s-title sm">프롬프트로는 병렬이 강제되지 않는다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">✕</span><div><b>orchestrate SKILL.md는 흐름을 '설명'할 뿐이다.</b> 모델이 그대로 따른다는 보장이 없다 — 8강의 <b>'스킬은 부탁'</b>과 같다.</div></div><div class="v"><span class="b">→</span><div>실제로 <b>병렬 서브에이전트</b>가 돌려면 셋 중 하나가 필요하다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">①</span><div><b>agent teams 활성화</b> — <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>. 네이티브 팀 기능(TeamCreate)을 쓰는 하네스(revfactory/harness · superpowers)가 대신 디스패치한다.</div></div><div class="v"><span class="b">②</span><div><b>네이티브 멀티에이전트 도구</b> — Antigravity처럼 병렬 스쿼드가 기본인 것.</div></div><div class="v"><span class="b">③</span><div><b>코드로 짠 오케스트레이터</b> — 우리 앱의 <code>Promise.all</code>. 프롬프트가 아니라 프로그램이라 <b>반드시</b> 병렬로 돈다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>진짜 강제는 프롬프트가 아니라 <b>런타임·코드</b>가 한다. Lab 3에서 앱을 코드로 짓는 이유가 이것이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="LAB B · 역할별 서브에이전트">
