@@ -948,6 +948,24 @@ codex   # 같은 harness/ 폴더에서</code></pre></div></div></div><div class=
   <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">@coder 4명 병렬 구현 결과</h4><table class="ctable"><thead><tr><th>상태</th><th>board</th><th>badge</th><th>card</th><th>feed</th></tr></thead><tbody><tr><td>진행</td><td>in-progress</td><td>running</td><td>in-progress</td><td>running</td></tr><tr><td>대기</td><td>waiting</td><td>waiting</td><td>waiting</td><td>queued</td></tr><tr><td>제목 필드</td><td>title</td><td>—</td><td>title</td><td>label</td></tr></tbody></table></div></div><div><div class="vlist"><div class="v"><span class="b">✕</span><div>같은 "진행" 상태가 <b>in-progress / running</b>으로 갈렸다 — 합치면 <b>타입 에러</b>.</div></div><div class="v"><span class="b">✕</span><div>Task 제목이 <b>title / label</b>로 갈렸다.</div></div><div class="v"><span class="b">★</span><div>"각 파일 자기완결"로 <b>파일 충돌은 막았지만 공유 계약이 어긋났다</b>.</div></div></div></div></div><div class="keymsg"><span class="k">교훈</span><div>병렬 독립 구현은 <b>이음새에서 어긋난다</b>. 플래너가 <b>공유 계약(상태 enum·타입)을 계획에 먼저 못박고</b>, @reviewer 게이트가 이를 검증해야 한다. 리뷰어가 없으면 조합 단계에서 터진다.</div></div></div>
 </section>
 
+<section class="slide" data-title="계약을 먼저 고정하면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">같은 과제, 프롬프트만 바꾼 결과</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">개선된 @planner 출력 — 계약을 먼저</span></div><pre><code>SHARED CONTRACT
+- TaskStatus: 'pending'|'running'|'done'|'failed'
+- Task: { id, title, status, updatedAt }
+- 색: pending=slate·running=blue
+       done=green·failed=red
+
+CHUNK 1  task-status-badge.tsx
+  계약 준수: TaskStatus 4값 그대로
+CHUNK 2  task-card.tsx
+  계약 준수: Task 타입·title 그대로
+...</code></pre></div></div><div><div><h4 style="margin:0 0 8px">병렬 재구현 결과 (실측)</h4><table class="ctable"><thead><tr><th></th><th>badge</th><th>card</th></tr></thead><tbody><tr><td>진행 상태</td><td>running</td><td>running</td></tr><tr><td>상태 4값</td><td>pending·running<br>·done·failed</td><td>동일</td></tr><tr><td>제목 필드</td><td>(status만)</td><td>title</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✓</span><div>두 파일이 <b>같은 enum·같은 타입</b>을 쓴다 — 합쳐도 타입 에러 없음.</div></div><div class="v"><span class="b">→</span><div>프롬프트에 <b>계약 정의 단계 하나</b>를 추가했을 뿐이다.</div></div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>느슨한 프롬프트는 이음새를 어긋내고, <b>계약을 계획 단계에서 못박은 프롬프트는 이음새를 없앤다</b>. 바꾼 것은 프롬프트 한 단계뿐이다.</div></div></div>
+</section>
+
 <section class="slide" data-title="호스트를 오케스트레이터로">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전환</div>
