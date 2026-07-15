@@ -641,8 +641,12 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>방법론 강제</div>
   <h2 class="s-title sm">코드로 강제되는 단계</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Hard Gate</b> — brainstorm → plan → spec, <b>단계 건너뛰기 차단</b>.</div></div><div class="v"><span class="b">→</span><div><b>TDD 자동 발동</b> — RED → GREEN. 테스트 먼저, 실패 확인, 최소 구현.</div></div><div class="v"><span class="b">→</span><div>크로스 호환 — Claude Code · Codex · Cursor · Copilot · Gemini 등.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설치 · 핵심 명령</span></div><pre><code>/plugin marketplace add obra/superpowers-marketplace
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Hard Gate</b> — brainstorm → plan → spec, <b>단계 건너뛰기 차단</b>.</div></div><div class="v"><span class="b">→</span><div><b>TDD 자동 발동</b> — RED → GREEN. 테스트 먼저, 실패 확인, 최소 구현.</div></div><div class="v"><span class="b">→</span><div>크로스 호환 — Claude Code · Codex · Cursor · Copilot · Gemini 등.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설치 · 핵심 명령</span></div><pre><code># Claude Code
+/plugin marketplace add obra/superpowers-marketplace
 /plugin install superpowers@superpowers-marketplace
+
+# Codex — 공식 Codex 플러그인 마켓에 등재
+# 마켓에서 superpowers 설치 후 Codex 재시작
 
 /superpowers:brainstorm   # 설계 정제 Q&amp;A
 /superpowers:write-plan   # 구현 계획
@@ -658,7 +662,7 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
 /plan-ceo-review    # 제품 스코프 결정
 /plan-eng-review    # 아키텍처 검토
 /cso                # 보안 전담 점검
-/qa · /ship · /retro</code></pre></div></div></div></div>
+/qa · /ship · /retro</code></pre></div></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg></div><div class="ct"><h4>설치</h4><p>Claude Code는 <code>git clone .../gstack ~/.claude/skills/gstack &amp;&amp; ./setup</code>, Codex는 <code>npx gstack-codex init</code>로 설치한다. 두 도구 모두 지원한다.</p></div></div></div>
 </section>
 
 <section class="slide" data-title="같은 작업, 다른 명령어">
@@ -748,7 +752,7 @@ git worktree remove .claude/worktrees/&lt;id&gt;</code></pre></div></div><div><d
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>리드 생성</div>
   <h2 class="s-title sm">위임만 하는 리드</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code에 그대로 입력</span></div><pre><code>~/.claude/skills/orchestrate/SKILL.md 만들어줘
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code · Codex에 그대로 입력</span></div><pre><code>~/.claude/skills/orchestrate/SKILL.md 만들어줘
 
 이런 리드 오케스트레이터가 필요해:
 · name: orchestrate · description엔 발동조건 한 문장
@@ -759,7 +763,7 @@ git worktree remove .claude/worktrees/&lt;id&gt;</code></pre></div></div><div><d
   ③ @reviewer 읽기전용 검수 (스펙 준수 + 코드 품질)
   ④ @tester 전체 검증 게이트
 · 검증 실패 → 담당 에이전트로 되돌림
-· "부탁"이 아니라 "순서"</code></pre></div><div class="keymsg"><span class="k">한 줄 원칙</span><div>리드는 <b>위임만</b> · 직접 코딩 안 함 · 실패는 <b>되돌림</b>.</div></div></div>
+· "부탁"이 아니라 "순서"</code></pre></div><div class="keymsg"><span class="k">도구 무관</span><div>SKILL.md와 에이전트 정의는 특정 도구 전용이 아니다. 같은 orchestrate 스킬을 <b>Claude Code와 Codex 양쪽</b>에서 그대로 쓴다. 리드는 위임만 하고, 실패한 태스크는 담당 에이전트로 되돌린다.</div></div></div>
 </section>
 
 <section class="slide" data-title="LAB B · 역할별 서브에이전트">
@@ -835,42 +839,71 @@ claude --plugin-dir ./harness
 # 또는 marketplace.json → /plugin install</code></pre></div></div></div><div class="keymsg"><span class="k">완성</span><div>오늘 직접 만든 것 — orchestrate 리드 · 역할 서브에이전트 4 · worktree 병렬 · guard.mjs 게이트 · <b>harness 플러그인</b>.</div></div></div>
 </section>
 
-<section class="slide" data-title="호스트를 chunk로 쪼갠다">
+<section class="slide" data-title="도구를 넘나드는 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>분해</div>
-  <h2 class="s-title sm">독립된 네 조각</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>이식성</div>
+  <h2 class="s-title sm">한 번 만든 하네스를 여러 도구에서</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">/harness:orchestrate "MCP 호스트 완성"</span></div><pre><code>@planner — 어제 만든 뼈대 + prd → 독립 chunk 4개
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>SKILL.md</b>와 <b>AGENTS.md</b>는 특정 도구 전용 포맷이 아니다.</div></div><div class="v"><span class="b">→</span><div>같은 <code>orchestrate</code> 스킬과 에이전트 정의를 <b>Claude Code와 Codex 양쪽</b>에서 그대로 로드한다.</div></div><div class="v"><span class="b">★</span><div>도구를 바꿔도 <b>컨텍스트가 이어진다</b> — 프로젝트 규약과 팀 구조가 파일로 남아 있기 때문이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 harness/ 를 두 도구에서</span></div><pre><code># Claude Code
+claude --plugin-dir ./harness
 
-  chunk 1 — MCP 클라이언트
-     서버 연결 · list_tools · call_tool
-
-  chunk 2 — 에이전트 루프 (백엔드)
-     판단 → 도구 호출 → 관찰 → 반복 (7강 루프)
-
-  chunk 3 — 도구 승인 UI (권한 게이트)
-     "이 도구를 실행할까요? [승인/거부]"
-
-  chunk 4 — 영속화 (Prisma)
-     대화 · 메시지 · 도구호출 로그를 Neon에
-
-사람 승인 대기 → @coder 4명 병렬 (각자 worktree)</code></pre></div><div class="keymsg"><span class="k">왜 병렬이 되나</span><div>네 조각이 <b>파일이 안 겹친다</b> — 판단 3문의 ①(병렬 분해 가능)을 통과한다.</div></div></div>
+# Codex
+# AGENTS.md · SKILL.md 를 그대로 인식
+codex   # 같은 harness/ 폴더에서</code></pre></div></div></div><div class="keymsg"><span class="k">의미</span><div>하네스는 도구가 아니라 <b>프로젝트에 묶인다</b>. 팀이 도구를 바꿔도 규약과 오케스트레이션은 유지된다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 3 — MCP 호스트 완성 (핵심)">
+<section class="slide" data-title="호스트를 오케스트레이터로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전환</div>
+  <h2 class="s-title sm">대화형에서 태스크 실행형으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>Day08의 앱은 <b>대화만</b> 하는 어시스턴트였다.</div></div><div class="v"><span class="b">→</span><div>오늘은 목표를 받아 <b>계획을 세우고, 여러 태스크를 실행</b>하는 오케스트레이터로 확장한다.</div></div><div class="v"><span class="b">★</span><div>7강의 단일 루프가 여기서 <b>플래너 + 다수 워커 + 검증</b>으로 커진다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">아키텍처</span></div><pre><code>목표 입력
+  → 플래너(Qwen)가 태스크로 분해
+  → 사람이 계획 승인
+  → 오케스트레이터가 워커에 위임
+       워커들: MCP 도구로 병렬 실행
+  → 검증 에이전트가 목표 달성 확인
+  → 진행 보드 · 로그로 스트리밍</code></pre></div></div></div><div class="keymsg"><span class="k">두 겹의 멀티에이전트</span><div><b>개발</b>은 하네스 팀(planner·coder)이 병렬로, <b>앱</b>은 런타임 오케스트레이터가 태스크를 병렬로 실행한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="추가할 기능">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기능 목록</div>
+  <h2 class="s-title sm">오케스트레이터 앱의 구성</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>층</th><th>추가</th><th>관련 개념</th></tr></thead><tbody><tr><td>데이터</td><td><b>Run</b>(실행 세션) · <b>Task</b>(작업 단위·상태·의존성) · <b>StepLog</b>(호출 기록)</td><td>계획-실행 · 평가</td></tr><tr><td>백엔드</td><td><b>플래너</b> — 목표를 태스크로 분해</td><td>계획-실행 · Plan Mode</td></tr><tr><td>백엔드</td><td><b>오케스트레이터</b> — 태스크를 워커에 위임·병렬 실행</td><td>오케스트레이터-워커 · 팬아웃</td></tr><tr><td>백엔드</td><td><b>워커</b> — 독립 컨텍스트에서 MCP 도구로 처리</td><td>서브에이전트 격리 · 위임 계약</td></tr><tr><td>백엔드</td><td><b>검증 에이전트</b> · <b>예산 한도</b></td><td>critic · done까지 · 예산</td></tr><tr><td>프론트</td><td><b>계획 승인</b> · <b>태스크 진행 보드</b> · <b>도구 승인</b> · <b>로그·비용</b></td><td>사람 게이트 · 관찰 가능성</td></tr></tbody></table></div>
+</section>
+
+<section class="slide" data-title="예제 시나리오">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>예제</div>
+  <h2 class="s-title sm">목표 하나가 태스크로 갈라진다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사용자 목표</span></div><pre><code>"이 회의록 3개를 요약하고,
+ 각각 할 일로 만들어서
+ 마감이 임박한 순으로 우선순위를 매겨줘"</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">플래너의 분해 (승인 대기)</span></div><pre><code>Task 1  회의록 A 요약        [독립]
+Task 2  회의록 B 요약        [독립]
+Task 3  회의록 C 요약        [독립]
+Task 4  요약 → 할 일 생성    [1,2,3 의존]
+Task 5  마감일로 우선순위    [4 의존]
+
+승인하면 Task 1·2·3 을 병렬 실행</code></pre></div></div></div><div class="keymsg"><span class="k">흐름</span><div>독립 태스크(1·2·3)는 <b>병렬</b>로, 의존 태스크(4·5)는 순서대로 실행된다. 각 워커는 MCP 도구(요약·할일 생성·우선순위)를 호출한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 3 — 오케스트레이터 앱 (핵심)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 3 — 생성한 팀으로 완성</h2>
+  <h2 class="s-title sm">Lab 3 — 계획하고 실행하는 호스트</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>어제 뼈대 위에서</h4><p>Day08에서 직접 만든 하네스를 적용해 개발한 Next.js + Neon + Qwen 앱을 연다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>스펙 → 분해 → 승인</h4><p><code>/harness:spec</code> → prd → 오케스트레이터가 <b>chunk 4개</b>로 분해 → <b>사람이 승인</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>@coder 병렬</h4><p>MCP 클라이언트 · <b>에이전트 루프</b>(7강) · <b>도구 승인 UI</b>(8강) · 영속화 — 각자 worktree.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>게이트</h4><p>@reviewer(읽기전용) → @tester(검증) → 통과한 것만 병합. <code>.env</code> 건드리면 <b>내 훅이 차단</b>.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>행동으로 검증</h4><p>도구를 부르는 대화를 입력한 뒤, 승인 버튼과 거부 버튼의 동작을 각각 확인한다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>데이터 모델 추가</h4><p>어제 앱에 <b>Run · Task · StepLog</b> 모델을 더하고 <code>prisma migrate</code>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>하네스로 기능 분해</h4><p><code>/harness:orchestrate</code>가 플래너·오케스트레이터·워커·태스크보드·검증을 <b>독립 chunk로</b> 나눈다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>개발 에이전트 병렬 구현</h4><p>@coder들이 각자 worktree에서 chunk를 <b>병렬</b>로 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>예제 시나리오 실행</h4><p>회의록 요약 → 할 일 생성 → 우선순위. 목표 입력 → 계획 승인 → <b>병렬 실행</b> → 진행 보드 확인.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>확장</h4><p>검증 에이전트로 실패 태스크 재시도 · 예산 한도 · 토큰 비용 요약을 더한다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="완성 — 내가 만든 호스트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>결과</div>
-  <h2 class="s-title sm">이틀간 사용한 도구의 내부를 직접 구현했다</h2>
+  <h2 class="s-title sm">완성된 오케스트레이터 앱</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강 것이다</h4><p>내가 지은 오케스트레이터가 <b>네 조각을 병렬로</b> 지었다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>이틀간 사용한 Claude Code가 내부에서 무엇을 하는지, 직접 만들어보며 확인했다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강에서 왔다</h4><p>개발은 하네스 팀이 병렬로, <b>앱은 플래너·워커·검증으로 태스크를 병렬 실행</b>한다.</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>Day08의 대화형 어시스턴트가, 계획을 세우고 여러 태스크를 실행하는 오케스트레이터로 확장됐다. 이틀간 사용한 도구의 내부 구조를 직접 구현한 결과다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 평가와 비용">
