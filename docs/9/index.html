@@ -685,6 +685,14 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
 /superpowers:execute-plan # 병렬 실행</code></pre></div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>메타</h4><p>이 강의의 설계에도 <b>superpowers의 brainstorming 스킬</b>을 썼다 — 지금 쓰는 도구가 곧 교재다.</p></div></div></div>
 </section>
 
+<section class="slide" data-title="Superpowers 스킬 카탈로그">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>파훼</div>
+  <h2 class="s-title sm">방법론을 강제하는 14개 스킬</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>단계</th><th>스킬</th><th>무엇을 강제하나</th></tr></thead><tbody><tr><td>설계</td><td><code>brainstorming</code></td><td>만들기 전 의도·요구·설계를 먼저 탐색 (창작 전 필수)</td></tr><tr><td>계획</td><td><code>writing-plans</code></td><td>스펙을 단계별 구현 계획으로</td></tr><tr><td>구현</td><td><code>test-driven-development</code></td><td>실패 테스트 먼저 — 우회 불가</td></tr><tr><td>구현</td><td><code>subagent-driven-development</code> · <code>dispatching-parallel-agents</code></td><td>독립 작업을 서브에이전트로 병렬</td></tr><tr><td>구현</td><td><code>using-git-worktrees</code></td><td>작업 공간 격리</td></tr><tr><td>검증</td><td><code>systematic-debugging</code></td><td>버그는 수정 전 근본 원인부터</td></tr><tr><td>검증</td><td><code>requesting/receiving-code-review</code> · <code>verification-before-completion</code></td><td>완료를 주장하기 전 증거 확인</td></tr><tr><td>마무리</td><td><code>finishing-a-development-branch</code> · <code>writing-skills</code></td><td>통합 결정 · 스킬 제작</td></tr></tbody></table><div class="keymsg"><span class="k">언제</span><div>품질이 흔들리거나 큰 작업을 규율 있게 몰고 갈 때. <b>적은 스킬을 강제 흐름</b>으로 — 단계를 건너뛸 수 없다.</div></div></div>
+</section>
+
 <section class="slide" data-title="gstack">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>가상 개발 팀</div>
@@ -695,6 +703,14 @@ review = agent(<span class="st">f"결함 찾기: {code}"</span>)  <span class="c
 /plan-eng-review    # 아키텍처 검토
 /cso                # 보안 전담 점검
 /qa · /ship · /retro</code></pre></div></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg></div><div class="ct"><h4>설치</h4><p>Claude Code는 <code>git clone .../gstack ~/.claude/skills/gstack &amp;&amp; ./setup</code>, Codex는 <code>npx gstack-codex init</code>로 설치한다. 두 도구 모두 지원한다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="gstack 스킬 카탈로그">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>파훼</div>
+  <h2 class="s-title sm">가상 팀이 골라 쓰는 40여 개 스킬</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>범주</th><th>스킬(골라 씀)</th><th>언제</th></tr></thead><tbody><tr><td>계획·리뷰</td><td><code>office-hours</code> · <code>spec</code> · <code>autoplan</code> · <code>plan-ceo/eng/design/devex-review</code></td><td>제품·아키텍처를 역할 관점으로 검토</td></tr><tr><td>구현·QA</td><td><code>qa</code> · <code>browse</code> · <code>review</code> · <code>investigate</code> · <code>health</code></td><td>브라우저 QA · PR 리뷰 · 디버깅 · 품질 점검</td></tr><tr><td>보안</td><td><code>cso</code> · <code>careful</code> · <code>guard</code> · <code>freeze</code></td><td>CSO 관점 점검 · 위험 명령 가드</td></tr><tr><td>배포</td><td><code>ship</code> · <code>land-and-deploy</code> · <code>canary</code></td><td>검증 후 출시 · 배포 후 카나리</td></tr><tr><td>디자인</td><td><code>design-consultation/html/review/shotgun</code></td><td>디자인 시스템 · AI 슬롭 점검</td></tr><tr><td>문서</td><td><code>document-generate/release</code> · <code>make-pdf</code></td><td>문서 생성 · 릴리스 노트</td></tr><tr><td>기타</td><td><code>scrape</code> · <code>retro</code> · <code>context-save/restore</code> · iOS 전용</td><td>스크래핑 · 회고 · 컨텍스트 · iOS</td></tr></tbody></table><div class="keymsg"><span class="k">언제</span><div>제품 관점 검토·실제 배포·디자인·QA를 <b>팀처럼 골라 쓸 때</b>. <b>많은 스킬을 명시적으로 호출</b> — 자동 발동이 아니다.</div></div></div>
 </section>
 
 <section class="slide" data-title="진영별 멀티에이전트">
