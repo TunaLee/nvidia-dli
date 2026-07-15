@@ -1027,7 +1027,92 @@ SessionUser  { id, email, name?, image?, provider }
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 3 — 전날 앱을 팀으로 키운다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>agent teams 켜기</h4><p><code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> — 없으면 병렬 서브에이전트가 안 뜬다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>계약 먼저 (0단계)</h4><p><code>/harness:orchestrate "백로그 9기능 추가"</code> → @planner가 <b>공유 계약 + Prisma 스키마</b>를 먼저 확정하고 사람이 승인.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>병렬 구현 (배치 1)</h4><p>계약이 서면 @coder 9명이 각자 worktree에서 신규 파일을 <b>동시에</b> 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>의존 처리 (배치 2)</h4><p>MCP UI·채팅 루프 통합은 선행 chunk가 끝난 뒤. 병렬 못 하는 지점을 직접 본다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>리뷰어 검증</h4><p>@reviewer가 이음새(Tool 모양·이벤트 이름·세션 필드)를 점검한다. 계약을 지켰나?</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>agent teams 켜기</h4><p><code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> — 없으면 병렬 서브에이전트가 안 뜬다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>계약 먼저 (0단계)</h4><p><code>/harness:orchestrate "백로그 9기능 추가"</code> → @planner가 <b>공유 계약 + Prisma 스키마</b>를 먼저 확정하고 사람이 승인.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>병렬 구현 (배치 1)</h4><p>계약이 서면 @coder 9명이 각자 worktree에서 신규 파일을 <b>동시에</b> 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>의존 처리 (배치 2)</h4><p>MCP UI·채팅 루프 통합은 선행 chunk가 끝난 뒤. 병렬 못 하는 지점을 직접 본다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>리뷰어 검증</h4><p>@reviewer가 이음새(Tool 모양·이벤트 이름·세션 필드)를 점검한다. 계약을 지켰나?</p></div></div></div></div><div class="keymsg"><span class="k">외부 설정</span><div>웹검색·구글 OAuth·MCP 모듈은 콘솔·API 키가 먼저다 — 다음 장들의 구현 스텝을 보고 준비한 뒤 하네스에 코드를 맡긴다.</div></div></div>
+</section>
+
+<section class="slide" data-title="외부 설정이 필요한 기능">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구현</div>
+  <h2 class="s-title sm">하네스가 코드를 짜도, 이건 사람이</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>대부분 기능은 하네스가 코드를 짜면 끝난다 (사이드바·테마·내보내기 등).</div></div><div class="v"><span class="b">→</span><div>그런데 <b>구글 OAuth·웹검색·MCP 모듈</b>은 <b>외부 설정</b>이 먼저다 — 콘솔에서 키를 받고, 리디렉션을 등록한다.</div></div><div class="v"><span class="b">★</span><div>이건 자동화가 안 된다. 사람이 콘솔에서 하고, 나머지 코드는 하네스에 맡긴다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">1</span><div><b>구글 OAuth</b> — Google Cloud Console + Auth.js</div></div><div class="v"><span class="b">2</span><div><b>웹검색</b> — 검색 API 키 + Tool 구현</div></div><div class="v"><span class="b">3</span><div><b>MCP 모듈</b> — 서버 레지스트리 + UI</div></div></div></div></div><div class="keymsg"><span class="k">다음</span><div>세 기능의 실제 붙이는 스텝을 하나씩 본다.</div></div></div>
+</section>
+
+<section class="slide" data-title="구글 OAuth 붙이기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구현</div>
+  <h2 class="s-title sm">콘솔 설정 + Auth.js</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">① Google Cloud Console</span></div><pre><code>console.cloud.google.com
+ → 프로젝트 생성
+ → API 및 서비스 · OAuth 동의 화면 (External)
+ → 사용자 인증 정보
+ → OAuth 클라이언트 ID · 웹 애플리케이션
+
+승인된 리디렉션 URI:
+  http://localhost:3000/api/auth/callback/google
+  https://&lt;프로덕션도메인&gt;/api/auth/callback/google
+
+② .env
+  AUTH_GOOGLE_ID=...
+  AUTH_GOOGLE_SECRET=...
+  AUTH_SECRET=   # npx auth secret 로 생성</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">③ auth.ts · ④ 라우트 · ⑤ 버튼 (Auth.js v5)</span></div><pre><code>// auth.ts
+import NextAuth from "next-auth"
+import Google from "next-auth/providers/google"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+
+export const { handlers, auth, signIn, signOut } =
+  NextAuth({
+    adapter: PrismaAdapter(prisma),
+    providers: [Google],  // AUTH_GOOGLE_* 자동 인식
+  })
+
+// app/api/auth/[...nextauth]/route.ts
+export { GET, POST } from "@/auth"
+
+// 로그인 버튼 (client)
+&lt;button onClick={() =&gt; signIn("google")}&gt;
+  Google로 로그인
+&lt;/button&gt;</code></pre></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>가장 흔한 오류 — redirect_uri_mismatch</h4><p>콘솔의 <b>승인된 리디렉션 URI</b>가 <code>/api/auth/callback/google</code>와 <b>글자 하나까지 정확히</b> 일치해야 한다. 프로토콜·포트·경로가 조금이라도 다르면 실패한다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="웹검색 도구 붙이기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구현</div>
+  <h2 class="s-title sm">검색 API 키 + Tool 구현</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">①</span><div><b>Tavily 키</b> — <code>tavily.com</code> 가입 → API 키. 무료 1,000/월, 카드 불필요. AI 에이전트용 검색이라 스니펫이 깔끔하다.</div></div><div class="v"><span class="b">②</span><div><code>npm i @tavily/core</code> · <code>.env</code> 에 <code>TAVILY_API_KEY=tvly-...</code></div></div><div class="v"><span class="b">③</span><div>도구를 <b>공유 계약의 Tool 모양</b>으로 구현 (서버 전용).</div></div><div class="v"><span class="b">④</span><div>에이전트 루프의 tools 목록에 등록 → LLM이 필요할 때 호출.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lib/tools/web-search.ts</span></div><pre><code>import { tavily } from "@tavily/core"
+const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY })
+
+export const webSearch: Tool = {
+  name: "web_search",
+  description: "웹에서 최신 정보를 검색한다",
+  parameters: { query: "string" },
+  async execute({ query }) {
+    const r = await tvly.search(query, { maxResults: 5 })
+    return r.results.map(x =&gt; ({
+      title: x.title, url: x.url, snippet: x.content
+    }))  // SearchResult 계약
+  },
+}</code></pre></div></div></div><div class="keymsg"><span class="k">키는 서버에만</span><div>검색 키도 API Route(서버)에서만 쓴다 — 8강의 원칙 그대로. 키가 프론트에 있으면 유출된 키다.</div></div></div>
+</section>
+
+<section class="slide" data-title="MCP 서버 모듈 장착">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구현</div>
+  <h2 class="s-title sm">claude mcp add 를 웹앱으로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>McpServer</code> 모델(name·transport·url|command·enabled)을 Neon에 저장.</div></div><div class="v"><span class="b">→</span><div><code>/api/mcp/servers</code> — 추가·삭제·토글. UI 패널에서 서버를 꽂았다 뺀다.</div></div><div class="v"><span class="b">→</span><div>연결 시 <code>list_tools</code> → <code>McpTool</code> → 공유 계약의 <code>Tool</code> 로 어댑트해 레지스트리에 등록.</div></div><div class="v"><span class="b">★</span><div>5강에서 만든 그 MCP 서버도 여기에 붙는다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lib/mcp/registry.ts (요지)</span></div><pre><code>// 사용자가 UI에서 서버를 추가하면
+async function connect(server: McpServer) {
+  const client = await mcpConnect(server)   // stdio|http
+  const tools = await client.listTools()
+  for (const t of tools) {
+    registerTool(toTool(t))   // McpTool → Tool 어댑트
+  }
+}
+
+// 채팅 루프는 레지스트리에서 도구 목록만 읽는다
+const tools = getRegisteredTools()</code></pre></div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>노출한 도구가 곧 경계</h4><p>서버를 꽂으면 그 도구만 에이전트에 노출된다. 끄면 사라진다 — <code>enabled</code> 토글이 곧 권한 스위치다. 5강의 "메뉴에 없는 건 못 시킨다"가 UI가 된다.</p></div></div></div>
 </section>
 
 <section class="slide" data-title="완성 — 내가 만든 호스트">
