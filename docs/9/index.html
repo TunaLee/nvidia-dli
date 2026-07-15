@@ -982,58 +982,60 @@ CHUNK 2  task-card.tsx
 ...</code></pre></div></div><div><div><h4 style="margin:0 0 8px">병렬 재구현 결과 (실측)</h4><table class="ctable"><thead><tr><th></th><th>badge</th><th>card</th></tr></thead><tbody><tr><td>진행 상태</td><td>running</td><td>running</td></tr><tr><td>상태 4값</td><td>pending·running<br>·done·failed</td><td>동일</td></tr><tr><td>제목 필드</td><td>(status만)</td><td>title</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✓</span><div>두 파일이 <b>같은 enum·같은 타입</b>을 쓴다 — 합쳐도 타입 에러 없음.</div></div><div class="v"><span class="b">→</span><div>프롬프트에 <b>계약 정의 단계 하나</b>를 추가했을 뿐이다.</div></div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>느슨한 프롬프트는 이음새를 어긋내고, <b>계약을 계획 단계에서 못박은 프롬프트는 이음새를 없앤다</b>. 바꾼 것은 프롬프트 한 단계뿐이다.</div></div></div>
 </section>
 
-<section class="slide" data-title="호스트를 오케스트레이터로">
+<section class="slide" data-title="기능 백로그">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전환</div>
-  <h2 class="s-title sm">대화형에서 태스크 실행형으로</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실습 목표</div>
+  <h2 class="s-title sm">전날 앱에 멀티에이전트로 기능을 더한다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>Day08의 앱은 <b>대화만</b> 하는 어시스턴트였다.</div></div><div class="v"><span class="b">→</span><div>오늘은 목표를 받아 <b>계획을 세우고, 여러 태스크를 실행</b>하는 오케스트레이터로 확장한다.</div></div><div class="v"><span class="b">★</span><div>7강의 단일 루프가 여기서 <b>플래너 + 다수 워커 + 검증</b>으로 커진다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">아키텍처</span></div><pre><code>목표 입력
-  → 플래너(Qwen)가 태스크로 분해
-  → 사람이 계획 승인
-  → 오케스트레이터가 워커에 위임
-       워커들: MCP 도구로 병렬 실행
-  → 검증 에이전트가 목표 달성 확인
-  → 진행 보드 · 로그로 스트리밍</code></pre></div></div></div><div class="keymsg"><span class="k">두 겹의 멀티에이전트</span><div><b>개발</b>은 하네스 팀(planner·coder)이 병렬로, <b>앱</b>은 런타임 오케스트레이터가 태스크를 병렬로 실행한다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>웹검색 도구</b> — 에이전트가 부르는 검색 + API Route</div></div><div class="v"><span class="b">→</span><div><b>구글 OAuth</b> 로그인</div></div><div class="v"><span class="b">→</span><div><b>MCP 서버 모듈 장착</b> — 추가·삭제·토글 UI + 레지스트리</div></div><div class="v"><span class="b">→</span><div><b>대화 사이드바</b> · <b>도구 로그 뷰어</b></div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>모델·시스템 프롬프트 설정</b></div></div><div class="v"><span class="b">→</span><div><b>테마 토글</b>(다크모드) · <b>내보내기</b>(마크다운)</div></div><div class="v"><span class="b">→</span><div><b>토큰·비용 배지</b></div></div><div class="v"><span class="b">★</span><div>질문 — 이걸 <b>병렬로 나눌 수 있나</b>? (판단 3문 ①)</div></div></div></div></div><div class="keymsg"><span class="k">실습</span><div>목표는 기능이 아니라 <b>분해</b>다. 잘 나눠지는 것과 안 나눠지는 것을 직접 본다.</div></div></div>
 </section>
 
-<section class="slide" data-title="추가할 기능">
+<section class="slide" data-title="먼저 — 공유 계약">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기능 목록</div>
-  <h2 class="s-title sm">오케스트레이터 앱의 구성</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>0단계</div>
+  <h2 class="s-title sm">여러 기능이 함께 쓰는 것을 못박는다</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>층</th><th>추가</th><th>관련 개념</th></tr></thead><tbody><tr><td>데이터</td><td><b>Run</b>(실행 세션) · <b>Task</b>(작업 단위·상태·의존성) · <b>StepLog</b>(호출 기록)</td><td>계획-실행 · 평가</td></tr><tr><td>백엔드</td><td><b>플래너</b> — 목표를 태스크로 분해</td><td>계획-실행 · Plan Mode</td></tr><tr><td>백엔드</td><td><b>오케스트레이터</b> — 태스크를 워커에 위임·병렬 실행</td><td>오케스트레이터-워커 · 팬아웃</td></tr><tr><td>백엔드</td><td><b>워커</b> — 독립 컨텍스트에서 MCP 도구로 처리</td><td>서브에이전트 격리 · 위임 계약</td></tr><tr><td>백엔드</td><td><b>검증 에이전트</b> · <b>예산 한도</b></td><td>critic · done까지 · 예산</td></tr><tr><td>프론트</td><td><b>계획 승인</b> · <b>태스크 진행 보드</b> · <b>도구 승인</b> · <b>로그·비용</b></td><td>사람 게이트 · 관찰 가능성</td></tr></tbody></table></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">SHARED CONTRACT (계약 먼저)</span></div><pre><code>// src/lib/types.ts
+Tool         { name, description, parameters, execute }
+SearchResult { title, url, snippet }
+McpServer    { id, userId, name, transport, enabled }
+ToolCallLog  { name, args, result, status, durationMs }
+SessionUser  { id, email, name?, image?, provider }
+
+// SSE 이벤트: token | tool_call | usage | done
+// prisma/schema.prisma — 단일 마이그레이션으로 한 번에</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>웹검색과 MCP가 <b>같은 <code>Tool</code> 모양</b>이어야 채팅 루프가 통합해서 부른다.</div></div><div class="v"><span class="b">→</span><div>로그 뷰어·토큰 배지는 <b>SSE 이벤트 이름</b>에 맞춰 파싱한다.</div></div><div class="v"><span class="b">★</span><div>이걸 안 정하면 앞서 본 <b>이음새 문제</b>가 재현된다.</div></div></div></div></div><div class="keymsg"><span class="k">차단자</span><div>Prisma 스키마는 <b>단일 파일·단일 마이그레이션</b>이라, 모든 모델 변경을 계약 단계에서 한 번에 못박아야 이후 병렬이 성립한다.</div></div></div>
 </section>
 
-<section class="slide" data-title="예제 시나리오">
+<section class="slide" data-title="병렬 배치">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>예제</div>
-  <h2 class="s-title sm">목표 하나가 태스크로 갈라진다</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>분해 결과</div>
+  <h2 class="s-title sm">동시에 vs 순서대로</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사용자 목표</span></div><pre><code>"이 회의록 3개를 요약하고,
- 각각 할 일로 만들어서
- 마감이 임박한 순으로 우선순위를 매겨줘"</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">플래너의 분해 (승인 대기)</span></div><pre><code>Task 1  회의록 A 요약        [독립]
-Task 2  회의록 B 요약        [독립]
-Task 3  회의록 C 요약        [독립]
-Task 4  요약 → 할 일 생성    [1,2,3 의존]
-Task 5  마감일로 우선순위    [4 의존]
-
-승인하면 Task 1·2·3 을 병렬 실행</code></pre></div></div></div><div class="keymsg"><span class="k">흐름</span><div>독립 태스크(1·2·3)는 <b>병렬</b>로, 의존 태스크(4·5)는 순서대로 실행된다. 각 워커는 MCP 도구(요약·할일 생성·우선순위)를 호출한다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>배치</th><th>chunk</th><th>동시?</th></tr></thead><tbody><tr><td><b>0 계약</b></td><td>공유 타입 + Prisma 마이그레이션</td><td>순차 (전체 차단자)</td></tr><tr><td><b>1 병렬</b></td><td>웹검색 · MCP 코어 · OAuth · 사이드바 · 로그뷰어 · 설정 · 테마 · 토큰배지 · 내보내기</td><td>9개 동시 (파일 안 겹침)</td></tr><tr><td><b>2 의존</b></td><td>MCP UI(←MCP API) · 채팅 루프 통합(←웹검색·MCP·설정)</td><td>선행 대기</td></tr></tbody></table><div class="keymsg"><span class="k">핵심</span><div>대부분 <b>신규 파일</b>이라 병렬로 갈린다. @coder 9명이 각자 worktree에서 동시에 — 이게 멀티에이전트가 실제로 도는 그림이다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 3 — 오케스트레이터 앱 (핵심)">
+<section class="slide" data-title="병렬이 막히는 지점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">순서·공유 상태가 병렬을 막는다</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>파일 / 자원</th><th>왜 병렬 불가</th><th>대응</th></tr></thead><tbody><tr><td><code>prisma/schema.prisma</code></td><td>단일 마이그레이션 체인</td><td>계약 단계에서 한 번에</td></tr><tr><td><code>api/chat/route.ts</code></td><td>도구·이벤트·설정이 몰리는 병합점</td><td>단독 소유 · 도구 완성 후 순차</td></tr><tr><td><code>lib/auth.ts</code> · 세션</td><td>OAuth가 공유 상태를 바꿈</td><td>계약에 세션 shape 고정 → 다른 기능은 <code>user.id</code>만 읽어 병렬 유지</td></tr><tr><td><code>[id]/route.ts</code></td><td>사이드바·설정이 공유</td><td>라우트 소유권 지정 or 필드 계약 선합의</td></tr><tr><td><code>app/layout.tsx</code></td><td>컴포넌트 마운트 병합</td><td>셸 단독 소유, 컴포넌트 파일은 병렬</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>판단 3문 ①의 실전</h4><p>OAuth는 세션 때문에 그냥은 병렬이 안 된다. 하지만 <b>계약을 먼저 고정하면 격리해서 동시 진행</b>할 수 있다. 무엇이 왜 안 나뉘는지 아는 것이 오케스트레이션의 핵심이다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 3 — 멀티에이전트로 기능 추가 (핵심)">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 3 — 계획하고 실행하는 호스트</h2>
+  <h2 class="s-title sm">Lab 3 — 전날 앱을 팀으로 키운다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>데이터 모델 추가</h4><p>어제 앱에 <b>Run · Task · StepLog</b> 모델을 더하고 <code>prisma migrate</code>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>하네스로 기능 분해</h4><p><code>/harness:orchestrate</code>가 플래너·오케스트레이터·워커·태스크보드·검증을 <b>독립 chunk로</b> 나눈다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>개발 에이전트 병렬 구현</h4><p>@coder들이 각자 worktree에서 chunk를 <b>병렬</b>로 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>예제 시나리오 실행</h4><p>회의록 요약 → 할 일 생성 → 우선순위. 목표 입력 → 계획 승인 → <b>병렬 실행</b> → 진행 보드 확인.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>확장</h4><p>검증 에이전트로 실패 태스크 재시도 · 예산 한도 · 토큰 비용 요약을 더한다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>agent teams 켜기</h4><p><code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> — 없으면 병렬 서브에이전트가 안 뜬다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>계약 먼저 (0단계)</h4><p><code>/harness:orchestrate "백로그 9기능 추가"</code> → @planner가 <b>공유 계약 + Prisma 스키마</b>를 먼저 확정하고 사람이 승인.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>병렬 구현 (배치 1)</h4><p>계약이 서면 @coder 9명이 각자 worktree에서 신규 파일을 <b>동시에</b> 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>의존 처리 (배치 2)</h4><p>MCP UI·채팅 루프 통합은 선행 chunk가 끝난 뒤. 병렬 못 하는 지점을 직접 본다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>리뷰어 검증</h4><p>@reviewer가 이음새(Tool 모양·이벤트 이름·세션 필드)를 점검한다. 계약을 지켰나?</p></div></div></div></div></div>
 </section>
 
 <section class="slide" data-title="완성 — 내가 만든 호스트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>결과</div>
-  <h2 class="s-title sm">완성된 오케스트레이터 앱</h2>
+  <h2 class="s-title sm">기능이 붙은 호스트 앱</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강에서 왔다</h4><p>개발은 하네스 팀이 병렬로, <b>앱은 플래너·워커·검증으로 태스크를 병렬 실행</b>한다.</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>Day08의 대화형 어시스턴트가, 계획을 세우고 여러 태스크를 실행하는 오케스트레이터로 확장됐다. 이틀간 사용한 도구의 내부 구조를 직접 구현한 결과다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프는 7강 것이다</h4><p>판단 → 도구 → 관찰. 노트북에서 파이썬으로 짠 그 루프가 <b>백엔드에서 돈다</b>.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>도구는 5강 것이다</h4><p>내가 만든 MCP 서버가 <b>웹앱에 붙었다</b>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>권한은 8강 것이다</h4><p>Replit 사고를 막는 <b>승인 게이트</b>를 UI로 만들었다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>팀은 9강에서 왔다</h4><p>웹검색·OAuth·MCP 모듈·사이드바 등 <b>9개 기능을 @coder들이 병렬로</b> 구현했다.</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>Day08의 대화형 챗앱이, 멀티에이전트 팀의 병렬 개발로 <b>여러 기능을 갖춘 MCP 호스트</b>가 됐다. 핵심은 기능이 아니라 <b>분해</b>였다 — 계약을 먼저 고정하고, 병렬 가능한 것과 아닌 것을 갈랐다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 평가와 비용">
