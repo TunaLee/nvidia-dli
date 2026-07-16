@@ -850,8 +850,10 @@ npx get-shit-done-cc --codex</code></pre></div></div></div><div class="callout m
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>메타</div>
   <h2 class="s-title sm">도메인 설명에서 팀으로</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code># 병렬 서브에이전트 활성화 (필수)
-export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div><pre><code># 병렬 서브에이전트 활성화 (필수) — 셸에 맞게
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1   # macOS/Linux
+$env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS="1"     # PowerShell
+set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1       # CMD
 
 # Claude Code
 /plugin marketplace add revfactory/harness
@@ -877,7 +879,12 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
   <h2 class="s-title sm">Claude Code에 순서대로 입력한다</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal · 이 4개만 입력한다</span></div><pre><code># 0. 병렬 서브에이전트 켜기 (필수)
+# macOS/Linux
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+# Windows PowerShell
+$env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"
+# Windows CMD
+set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
 # 1. 리드 스킬
 &gt; orchestrate 스킬을 만들어줘. "○○ 기능 만들어줘"에 발동하고,
@@ -1123,7 +1130,7 @@ SessionUser  { id, email, name?, image?, provider }
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 3 — 전날 앱을 팀으로 키운다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>agent teams 켜기</h4><p><code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> — 없으면 병렬 서브에이전트가 안 뜬다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>계약 먼저 (0단계)</h4><p><code>/harness:orchestrate "백로그 9기능 추가"</code> → @planner가 <b>공유 계약 + Prisma 스키마</b>를 먼저 확정하고 사람이 승인.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>병렬 구현 (배치 1)</h4><p>계약이 서면 @coder 9명이 각자 worktree에서 신규 파일을 <b>동시에</b> 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>의존 처리 (배치 2)</h4><p>MCP UI·채팅 루프 통합은 선행 chunk가 끝난 뒤. 병렬 못 하는 지점을 직접 본다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>리뷰어 검증</h4><p>@reviewer가 이음새(Tool 모양·이벤트 이름·세션 필드)를 점검한다. 계약을 지켰나?</p></div></div></div></div><div class="keymsg"><span class="k">외부 설정</span><div>웹검색·구글 OAuth·MCP 모듈은 콘솔·API 키가 먼저다 — 다음 장들의 구현 스텝을 보고 준비한 뒤 하네스에 코드를 맡긴다.</div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day09_멀티에이전트_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>agent teams 켜기</h4><p>agent teams 활성화 (윈도우: PowerShell <code>$env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS="1"</code> · CMD <code>set CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> · macOS/Linux <code>export …=1</code>). 없으면 병렬 서브에이전트가 안 뜬다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>계약 먼저 (0단계)</h4><p><code>/harness:orchestrate "백로그 9기능 추가"</code> → @planner가 <b>공유 계약 + Prisma 스키마</b>를 먼저 확정하고 사람이 승인.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>병렬 구현 (배치 1)</h4><p>계약이 서면 @coder 9명이 각자 worktree에서 신규 파일을 <b>동시에</b> 구현한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>의존 처리 (배치 2)</h4><p>MCP UI·채팅 루프 통합은 선행 chunk가 끝난 뒤. 병렬 못 하는 지점을 직접 본다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>리뷰어 검증</h4><p>@reviewer가 이음새(Tool 모양·이벤트 이름·세션 필드)를 점검한다. 계약을 지켰나?</p></div></div></div></div><div class="keymsg"><span class="k">외부 설정</span><div>웹검색·구글 OAuth·MCP 모듈은 콘솔·API 키가 먼저다 — 다음 장들의 구현 스텝을 보고 준비한 뒤 하네스에 코드를 맡긴다.</div></div></div>
 </section>
 
 <section class="slide" data-title="외부 설정이 필요한 기능">
