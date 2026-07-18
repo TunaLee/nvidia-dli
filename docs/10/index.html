@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 10 · LLM 서빙 — vLLM · Ollama · NIM</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+<section class="slide cover active" data-title="표지 · Day 10">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap"><div class="kick"><span class="pill">WEEK 2 · DAY 10</span><span>SERVING</span></div>
+  <h1>LLM 서빙<br/>API 뒤의 층</h1></div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>지금까지 불러 쓰던 API의 뒤편을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="이어가기 · 9→10">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">API 뒤의 마지막 층</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>1~9강 내내 <code>integrate.api.nvidia.com/v1</code> 을 불렀다.</div></div><div class="v"><span class="b">→</span><div>그 주소 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층을 직접 다룬다. 서빙까지 알면 스택의 전 층을 만져본 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
+ 8-9강 하네스·팀    (Claude Code · 오케스트레이터)
+ 7강   에이전트 루프 (판단 → 도구 → 관찰)
+ 3-6강 MCP 도구
+ 1-2강 RAG
+        + 모델 (Qwen)</code></pre></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 서빙이란">
+  <div class="ghost">00</div><div class="seyebrow">CHAPTER 00</div><h2>서빙이란</h2>
+  <div class="agenda"><span>층 구조</span><span>자가 호스팅</span><span>엔진 지형</span></div>
+</section>
+
+<section class="slide" data-title="API 뒤의 구조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>층</div>
+  <h2 class="s-title sm">요청 하나가 지나는 길</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 번의 chat.completions 호출</span></div><pre><code>[내 앱 · 오케스트레이터]
+     |  POST /v1/chat/completions
+     v
+[서빙 엔진]   vLLM · Ollama · NIM …
+     |  스케줄링 · 배칭 · KV 캐시 관리
+     v
+[GPU + 모델 가중치]   Qwen 등
+     |  토큰 생성
+     v
+[스트리밍 응답]  ← 우리가 받던 그 토큰들</code></pre></div><div class="keymsg"><span class="k">정의</span><div>서빙 엔진은 모델 가중치를 메모리에 올리고, 여러 요청을 스케줄링해 GPU를 효율적으로 쓰게 하는 소프트웨어다.</div></div></div>
+</section>
+
+<section class="slide" data-title="서빙이 보이지 않았던 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">관리형 API의 역할</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA API를 쓰는 동안 서빙은 <b>NVIDIA가 대신</b> 하고 있었다 (NIM 계열 인프라).</div></div><div class="v"><span class="b">→</span><div>우리는 OpenAI 호환 <code>/v1</code> 규격만 알면 됐다.</div></div><div class="v"><span class="b">→</span><div>OpenAI · Anthropic API도 구조는 같다 — 관리형 서빙이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">★</span><div>관리형의 대가가 앞서 겪은 <b>rate limit</b>이다.</div></div><div class="v"><span class="b">→</span><div>9강에서 동시성 캡·백오프로 우회했지만, 근본 해법은 <b>서빙을 직접 갖는 것</b>이다.</div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>관리형 API는 서빙을 대신해 주는 대신 호출량을 제한한다. 오늘은 그 반대편을 배운다.</div></div></div>
+</section>
+
+<section class="slide" data-title="자가 호스팅의 세 가지 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
+  <h2 class="s-title sm">직접 띄우면 얻는 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>호출 제한에서의 해방</h4><p>내 GPU가 감당하는 만큼 부른다. 9강 멀티에이전트의 동시성 고민이 사라진다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>데이터 경계</h4><p>프롬프트가 외부로 나가지 않는다. 8강 삼성 사례의 해법이 정확히 이것이다 — 데이터가 통제 경계 안에 머문다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>대량 호출 비용</h4><p>호출량이 많으면 토큰 과금보다 GPU 비용이 싸지는 지점이 온다.</p></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>공짜는 아니다</h4><p>GPU 확보 · 모델 관리 · 장애 대응이 전부 내 몫이 된다. 소량 호출이면 관리형 API가 여전히 싸고 편하다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="서빙 엔진 지형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">용도별 대표 엔진</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>엔진</th><th>성격</th><th>주 용도</th></tr></thead><tbody><tr><td><b>Ollama</b></td><td>설치 한 줄 · llama.cpp 기반 · GGUF</td><td>개인 로컬 · 프로토타입</td></tr><tr><td><b>vLLM</b></td><td>PagedAttention · 높은 처리량</td><td>프로덕션 서버 (사실상 표준)</td></tr><tr><td><b>SGLang</b></td><td>구조화 출력·병렬에 강점</td><td>프로덕션 서버</td></tr><tr><td><b>TGI</b></td><td>Hugging Face 제품</td><td>HF 생태계</td></tr><tr><td><b>llama.cpp</b></td><td>C++ · CPU에서도</td><td>엣지 · 실험</td></tr><tr><td><b>NIM</b></td><td>NVIDIA 컨테이너 · TensorRT-LLM</td><td>엔터프라이즈 (오늘 CH3)</td></tr></tbody></table><div class="keymsg"><span class="k">공통점</span><div>전부 <b>OpenAI 호환 <code>/v1</code></b> 을 연다. 그래서 앱 코드는 base_url 하나만 바꾸면 된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="우리 DGX의 정체">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>사례</div>
+  <h2 class="s-title sm">이미 하나 갖고 있다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트용으로 못 썼던 이유.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">?</span><div>모델 문제일까, 설정 문제일까.</div></div><div class="v"><span class="b">★</span><div>CH3에서 답이 나온다 — <b>서빙 설정</b>(도구 호출 파서)의 문제다.</div></div></div></div></div><div class="keymsg"><span class="k">예고</span><div>오늘 끝나면 이 서버를 에이전트용으로 살릴 방법까지 알게 된다.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 추론의 원리">
+  <div class="ghost">01</div><div class="seyebrow">CHAPTER 01</div><h2>추론의 원리</h2>
+  <div class="agenda"><span>KV 캐시</span><span>PagedAttention</span><span>배칭</span><span>양자화</span></div>
+</section>
+
+<section class="slide" data-title="배경 — 토큰 하나의 비용">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">생성이 느린 구조적 이유</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>LLM은 <b>오토리그레시브</b> — 토큰을 하나 만들 때마다 지금까지의 전체 문맥을 입력으로 다시 계산한다.</div></div><div class="v"><span class="b">→</span><div>1,000토큰 답변 = forward 1,000번.</div></div><div class="v"><span class="b">✕</span><div>순진하게 구현하면 매번 <b>같은 앞부분을 다시 계산</b>하게 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">생성 루프의 구조</span></div><pre><code>문맥: [나는] → 다음 토큰 '오늘'
+문맥: [나는, 오늘] → '서빙'
+문맥: [나는, 오늘, 서빙] → '을'
+...
+
+# 매 단계의 attention 계산이
+# 앞 토큰 전체를 다시 본다</code></pre></div></div></div><div class="keymsg"><span class="k">질문</span><div>이 반복 계산을 어떻게 줄이는가 — 서빙 엔진 최적화의 출발점이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="KV 캐시">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>원리 1</div>
+  <h2 class="s-title sm">계산 재사용</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>attention에서 각 토큰의 <b>K(key)·V(value)</b>는 한 번 계산되면 변하지 않는다.</div></div><div class="v"><span class="b">→</span><div>그래서 <b>저장해 두고 재사용</b>한다 — 새 토큰 하나 분량만 계산하면 된다.</div></div><div class="v"><span class="b">★</span><div>생성 속도가 극적으로 빨라지는 대신, <b>메모리를 먹기 시작</b>한다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>KV 캐시 크기는 <b>문맥 길이 × 레이어 × 헤드</b>에 비례한다.</div></div><div class="v"><span class="b">→</span><div>긴 대화 · 동시 요청이 많을수록 GPU 메모리를 잠식한다.</div></div><div class="v"><span class="b">✕</span><div>8강의 '컨텍스트는 유한 자원'이 서빙 쪽에서는 <b>메모리 문제</b>로 나타난다.</div></div></div></div></div><div class="keymsg"><span class="k">교환</span><div>KV 캐시는 계산을 메모리로 바꾸는 거래다. 다음 문제는 그 메모리를 어떻게 아끼느냐가 된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="KV 캐시의 낭비">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">예약 방식의 비효율</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">순진한 할당</span></div><pre><code>요청 A: [========........]  최대 길이만큼 예약
+요청 B: [=====...........]  실제론 일부만 사용
+요청 C: [==============..]
+
+# 쓰지도 않을 뒷부분을 미리 잡아둔다
+# 조각난 빈틈은 다른 요청이 못 쓴다</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">✕</span><div>요청마다 <b>최대 길이를 통째로 예약</b> — 안 쓰는 부분이 낭비된다.</div></div><div class="v"><span class="b">✕</span><div>요청이 끝나고 남은 자리가 <b>조각나</b> 새 요청이 들어오지 못한다.</div></div><div class="v"><span class="b">→</span><div>GPU 메모리의 상당 부분이 실제로는 비어 있는 채 낭비됐다.</div></div></div></div></div><div class="keymsg"><span class="k">결과</span><div>메모리가 남는데도 동시 요청을 더 받지 못한다 — 처리량이 메모리 관리에 막히는 상황이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="PagedAttention">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>원리 2</div>
+  <h2 class="s-title sm">OS 페이징의 차용 — vLLM의 핵심</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>운영체제의 <b>가상 메모리 페이징</b>을 KV 캐시에 적용했다.</div></div><div class="v"><span class="b">→</span><div>KV를 <b>고정 크기 블록</b>으로 쪼개 필요할 때만 할당한다 — 연속 공간이 필요 없다.</div></div><div class="v"><span class="b">★</span><div>예약 낭비가 거의 사라져, 같은 GPU로 <b>훨씬 많은 동시 요청</b>을 받는다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">블록 단위 할당</span></div><pre><code>요청 A: [블록1][블록7][블록3]
+요청 B: [블록2][블록5]
+요청 C: [블록4][블록6][블록8]...
+
+# 물리 위치는 흩어져 있어도
+# 논리적으로 이어진 문맥으로 동작</code></pre></div></div></div><div class="keymsg"><span class="k">의의</span><div>vLLM이 이 논문에서 출발했고, 이후 대부분의 서빙 엔진이 같은 아이디어를 채택했다.</div></div></div>
+</section>
+
+<section class="slide" data-title="Continuous batching">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>원리 3</div>
+  <h2 class="s-title sm">빈자리의 즉시 충전</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">static batching</span></div><pre><code>배치: [A, B, C] 동시 시작
+A 끝남 → 자리 비움 (대기)
+B 끝남 → 자리 비움 (대기)
+C 끝날 때까지 전원 대기
+→ 다음 배치 [D, E, F] 시작</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">continuous batching</span></div><pre><code>배치: [A, B, C]
+A 끝남 → 그 자리에 D 즉시 투입
+B 끝남 → E 즉시 투입
+
+# 토큰 단위로 스케줄링
+# GPU가 놀지 않는다</code></pre></div></div></div><div class="keymsg"><span class="k">효과</span><div>요청 길이가 제각각인 실제 트래픽에서 처리량 차이를 만드는 핵심 기법이다. vLLM · SGLang 모두 기본 동작이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="양자화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>원리 4</div>
+  <h2 class="s-title sm">정밀도와 메모리의 교환</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>가중치를 FP16(16비트) 대신 <b>8비트·4비트</b>로 저장한다.</div></div><div class="v"><span class="b">→</span><div>예: 8B 모델이 FP16으로 약 16GB → 4비트로 <b>약 5GB</b> — 노트북에 들어간다.</div></div><div class="v"><span class="b">→</span><div>품질은 소폭 떨어지지만, 최근 기법(AWQ 등)은 체감 차이가 작다.</div></div></div></div><div><table class="ctable"><thead><tr><th>포맷</th><th>쓰는 곳</th></tr></thead><tbody><tr><td><b>GGUF</b></td><td>llama.cpp · Ollama — 로컬의 표준</td></tr><tr><td><b>AWQ · GPTQ</b></td><td>vLLM 등 GPU 서빙</td></tr><tr><td><b>FP8</b></td><td>최신 GPU (H100 이후) · NIM</td></tr></tbody></table></div></div><div class="keymsg"><span class="k">연결</span><div>Ollama에서 받는 모델이 전부 GGUF 양자화본이다. 큰 모델이 내 컴퓨터에서 도는 이유가 이것이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="처리량과 지연의 다른 목표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">서버용과 개인용의 갈림</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 실습</span><div>개인용(Ollama)을 직접 띄워보고, 프로덕션용(vLLM)은 원리와 설정을 다룬다.</div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] Ollama">
+  <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div><h2>Ollama</h2>
+  <div class="agenda"><span>설치</span><span>실행</span><span>OpenAI 호환</span></div>
+</section>
+
+<section class="slide" data-title="Ollama">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>개요</div>
+  <h2 class="s-title sm">내 컴퓨터의 모델 실행기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>llama.cpp</b> 기반의 로컬 서빙 도구 — 설치와 실행이 한 줄이다.</div></div><div class="v"><span class="b">→</span><div>모델은 <b>GGUF 양자화본</b>으로 받는다 — 8B급이 일반 노트북에서 돈다.</div></div><div class="v"><span class="b">→</span><div>GPU가 있으면 쓰고, 없으면 CPU로도 돈다 (느리지만).</div></div><div class="v"><span class="b">★</span><div>기본 포트 <code>11434</code> 에 <b>OpenAI 호환 <code>/v1</code></b> 을 연다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 명령이 전부</span></div><pre><code>ollama pull qwen3:8b   # 모델 받기
+ollama run qwen3:8b    # 대화 실행
+ollama list            # 받은 모델 목록</code></pre></div></div></div><div class="keymsg"><span class="k">자리</span><div>개인 실험·프로토타입·오프라인 환경용이다. 동시 사용자가 많은 서비스는 vLLM 쪽이 맞다.</div></div></div>
+</section>
+
+<section class="slide" data-title="설치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>설치</div>
+  <h2 class="s-title sm">윈도우 · 맥 · 리눅스</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Windows</span></div><pre><code>winget install Ollama.Ollama
+
+:: 또는 ollama.com/download 설치 파일
+:: 설치 후 새 터미널에서
+ollama --version</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">macOS / Linux</span></div><pre><code># macOS
+brew install ollama
+
+# Linux
+curl -fsSL https://ollama.com/install.sh | sh</code></pre></div></div></div><div class="keymsg"><span class="k">확인</span><div>설치가 끝나면 백그라운드 서비스가 함께 시작된다. <code>ollama list</code> 가 동작하면 준비 완료다.</div></div></div>
+</section>
+
+<section class="slide" data-title="모델 선택">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">수업용 권장 — qwen3:8b</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>모델</th><th>메모리 기준</th><th>특징</th></tr></thead><tbody><tr><td><b>qwen3:8b</b></td><td>VRAM 8GB 또는 RAM 16GB</td><td><b>도구 호출 지원</b> · 수업 권장</td></tr><tr><td>qwen3:4b</td><td>더 가벼움</td><td>저사양 노트북용 대안</td></tr><tr><td>기타 (llama · gemma …)</td><td>모델별 상이</td><td>ollama.com 라이브러리에서 확인</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>도구 호출 지원 여부가 핵심</h4><p>에이전트 실습에는 <b>tool calling을 지원하는 모델</b>이어야 한다. qwen3 계열은 지원한다 — 7강 루프를 그대로 붙일 수 있는 이유다.</p></div></div><div class="keymsg"><span class="k">수업 기준</span><div>사양이 되면 <code>qwen3:8b</code>, 무거우면 <code>qwen3:4b</code> 로 내려간다.</div></div></div>
+</section>
+
+<section class="slide" data-title="OpenAI 호환 API">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>핵심</div>
+  <h2 class="s-title sm">base_url 하나의 교체</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">7강에서 쓰던 코드 그대로</span></div><pre><code>from openai import OpenAI
+
+llm = OpenAI(
+  base_url="http://localhost:11434/v1",
+  api_key="ollama",   # 아무 문자열
+)
+
+r = llm.chat.completions.create(
+  model="qwen3:8b",
+  messages=[{"role":"user",
+             "content":"안녕"}],
+)</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>바뀐 것은 <b>base_url과 model 두 줄</b>이다.</div></div><div class="v"><span class="b">→</span><div>NVIDIA API · DGX · Ollama 가 전부 같은 규격을 열기 때문이다.</div></div><div class="v"><span class="b">★</span><div>7강 에이전트 루프, 9강 앱이 <b>수정 없이</b> 로컬 모델로 돌아간다.</div></div></div></div></div><div class="keymsg"><span class="k">표준의 힘</span><div>OpenAI 호환 <code>/v1</code> 이 사실상의 업계 표준이라, 서빙을 갈아끼워도 앱은 그대로다.</div></div></div>
+</section>
+
+<section class="slide" data-title="Modelfile">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>참고</div>
+  <h2 class="s-title sm">모델 커스터마이즈</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Modelfile</span></div><pre><code>FROM qwen3:8b
+SYSTEM """너는 우리 팀의 업무 비서다.
+한국어로 간결하게 답한다."""
+PARAMETER temperature 0.2</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">빌드와 실행</span></div><pre><code>ollama create my-assistant -f Modelfile
+ollama run my-assistant</code></pre></div></div></div><div class="keymsg"><span class="k">용도</span><div>시스템 프롬프트·파라미터를 박은 나만의 모델 이름을 만든다. 도커 이미지의 Dockerfile과 같은 발상이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 1 — Ollama 로컬 서빙">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 1 — 내 컴퓨터에 모델 띄우기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>winget install Ollama.Ollama</code> (맥은 brew). 새 터미널에서 <code>ollama --version</code> 확인.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>모델 받기 · 대화</h4><p><code>ollama pull qwen3:8b</code> → <code>ollama run qwen3:8b</code> 로 터미널 대화. 저사양이면 <code>qwen3:4b</code>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>API 확인</h4><p>openai 패키지로 <code>http://localhost:11434/v1</code> 을 호출한다 — NVIDIA API와 같은 규격임을 확인.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>관찰</h4><p>첫 토큰까지의 시간과 생성 속도를 NVIDIA API와 비교해 본다. 로컬의 지연·품질 감각을 잡는다.</p></div></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] vLLM과 프로덕션 서빙">
+  <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div><h2>vLLM과 프로덕션 서빙</h2>
+  <div class="agenda"><span>vllm serve</span><span>도구 호출 파서</span><span>NIM</span></div>
+</section>
+
+<section class="slide" data-title="vLLM">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>개요</div>
+  <h2 class="s-title sm">처리량 중심의 프로덕션 표준</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>PagedAttention</b> 논문 팀이 만든 오픈소스 서빙 엔진.</div></div><div class="v"><span class="b">→</span><div>continuous batching 기본 — 동시 요청 처리량이 강점이다.</div></div><div class="v"><span class="b">→</span><div>GPU 필요 (리눅스 중심). 개인 노트북용이 아니라 <b>서버용</b>이다.</div></div><div class="v"><span class="b">★</span><div>우리 DGX 같은 장비에 올리는 것이 전형적인 용도다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설치와 서버 실행</span></div><pre><code>pip install vllm
+
+vllm serve Qwen/Qwen3-8B
+# → http://0.0.0.0:8000/v1  (OpenAI 호환)</code></pre></div></div></div><div class="keymsg"><span class="k">결과</span><div>명령 한 줄로 OpenAI 호환 서버가 뜬다. 앱에서는 역시 base_url만 바꾸면 된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="도구 호출 파서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>함정</div>
+  <h2 class="s-title sm">서빙 설정이 에이전트를 가른다</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>모델은 도구 호출을 <code>&lt;tool_call&gt;…</code> 같은 <b>텍스트</b>로 뱉는다.</div></div><div class="v"><span class="b">→</span><div>이를 OpenAI 규격의 <b>tool_calls 필드로 변환하는 것은 서빙 엔진의 몫</b>이다.</div></div><div class="v"><span class="b">✕</span><div>파서를 안 켜면 — 도구 호출이 본문 텍스트로 섞여 나와 <b>에이전트 루프가 깨진다</b>.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">vLLM에서 켜는 법 (Qwen 계열)</span></div><pre><code>vllm serve Qwen/Qwen3-8B \
+  --enable-auto-tool-choice \
+  --tool-call-parser hermes
+
+# 이 두 플래그가 없으면
+# tool_calls 가 텍스트로 온다</code></pre></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>우리 DGX가 정확히 이 상태였다</h4><p>DGX Qwen이 <code>&lt;tool_call&gt;</code> 을 텍스트로 뱉어 에이전트용으로 못 썼다 — 모델이 아니라 <b>서빙 설정 문제</b>다. 파서를 켜면 rate limit 없는 에이전트 서버가 된다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="SGLang · TGI">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>참고</div>
+  <h2 class="s-title sm">다른 프로덕션 선택지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>SGLang</b> — vLLM과 같은 급의 처리량 + <b>구조화 출력·복잡한 병렬 호출</b>에 강점. 최근 채택이 빠르게 늘고 있다.</div></div><div class="v"><span class="b">→</span><div><b>TGI</b> (Text Generation Inference) — Hugging Face 제품. HF 생태계와의 결합이 장점.</div></div><div class="v"><span class="b">★</span><div>셋 다 OpenAI 호환을 연다. 엔진을 바꿔도 앱은 base_url만 바뀐다.</div></div></div><div class="keymsg"><span class="k">선택 기준</span><div>일반 서빙은 vLLM이 무난한 기본값이고, 구조화 출력이 많으면 SGLang을 검토한다.</div></div></div>
+</section>
+
+<section class="slide" data-title="NIM">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>NVIDIA</div>
+  <h2 class="s-title sm">컨테이너로 배포하는 프로덕션 서빙</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>NVIDIA Inference Microservice</b> — 모델·엔진(TensorRT-LLM)·설정을 <b>컨테이너 하나</b>로 묶은 제품.</div></div><div class="v"><span class="b">→</span><div><code>docker run</code> 으로 올리면 OpenAI 호환 <code>/v1</code> 이 뜬다.</div></div><div class="v"><span class="b">→</span><div>GPU별 최적화 프로파일 · 엔터프라이즈 지원이 강점이다.</div></div><div class="v"><span class="b">★</span><div>우리가 쓰던 <code>integrate.api.nvidia.com</code> 이 NIM 인프라의 관리형 버전이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">개념 예시</span></div><pre><code>docker run --gpus all \
+  nvcr.io/nim/qwen/... \
+  # → localhost:8000/v1
+
+# 오픈소스 조합(vLLM)과 같은 규격,
+# 배포·최적화가 제품화된 형태</code></pre></div></div></div><div class="keymsg"><span class="k">자리</span><div>vLLM이 오픈소스 표준이라면 NIM은 그 위의 엔터프라이즈 제품군이다 — 사내 GPU에 같은 API를 세운다.</div></div></div>
+</section>
+
+<section class="slide" data-title="서빙 선택 가이드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">상황별 기본값</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>상황</th><th>선택</th></tr></thead><tbody><tr><td>개인 노트북 · 오프라인 실험</td><td><b>Ollama</b></td></tr><tr><td>사내 GPU 서버 · 팀 공용</td><td><b>vLLM</b> (+ 도구 호출 파서)</td></tr><tr><td>구조화 출력·병렬 호출이 많은 서비스</td><td><b>SGLang</b></td></tr><tr><td>엔터프라이즈 지원 · 규제 환경</td><td><b>NIM</b></td></tr><tr><td>소량 호출 · 운영 부담 회피</td><td>관리형 API (NVIDIA · OpenAI …)</td></tr></tbody></table><div class="keymsg"><span class="k">공통 전제</span><div>무엇을 고르든 앱 쪽 변경은 base_url 한 줄이다. 서빙과 앱이 OpenAI 호환 규격으로 분리돼 있기 때문이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 2 — base_url 교체">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 2 — 7강 루프를 내 모델로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프 준비</h4><p>7강의 에이전트 루프(판단 → 도구 → 관찰)를 그대로 가져온다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>교체</h4><p><code>base_url="http://localhost:11434/v1"</code> · <code>model="qwen3:8b"</code> — 바뀌는 것은 두 줄뿐.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 호출 확인</h4><p>할 일 추가 도구를 시켜 <b>tool_calls 가 네이티브로 오는지</b> 본다. 로컬 모델이 에이전트가 되는 순간이다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>같은 요청을 NVIDIA API와 로컬로 각각 돌려 속도·품질을 표로 적는다.</p></div></div></div></div></div>
+</section>
+
+<section class="slide section" data-title="[섹션] 앱 연결">
+  <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>앱 연결</h2>
+  <div class="agenda"><span>모델 스위처</span><span>하이브리드 라우팅</span></div>
+</section>
+
+<section class="slide" data-title="앱의 모델 스위처 확장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">mcp-host에 로컬 모델 추가</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lib/models.ts 에 추가</span></div><pre><code>export const MODELS = [
+  { id: "qwen/qwen3-next-80b-a3b-instruct",
+    baseURL: "https://integrate.api.nvidia.com/v1",
+    label: "NVIDIA Qwen (관리형)" },
+  { id: "qwen3:8b",
+    baseURL: "http://localhost:11434/v1",
+    label: "로컬 Ollama" },
+]</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>9강 앱의 설정 패널(모델 선택)에 <b>로컬 항목</b>을 더한다.</div></div><div class="v"><span class="b">→</span><div>API Route가 선택된 baseURL로 클라이언트를 만들면 끝이다.</div></div><div class="v"><span class="b">★</span><div>같은 채팅 UI에서 <b>관리형·로컬을 골라 쓰는</b> 앱이 된다.</div></div></div></div></div><div class="keymsg"><span class="k">의미</span><div>서빙 계층이 표준 규격으로 분리돼 있어서, 앱 기능이 아니라 설정 항목 하나로 끝나는 일이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="하이브리드 라우팅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">관리형과 자가 서빙의 분업</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>역할</th><th>보낼 곳</th><th>이유</th></tr></thead><tbody><tr><td>도구를 쓰는 워커</td><td><b>NVIDIA API</b> (또는 파서 켠 vLLM)</td><td>안정적인 tool_calls</td></tr><tr><td>요약 · 비평 · 저지</td><td><b>DGX / Ollama</b> (자가 서빙)</td><td>도구 불필요 · 호출량 부담 없음</td></tr><tr><td>대량 배치 작업</td><td><b>자가 서빙</b></td><td>rate limit·비용 해방</td></tr></tbody></table><div class="keymsg"><span class="k">연결</span><div>9강 멀티에이전트의 rate limit 대응이 여기서 완성된다 — 동시성 캡이 아니라 <b>부하 자체를 나누는</b> 해법이다. 8강 모델 라우팅의 서빙판이기도 하다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 3 — 앱에 로컬 모델 연결 (선택)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 3 — 모델 스위처 확장</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>모델 목록 추가</h4><p>앱의 모델 상수에 Ollama 항목(<code>localhost:11434/v1</code>)을 더한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>동작 확인</h4><p>설정 패널에서 로컬 모델을 고르고 대화가 되는지, 스트리밍이 흐르는지 확인한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>강사 시연 — DGX 파서</h4><p>DGX의 서빙 스택에서 도구 호출 파서를 켜고, tool_calls 가 네이티브로 바뀌는 것을 확인한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>회고</h4><p>관리형·로컬·자가 서버 세 경로의 속도·품질·제약을 표로 정리한다.</p></div></div></div></div></div>
+</section>
+
+<section class="slide" data-title="오늘 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">오늘 채운 층</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)를 직접 띄웠고, vLLM(프로덕션)의 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델로 돌았다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙까지 내려가 보면, 관리형 API의 제약이 선택의 문제였다는 것을 알게 된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="열흘의 지도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>마무리</div>
+  <h2 class="s-title sm">1강부터 10강까지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">전체 스택</span></div><pre><code>10강  서빙          vLLM · Ollama · NIM — 모델을 직접 띄운다
+ 9강  멀티에이전트    오케스트레이터 · 병렬 · 계약
+ 8강  하네스         CLAUDE.md · 보안 게이트 · 풀스택
+ 7강  에이전트       LLM + 도구 + 루프
+ 3-6강 MCP           도구 프로토콜 · 서버 제작
+ 1-2강 RAG           검색으로 근거를 대는 생성</code></pre></div><div class="keymsg"><span class="k">마무리</span><div>모델 위의 모든 층을 한 번씩 직접 만들거나 다뤘다. 어떤 층에서 문제가 나든, 이제 어디를 열어봐야 하는지 안다.</div></div></div>
+</section>
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
