@@ -461,7 +461,7 @@
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>프레임워크</div>
   <h2 class="s-title sm">에이전트 워크플로를 그래프로 모델링</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>LangChain 팀</b>이 만든 에이전트 오케스트레이션 프레임워크.</div></div><div class="v"><span class="b">→</span><div>워크플로를 <b>그래프</b>로 짠다 — <b>노드</b>(작업)와 <b>엣지</b>(흐름).</div></div><div class="v"><span class="b">★</span><div>상태 기계(state machine)에 가깝다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">?</span><div><b>왜 그래프인가</b> — 체인·DAG는 한 방향뿐이다.</div></div><div class="v"><span class="b">→</span><div>에이전트는 <b>되돌아가고 반복</b>한다 (판단→도구→관찰→다시 판단).</div></div><div class="v"><span class="b">★</span><div><b>순환(loop)과 조건 분기</b>를 표현하려면 그래프가 필요하다.</div></div></div></div></div><div class="keymsg"><span class="k">언제</span><div>복잡한 상태·순환·조건 라우팅이 필요한 <b>프로덕션 멀티에이전트</b>를 코드로 짤 때.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>LangChain 팀</b>이 만든 에이전트 오케스트레이션 프레임워크.</div></div><div class="v"><span class="b">→</span><div>워크플로를 <b>그래프</b>로 짠다 — <b>노드</b>(작업)와 <b>엣지</b>(흐름).</div></div><div class="v"><span class="b">★</span><div>상태 기계(state machine)에 가깝다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">?</span><div><b>왜 그래프인가</b> — 체인·DAG는 한 방향뿐이다.</div></div><div class="v"><span class="b">→</span><div>에이전트는 <b>되돌아가고 반복</b>한다 (판단→도구→관찰→다시 판단).</div></div><div class="v"><span class="b">★</span><div><b>순환(loop)과 조건 분기</b>를 표현하려면 그래프가 필요하다.</div></div></div></div></div><div class="keymsg"><span class="k">언제</span><div>복잡한 상태·순환·조건 라우팅이 필요한 <b>프로덕션 멀티에이전트</b>를 코드로 짤 때.</div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>LangChain과의 현재 관계</h4><p>역사적으로는 LangChain(AgentExecutor)의 한계에서 LangGraph가 나왔다. 현재는 관계가 한 층 정리됐다 — <b>LangChain 1.0의 <code>create_agent</code>가 LangGraph 위에서 돈다</b>. LangGraph가 런타임이고, LangChain이 그 위의 고수준 API다.</p></div></div></div>
 </section>
 
 <section class="slide" data-title="핵심 3요소 — State · Node · Edge">
@@ -791,6 +791,19 @@ npx get-shit-done-cc --codex</code></pre></div></div></div><div class="callout m
   <h2 class="s-title sm">도구마다 멀티에이전트 경로가 있다</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>진영</th><th>도구</th><th>멀티에이전트 방법</th></tr></thead><tbody><tr><td>Anthropic</td><td><b>Claude Code</b></td><td>Superpowers · gstack · revfactory/harness (agent teams)</td></tr><tr><td>OpenAI</td><td><b>Codex</b></td><td>Superpowers(크로스) · <b>meta-harness</b>(SaehwanPark 포트)</td></tr><tr><td>Google</td><td><b>Antigravity</b></td><td>네이티브 병렬 서브에이전트 스쿼드</td></tr></tbody></table><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>Google Antigravity</h4><p>Gemini CLI가 2026년 6월 <b>Antigravity CLI</b>(<code>agy</code>)로 전환됐다. researcher · planner · coder · reviewer · ops 같은 역할의 <b>서브에이전트 스쿼드</b>를 각자 격리 샌드박스에서 병렬 실행한다. <code>/goal</code> · <code>/schedule</code> 슬래시 명령을 쓴다.</p></div></div></div>
+</section>
+
+<section class="slide" data-title="NeMo Agent Toolkit">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>NVIDIA</div>
+  <h2 class="s-title sm">에이전트 팀의 연결과 최적화 계층</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA의 오픈소스 라이브러리 — <b>여러 에이전트를 연결·관측·최적화</b>하는 층이다.</div></div><div class="v"><span class="b">→</span><div><b>프레임워크 불문</b> — LangChain·LangGraph·CrewAI·LlamaIndex·Semantic Kernel 위에 나란히 얹힌다.</div></div><div class="v"><span class="b">→</span><div>그래프 기반 프레임워크를 <b>병렬 실행·노드 우선순위</b>로 가속한다.</div></div><div class="v"><span class="b">★</span><div><b>MCP와 A2A를 지원</b>한다 — 오늘 배운 두 프로토콜이 여기서 다시 만난다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">층으로 보면</span></div><pre><code>NeMo Agent Toolkit    ← 연결·관측·최적화
+     |
+LangGraph · CrewAI
+· 직접 구현 오케스트레이터  ← 워크플로를 짠다
+     |
+서빙 (vLLM · NIM)          ← 모델을 띄운다</code></pre></div></div></div><div class="keymsg"><span class="k">주의</span><div>이름이 비슷한 NeMo(본체)는 모델 <b>학습·배포</b> 프레임워크로 전혀 다른 물건이다. Agent Toolkit은 그중 에이전트 오케스트레이션 위에 얹는 도구다.</div></div></div>
 </section>
 
 <section class="slide" data-title="같은 작업, 다른 명령어">
@@ -1243,6 +1256,14 @@ export const webSearch: Tool = {
 }</code></pre></div></div></div><div class="keymsg"><span class="k">키는 서버에만</span><div>검색 키도 API Route(서버)에서만 쓴다 — 8강의 원칙 그대로. 키가 프론트에 있으면 유출된 키다.</div></div></div>
 </section>
 
+<section class="slide" data-title="직접 도구와 MCP 도구">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">도구를 붙이는 두 방식</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>직접 도구</th><th>MCP 도구</th></tr></thead><tbody><tr><td>코드 위치</td><td><b>앱 코드 안</b> (<code>lib/tools/…</code>)</td><td><b>별도 프로그램</b> (MCP 서버)</td></tr><tr><td>프로세스</td><td>앱 백엔드와 같은 프로세스</td><td>다른 프로세스 (다른 언어·머신 가능)</td></tr><tr><td>연결</td><td>함수 호출</td><td>프로토콜 — <code>list_tools</code> → <code>call_tool</code></td></tr><tr><td>추가·제거</td><td>앱 코드 수정</td><td>앱 코드 수정 없이 장착·해제</td></tr><tr><td>재사용</td><td>이 앱에서만</td><td>여러 앱·도구가 공유</td></tr></tbody></table><div class="keymsg"><span class="k">LLM 입장에서는 같다</span><div>어느 쪽이든 name·description·parameters를 가진 도구 하나로 보이고 똑같이 호출한다. 차이는 뒤의 배관이다. 우리 앱에서 <b>웹검색은 직접 도구</b>, <b>5강 서버·슬랙은 MCP 도구</b>로 붙이는 이유가 이것이다.</div></div></div>
+</section>
+
 <section class="slide" data-title="MCP 서버 모듈 장착">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구현</div>
@@ -1304,6 +1325,21 @@ const tools = getRegisteredTools()</code></pre></div></div></div><div class="cal
   <h2 class="s-title sm">멀티에이전트의 비용 구조</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>에이전트 수 × 스텝 × 컨텍스트 = <b>토큰 폭증</b></div></div><div class="v"><span class="b">→</span><div><b>예산</b>을 정하고, 초과하면 멈춘다</div></div><div class="v"><span class="b">→</span><div>병렬은 빠르지만 <b>공짜가 아니다</b></div></div></div><div class="keymsg"><span class="k">감각</span><div>‘더 많은 에이전트’가 항상 답은 아니다 — <b>필요한 만큼만</b>.</div></div></div>
+</section>
+
+<section class="slide" data-title="호출 한도 아래의 설계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>제약</div>
+  <h2 class="s-title sm">관리형 API로 멀티에이전트를 돌릴 때</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>관리형 키는 분당 호출이 제한된다. 워커 여럿을 동시에 돌리면 <b>순간 호출이 몰려 429</b>가 난다.</div></div><div class="v"><span class="b">①</span><div><b>동시성 캡</b> — 워커를 2~3개씩 도는 풀로 제한한다. <code>Promise.all</code> 대신 소규모 풀.</div></div><div class="v"><span class="b">②</span><div><b>지수 백오프</b> — 429를 받으면 잠시 쉬고 재시도한다.</div></div><div class="v"><span class="b">③</span><div><b>Run당 예산</b> — 최대 스텝·총 호출 상한. 루프 엔지니어링의 예산이 여기서 실전이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">호출 수 감각 (에이전트 3~5개 기준)</span></div><pre><code>플래너         1콜
+태스크 5 × 2~3콜   10~15콜
+검증           1~2콜
+─────────────────
+합계        약 15콜 / Run
+
+# 동시성 2~3이면 무료 키로도
+# 1~2분에 걸쳐 안정적으로 돈다</code></pre></div></div></div><div class="keymsg"><span class="k">근본 해법</span><div>캡과 백오프는 우회다. 한도 자체를 없애려면 <b>자가 서빙</b>으로 간다 — 10강에서 다룬다. 도구 워커는 관리형 API, 요약·비평은 자가 서빙으로 나누는 하이브리드가 실전 답이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="모델 티어링">
