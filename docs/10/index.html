@@ -313,7 +313,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>층</div>
   <h2 class="s-title sm">요청 하나가 지나는 길</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 번의 chat.completions 호출</span></div><pre><code>[내 앱 · 오케스트레이터]
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 번의 chat.completions 호출</span></div><pre><code>[내 앱 · 오케스트레이터]   직접 구현 · LangGraph · Claude Code
      |  POST /v1/chat/completions
      v
 [서빙 엔진]   vLLM · Ollama · NIM …
@@ -542,7 +542,7 @@ vllm serve Qwen/Qwen3-8B
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>함정</div>
   <h2 class="s-title sm">서빙 설정이 에이전트를 가른다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>모델은 도구 호출을 <code>&lt;tool_call&gt;…</code> 같은 <b>텍스트</b>로 뱉는다.</div></div><div class="v"><span class="b">→</span><div>이를 OpenAI 규격의 <b>tool_calls 필드로 변환하는 것은 서빙 엔진의 몫</b>이다.</div></div><div class="v"><span class="b">✕</span><div>파서를 안 켜면 — 도구 호출이 본문 텍스트로 섞여 나와 <b>에이전트 루프가 깨진다</b>.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">vLLM에서 켜는 법 (Qwen 계열)</span></div><pre><code>vllm serve Qwen/Qwen3-8B \
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>모델은 도구 호출을 <code>&lt;tool_call&gt;…</code> 같은 <b>텍스트</b>로 뱉는다.</div></div><div class="v"><span class="b">→</span><div>이를 OpenAI 규격의 <b>tool_calls 필드로 변환하는 것은 서빙 엔진의 몫</b>이다.</div></div><div class="v"><span class="b">✕</span><div>파서를 안 켜면 — 도구 호출이 본문 텍스트로 섞여 나와 <b>에이전트 루프가 깨진다</b>. 직접 구현이든 LangGraph든 마찬가지다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">vLLM에서 켜는 법 (Qwen 계열)</span></div><pre><code>vllm serve Qwen/Qwen3-8B \
   --enable-auto-tool-choice \
   --tool-call-parser hermes
 
