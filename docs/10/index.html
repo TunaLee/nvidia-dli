@@ -452,46 +452,6 @@ docker run --gpus all nvcr.io/nim/...     # :8000/v1</code></pre></div><div clas
   <div class="body"><table class="ctable"><thead><tr><th>규모</th><th>FP16 원본</th><th>Q4 양자화 (GGUF)</th><th>실행 환경</th></tr></thead><tbody><tr><td>4B</td><td>약 8GB</td><td>약 2.5GB</td><td>CPU · RAM 16GB</td></tr><tr><td>8B</td><td>약 16GB</td><td>약 5GB</td><td>VRAM 8GB 또는 RAM 16GB</td></tr><tr><td>14B</td><td>약 28GB</td><td>약 9GB</td><td>VRAM 12~16GB</td></tr><tr><td>30B-A3B (MoE)</td><td>약 60GB</td><td>약 18GB</td><td>VRAM 24GB 또는 RAM 32GB</td></tr><tr><td>70B급</td><td>약 140GB</td><td>약 40GB</td><td>멀티 GPU · 워크스테이션</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">→</span><div>가중치 외에 <b>KV 캐시</b>가 컨텍스트 길이·동시 요청 수에 비례해 추가된다 (CH1).</div></div><div class="v"><span class="b">→</span><div>로컬은 Q4 양자화가 기본값이다 — Ollama가 받는 GGUF가 이것이다.</div></div><div class="v"><span class="b">→</span><div><b>컨텍스트 길이</b> — Ollama 기본값은 짧다(2k~4k). 에이전트 루프처럼 대화가 길어지면 앞부분이 잘리므로 <code>num_ctx</code> 로 늘린다. KV 캐시 메모리가 비례해 커진다.</div></div><div class="v"><span class="b">★</span><div>따라서 GPU 없는 노트북의 실습 상한은 <b>4B Q4</b> 급이다.</div></div></div></div>
 </section>
 
-<section class="slide" data-title="OpenAI 호환 API">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>핵심</div>
-  <h2 class="s-title sm">base_url 하나의 교체</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">7강에서 쓰던 코드 그대로</span></div><pre><code>from openai import OpenAI
-
-llm = OpenAI(
-  base_url="http://localhost:11434/v1",
-  api_key="ollama",   # 아무 문자열
-)
-
-r = llm.chat.completions.create(
-  model="qwen3:4b-instruct",
-  messages=[{"role":"user",
-             "content":"안녕"}],
-)</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>바뀐 것은 <b>base_url과 model 두 줄</b>이다.</div></div><div class="v"><span class="b">→</span><div>NVIDIA API · DGX · Ollama 가 전부 같은 규격을 열기 때문이다.</div></div><div class="v"><span class="b">★</span><div>7강 에이전트 루프, 9강 앱이 <b>수정 없이</b> 로컬 모델로 돌아간다.</div></div></div></div></div><div class="keymsg"><span class="k">호환 규격</span><div>OpenAI 호환 <code>/v1</code> 이 사실상의 업계 표준이다. 서빙을 바꿔도 앱 코드는 유지된다.</div></div></div>
-</section>
-
-<section class="slide" data-title="하이브리드 thinking의 함정">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">hybrid와 instruct의 응답 시간 차이</h2>
-  <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>같은 질문 — 실측 비교</th><th>qwen3:4b (hybrid)</th><th>qwen3:4b-instruct</th></tr></thead><tbody><tr><td>생성 토큰</td><td>2,232 (안 보이는 추론 포함)</td><td><b>63</b></td></tr><tr><td>스트리밍 첫 응답</td><td>추론이 끝난 뒤에야 시작</td><td><b>즉시</b></td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✕</span><div>hybrid 모델은 <b>thinking이 기본으로 켜져</b> 있고, <code>/v1</code>의 <code>think:false</code>·<code>/no_think</code> 스위치로는 <b>꺼지지 않았다</b> (실측).</div></div><div class="v"><span class="b">→</span><div>해법은 우회가 아니라 <b>모델 태그 선택</b>이다 — thinking이 없는 <code>-instruct</code> 변형을 받는다.</div></div></div><div class="keymsg"><span class="k">정리</span><div>도구 호출 파서와 마찬가지로, 모델 태그 선택이 에이전트 응답 시간을 결정한다.</div></div></div>
-</section>
-
-<section class="slide" data-title="도구 호출 파서">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>함정</div>
-  <h2 class="s-title sm">도구 호출 파서 설정</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>모델은 도구 호출을 <code>&lt;tool_call&gt;…</code> 같은 <b>텍스트</b>로 뱉는다.</div></div><div class="v"><span class="b">→</span><div>이를 OpenAI 규격의 <b>tool_calls 필드로 변환하는 것은 서빙 엔진의 몫</b>이다.</div></div><div class="v"><span class="b">✕</span><div>파서를 안 켜면 — 도구 호출이 본문 텍스트로 섞여 나와 <b>에이전트 루프가 깨진다</b>. 직접 구현이든 LangGraph든 마찬가지다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">vLLM에서 켜는 법 (Qwen 계열)</span></div><pre><code>vllm serve Qwen/Qwen3-8B \
-  --enable-auto-tool-choice \
-  --tool-call-parser hermes
-
-# 이 두 플래그가 없으면
-# tool_calls 가 텍스트로 온다</code></pre></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>강의용 DGX의 사례</h4><p>DGX Qwen이 <code>&lt;tool_call&gt;</code> 을 텍스트로 반환해 에이전트 루프가 동작하지 않는다 — 모델이 아니라 <b>서빙 설정 문제</b>다. 파서를 켜면 rate limit 없는 에이전트 서버가 된다.</p></div></div></div>
-</section>
-
 <section class="slide section" data-title="[섹션] 앱 연결">
   <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div><h2>앱 연결</h2>
   <div class="agenda"><span>모델 스위처</span><span>하이브리드 라우팅</span></div>
