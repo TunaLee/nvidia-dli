@@ -303,23 +303,6 @@
   <div class="agenda"><span>층 구조</span><span>자가 호스팅</span><span>엔진 지형</span></div>
 </section>
 
-<section class="slide" data-title="API 뒤의 구조">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>층</div>
-  <h2 class="s-title sm">요청 하나가 지나는 길</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 번의 chat.completions 호출</span></div><pre><code>[내 앱 · 오케스트레이터]   직접 구현 · LangGraph · Claude Code
-     |  POST /v1/chat/completions
-     v
-[서빙 엔진]   vLLM · Ollama · NIM …
-     |  스케줄링 · 배칭 · KV 캐시 관리
-     v
-[GPU + 모델 가중치]   Qwen 등
-     |  토큰 생성
-     v
-[스트리밍 응답]  ← 우리가 받던 그 토큰들</code></pre></div><div class="keymsg"><span class="k">정의</span><div>서빙 엔진은 모델 가중치를 메모리에 올리고, 여러 요청을 스케줄링해 GPU를 효율적으로 쓰게 하는 소프트웨어다.</div></div></div>
-</section>
-
 <section class="slide" data-title="서빙이 보이지 않았던 이유">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
@@ -692,6 +675,23 @@ def worker(state):       # 배치별 감성·주제 분석
 
 def aggregate(state):    # 경영 보고 종합
     ...</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 구조(분할 → 팬아웃 → 병렬 → 종합)는 CH4 코드와 동일하다.</div></div><div class="v"><span class="b">→</span><div>분할 노드는 LLM이 아니라 <b>일반 코드</b>다 — 규칙으로 나눌 수 있으면 LLM을 쓰지 않는다.</div></div><div class="v"><span class="b">★</span><div>실측 (Ollama qwen3:4b-instruct): 리뷰 12건 · 3배치 병렬. 긍/부정 비율·주제별 불만·개선 우선순위가 담긴 보고가 생성된다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>실무 적용은 그래프를 새로 짜는 일이 아니라, 검증된 구조에 입력과 워커 프롬프트를 바꾸는 일이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="API 뒤의 구조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>구조 정리</div>
+  <h2 class="s-title sm">요청 하나가 지나는 길</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 번의 chat.completions 호출</span></div><pre><code>[내 앱 · 오케스트레이터]   직접 구현 · LangGraph · Claude Code
+     |  POST /v1/chat/completions
+     v
+[서빙 엔진]   vLLM · Ollama · NIM …
+     |  스케줄링 · 배칭 · KV 캐시 관리
+     v
+[GPU + 모델 가중치]   Qwen 등
+     |  토큰 생성
+     v
+[스트리밍 응답]  ← 우리가 받던 그 토큰들</code></pre></div><div class="keymsg"><span class="k">정의</span><div>서빙 엔진은 모델 가중치를 메모리에 올리고, 여러 요청을 스케줄링해 GPU를 효율적으로 쓰게 하는 소프트웨어다.</div></div></div>
 </section>
 
 <section class="slide" data-title="오늘 정리">
