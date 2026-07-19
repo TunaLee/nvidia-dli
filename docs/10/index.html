@@ -295,7 +295,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>연결</div>
   <h2 class="s-title sm">API 뒤의 마지막 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층의 원리를 살펴본다. 서빙까지 알면 스택의 전 층을 이해한 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층의 원리를 다룬다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
  8-9강 하네스·팀    (Claude Code · 오케스트레이터)
  7강   에이전트 루프 (판단 → 도구 → 관찰)
  3-6강 MCP 도구
@@ -330,7 +330,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
   <h2 class="s-title sm">관리형 API의 역할</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA API를 쓰는 동안 서빙은 <b>NVIDIA가 대신</b> 하고 있었다 (NIM 계열 인프라).</div></div><div class="v"><span class="b">→</span><div>우리는 OpenAI 호환 <code>/v1</code> 규격만 알면 됐다.</div></div><div class="v"><span class="b">→</span><div>OpenAI · Anthropic API도 구조는 같다 — 관리형 서빙이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">★</span><div>관리형의 대가가 앞서 겪은 <b>rate limit</b>이다.</div></div><div class="v"><span class="b">→</span><div>9강에서 동시성 캡·백오프로 우회했지만, 근본 해법은 <b>서빙을 직접 갖는 것</b>이다.</div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>관리형 API는 서빙을 대신해 주는 대신 호출량을 제한한다. 오늘은 그 반대편을 배운다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA API를 쓰는 동안 서빙은 <b>NVIDIA가 대신</b> 하고 있었다 (NIM 계열 인프라).</div></div><div class="v"><span class="b">→</span><div>우리는 OpenAI 호환 <code>/v1</code> 규격만 알면 됐다.</div></div><div class="v"><span class="b">→</span><div>OpenAI · Anthropic API도 구조는 같다 — 관리형 서빙이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">★</span><div>관리형 API의 대가는 호출량 제한(<b>rate limit</b>)이다.</div></div><div class="v"><span class="b">→</span><div>동시성 캡·백오프는 우회책이고, <b>자가 서빙</b>이 근본 해법이다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API는 서빙을 대신하는 대신 호출량을 제한한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="자가 호스팅의 세 가지 이유">
@@ -354,7 +354,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>사례</div>
   <h2 class="s-title sm">이미 하나 갖고 있다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트용으로 못 썼던 이유.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">?</span><div>모델 문제일까, 설정 문제일까.</div></div><div class="v"><span class="b">★</span><div>CH3에서 답이 나온다 — <b>서빙 설정</b>(도구 호출 파서)의 문제다.</div></div></div></div></div><div class="keymsg"><span class="k">예고</span><div>오늘 끝나면 이 서버를 에이전트용으로 살릴 방법까지 알게 된다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트용으로 못 썼던 이유.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>원인은 모델이 아니라 서빙 설정이다.</div></div><div class="v"><span class="b">★</span><div>해결 설정은 <b>도구 호출 파서</b>다 (CH3).</div></div></div></div></div><div class="keymsg"><span class="k">참고</span><div>해결 설정(도구 호출 파서)은 CH3에서 다룬다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 추론의 원리">
@@ -373,7 +373,7 @@
 ...
 
 # 매 단계의 attention 계산이
-# 앞 토큰 전체를 다시 본다</code></pre></div></div></div><div class="keymsg"><span class="k">질문</span><div>이 반복 계산을 어떻게 줄이는가 — 서빙 엔진 최적화의 출발점이다.</div></div></div>
+# 앞 토큰 전체를 다시 본다</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div>이 반복 계산을 줄이는 것이 서빙 엔진 최적화의 출발점이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="KV 캐시">
@@ -381,7 +381,7 @@
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>원리 1</div>
   <h2 class="s-title sm">계산 재사용</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>attention에서 각 토큰의 <b>K(key)·V(value)</b>는 한 번 계산되면 변하지 않는다.</div></div><div class="v"><span class="b">→</span><div>그래서 <b>저장해 두고 재사용</b>한다 — 새 토큰 하나 분량만 계산하면 된다.</div></div><div class="v"><span class="b">★</span><div>생성 속도가 극적으로 빨라지는 대신, <b>메모리를 먹기 시작</b>한다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>KV 캐시 크기는 <b>문맥 길이 × 레이어 × 헤드</b>에 비례한다.</div></div><div class="v"><span class="b">→</span><div>긴 대화 · 동시 요청이 많을수록 GPU 메모리를 잠식한다.</div></div><div class="v"><span class="b">✕</span><div>8강의 '컨텍스트는 유한 자원'이 서빙 쪽에서는 <b>메모리 문제</b>로 나타난다.</div></div></div></div></div><div class="keymsg"><span class="k">교환</span><div>KV 캐시는 계산을 메모리로 바꾸는 거래다. 다음 문제는 그 메모리를 어떻게 아끼느냐가 된다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>attention에서 각 토큰의 <b>K(key)·V(value)</b>는 한 번 계산되면 변하지 않는다.</div></div><div class="v"><span class="b">→</span><div>그래서 <b>저장해 두고 재사용</b>한다 — 새 토큰 하나 분량만 계산하면 된다.</div></div><div class="v"><span class="b">★</span><div>생성 속도가 극적으로 빨라지는 대신, <b>메모리를 먹기 시작</b>한다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>KV 캐시 크기는 <b>문맥 길이 × 레이어 × 헤드</b>에 비례한다.</div></div><div class="v"><span class="b">→</span><div>긴 대화 · 동시 요청이 많을수록 GPU 메모리를 잠식한다.</div></div><div class="v"><span class="b">✕</span><div>8강의 '컨텍스트는 유한 자원'이 서빙 쪽에서는 <b>메모리 문제</b>로 나타난다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>KV 캐시는 계산량을 메모리 사용량으로 바꾸는 기법이다. 이후 과제는 메모리 관리다.</div></div></div>
 </section>
 
 <section class="slide" data-title="KV 캐시의 낭비">
@@ -438,7 +438,7 @@ B 끝남 → E 즉시 투입
 <section class="slide" data-title="처리량과 지연의 다른 목표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">서버용과 개인용의 갈림</h2>
+  <h2 class="s-title sm">서버용과 개인용의 차이</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 구성</span><div>개인용(Ollama)과 프로덕션용(vLLM)의 원리와 설정을 예시 중심으로 살펴본다.</div></div></div>
 </section>
@@ -479,15 +479,15 @@ curl -fsSL https://ollama.com/install.sh | sh</code></pre></div></div></div><div
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>모델</div>
   <h2 class="s-title sm">수업용 권장 — qwen3:8b</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>모델</th><th>메모리 기준</th><th>특징</th></tr></thead><tbody><tr><td><b>qwen3:4b-instruct</b></td><td>2.5GB · RAM 16GB (CPU 가능)</td><td><b>수업 기본</b> — thinking 없음 · 도구 호출 (실측 검증)</td></tr><tr><td>qwen2.5:3b</td><td>1.9GB · RAM 8GB</td><td>저사양 대안 — 도구 호출 지원 (참고)</td></tr><tr><td>qwen3:30b-a3b-instruct</td><td>GPU · RAM 24GB+</td><td>상위 선택 (참고)</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>도구 호출 지원 여부가 핵심</h4><p>에이전트 실습에는 <b>tool calling을 지원하는 모델</b>이어야 한다. qwen3 계열은 작은 사이즈까지 전부 지원한다 — CPU 노트북에서도 7강 루프를 붙일 수 있는 이유다.</p></div></div><div class="keymsg"><span class="k">수업 기준</span><div>태그의 <b>-instruct 가 핵심</b>이다. 무늬만 같은 <code>qwen3:4b</code>(hybrid)는 thinking이 기본으로 켜져 있어 한 문장 답변에도 수십 초를 쓴다. 다음 장에서 실측으로 확인한다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>모델</th><th>메모리 기준</th><th>특징</th></tr></thead><tbody><tr><td><b>qwen3:4b-instruct</b></td><td>2.5GB · RAM 16GB (CPU 가능)</td><td><b>수업 기본</b> — thinking 없음 · 도구 호출 (실측 검증)</td></tr><tr><td>qwen2.5:3b</td><td>1.9GB · RAM 8GB</td><td>저사양 대안 — 도구 호출 지원 (참고)</td></tr><tr><td>qwen3:30b-a3b-instruct</td><td>GPU · RAM 24GB+</td><td>상위 선택 (참고)</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>도구 호출 지원 여부가 핵심</h4><p>에이전트 실습에는 <b>tool calling을 지원하는 모델</b>이어야 한다. qwen3 계열은 작은 사이즈까지 전부 지원한다 — CPU 노트북에서도 7강 루프를 붙일 수 있는 이유다.</p></div></div><div class="keymsg"><span class="k">선택 기준</span><div>hybrid 태그(<code>qwen3:4b</code>)는 thinking이 기본으로 켜져 있어 응답이 수십 초 걸린다. thinking이 없는 <b>-instruct</b> 태그를 받는다. 실측 비교는 다음 장.</div></div></div>
 </section>
 
 <section class="slide" data-title="하이브리드 thinking의 함정">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">태그 하나가 가르는 응답 시간</h2>
+  <h2 class="s-title sm">hybrid와 instruct의 응답 시간 차이</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>같은 질문 (M3 · 24GB 실측)</th><th>qwen3:4b (hybrid)</th><th>qwen3:4b-instruct</th></tr></thead><tbody><tr><td>생성 토큰</td><td>2,232 (안 보이는 추론 포함)</td><td><b>63</b></td></tr><tr><td>답변 시간</td><td>82.5초</td><td><b>3.9초</b></td></tr><tr><td>스트리밍 첫 토큰</td><td>88.9초</td><td><b>0.23초</b></td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✕</span><div>hybrid 모델은 <b>thinking이 기본으로 켜져</b> 있고, <code>/v1</code>의 <code>think:false</code>·<code>/no_think</code> 스위치로는 <b>꺼지지 않았다</b> (실측).</div></div><div class="v"><span class="b">→</span><div>해법은 우회가 아니라 <b>모델 태그 선택</b>이다 — thinking이 없는 <code>-instruct</code> 변형을 받는다.</div></div></div><div class="keymsg"><span class="k">교훈</span><div>도구 호출 파서(다음 챕터)와 함께, <b>서빙 계층의 선택이 에이전트의 체감을 가른다</b>는 두 번째 사례다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>같은 질문 (M3 · 24GB 실측)</th><th>qwen3:4b (hybrid)</th><th>qwen3:4b-instruct</th></tr></thead><tbody><tr><td>생성 토큰</td><td>2,232 (안 보이는 추론 포함)</td><td><b>63</b></td></tr><tr><td>답변 시간</td><td>82.5초</td><td><b>3.9초</b></td></tr><tr><td>스트리밍 첫 토큰</td><td>88.9초</td><td><b>0.23초</b></td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✕</span><div>hybrid 모델은 <b>thinking이 기본으로 켜져</b> 있고, <code>/v1</code>의 <code>think:false</code>·<code>/no_think</code> 스위치로는 <b>꺼지지 않았다</b> (실측).</div></div><div class="v"><span class="b">→</span><div>해법은 우회가 아니라 <b>모델 태그 선택</b>이다 — thinking이 없는 <code>-instruct</code> 변형을 받는다.</div></div></div><div class="keymsg"><span class="k">정리</span><div>도구 호출 파서와 마찬가지로, 모델 태그 선택이 에이전트 응답 시간을 결정한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="OpenAI 호환 API">
@@ -506,7 +506,7 @@ r = llm.chat.completions.create(
   model="qwen3:4b-instruct",
   messages=[{"role":"user",
              "content":"안녕"}],
-)</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>바뀐 것은 <b>base_url과 model 두 줄</b>이다.</div></div><div class="v"><span class="b">→</span><div>NVIDIA API · DGX · Ollama 가 전부 같은 규격을 열기 때문이다.</div></div><div class="v"><span class="b">★</span><div>7강 에이전트 루프, 9강 앱이 <b>수정 없이</b> 로컬 모델로 돌아간다.</div></div></div></div></div><div class="keymsg"><span class="k">표준의 힘</span><div>OpenAI 호환 <code>/v1</code> 이 사실상의 업계 표준이라, 서빙을 갈아끼워도 앱은 그대로다.</div></div></div>
+)</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>바뀐 것은 <b>base_url과 model 두 줄</b>이다.</div></div><div class="v"><span class="b">→</span><div>NVIDIA API · DGX · Ollama 가 전부 같은 규격을 열기 때문이다.</div></div><div class="v"><span class="b">★</span><div>7강 에이전트 루프, 9강 앱이 <b>수정 없이</b> 로컬 모델로 돌아간다.</div></div></div></div></div><div class="keymsg"><span class="k">호환 규격</span><div>OpenAI 호환 <code>/v1</code> 이 사실상의 업계 표준이다. 서빙을 바꿔도 앱 코드는 유지된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="Modelfile">
@@ -540,7 +540,7 @@ vllm serve Qwen/Qwen3-8B
 <section class="slide" data-title="도구 호출 파서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>함정</div>
-  <h2 class="s-title sm">서빙 설정이 에이전트를 가른다</h2>
+  <h2 class="s-title sm">도구 호출 파서 설정</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>모델은 도구 호출을 <code>&lt;tool_call&gt;…</code> 같은 <b>텍스트</b>로 뱉는다.</div></div><div class="v"><span class="b">→</span><div>이를 OpenAI 규격의 <b>tool_calls 필드로 변환하는 것은 서빙 엔진의 몫</b>이다.</div></div><div class="v"><span class="b">✕</span><div>파서를 안 켜면 — 도구 호출이 본문 텍스트로 섞여 나와 <b>에이전트 루프가 깨진다</b>. 직접 구현이든 LangGraph든 마찬가지다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">vLLM에서 켜는 법 (Qwen 계열)</span></div><pre><code>vllm serve Qwen/Qwen3-8B \
   --enable-auto-tool-choice \
@@ -596,7 +596,7 @@ vllm serve Qwen/Qwen3-8B
   { id: "qwen3:4b-instruct",
     baseURL: "http://localhost:11434/v1",
     label: "로컬 Ollama" },
-]</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>9강 앱의 설정 패널(모델 선택)에 <b>로컬 항목</b>을 더한다.</div></div><div class="v"><span class="b">→</span><div>API Route가 선택된 baseURL로 클라이언트를 만들면 끝이다.</div></div><div class="v"><span class="b">★</span><div>같은 채팅 UI에서 <b>관리형·로컬을 골라 쓰는</b> 앱이 된다.</div></div></div></div></div><div class="keymsg"><span class="k">의미</span><div>서빙 계층이 표준 규격으로 분리돼 있어서, 앱 기능이 아니라 설정 항목 하나로 끝나는 일이다.</div></div></div>
+]</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>9강 앱의 설정 패널(모델 선택)에 <b>로컬 항목</b>을 더한다.</div></div><div class="v"><span class="b">→</span><div>API Route가 선택된 baseURL로 클라이언트를 만들면 끝이다.</div></div><div class="v"><span class="b">★</span><div>같은 채팅 UI에서 <b>관리형·로컬을 골라 쓰는</b> 앱이 된다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>서빙이 OpenAI 호환 규격으로 분리돼 있어 설정 항목 추가만으로 동작한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="하이브리드 라우팅">
@@ -604,7 +604,7 @@ vllm serve Qwen/Qwen3-8B
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>설계</div>
   <h2 class="s-title sm">관리형과 자가 서빙의 분업</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>역할</th><th>보낼 곳</th><th>이유</th></tr></thead><tbody><tr><td>도구를 쓰는 워커</td><td><b>NVIDIA API</b> (또는 파서 켠 vLLM)</td><td>안정적인 tool_calls</td></tr><tr><td>요약 · 비평 · 저지</td><td><b>DGX / Ollama</b> (자가 서빙)</td><td>도구 불필요 · 호출량 부담 없음</td></tr><tr><td>대량 배치 작업</td><td><b>자가 서빙</b></td><td>rate limit·비용 해방</td></tr></tbody></table><div class="keymsg"><span class="k">연결</span><div>9강 멀티에이전트의 rate limit 대응이 여기서 완성된다 — 동시성 캡이 아니라 <b>부하 자체를 나누는</b> 해법이다. 8강 모델 라우팅의 서빙판이기도 하다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>역할</th><th>보낼 곳</th><th>이유</th></tr></thead><tbody><tr><td>도구를 쓰는 워커</td><td><b>NVIDIA API</b> (또는 파서 켠 vLLM)</td><td>안정적인 tool_calls</td></tr><tr><td>요약 · 비평 · 저지</td><td><b>DGX / Ollama</b> (자가 서빙)</td><td>도구 불필요 · 호출량 부담 없음</td></tr><tr><td>대량 배치 작업</td><td><b>자가 서빙</b></td><td>rate limit·비용 해방</td></tr></tbody></table><div class="keymsg"><span class="k">정리</span><div>역할별로 관리형·자가 서빙을 나눠 호출 한도 부담을 줄인다. 8강 모델 라우팅과 같은 원리다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 직접 만드는 오케스트레이터">
@@ -617,7 +617,7 @@ vllm serve Qwen/Qwen3-8B
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>자리</div>
   <h2 class="s-title sm">같은 패턴, 다른 구현 층</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th></th><th>9강</th><th>10강 (오늘)</th></tr></thead><tbody><tr><td>오케스트레이터</td><td><b>하네스</b> (Claude Code 팀)</td><td><b>코드</b> (LangGraph)</td></tr><tr><td>무엇을 오케스트레이션</td><td>개발 작업 (기능 구현 병렬)</td><td>런타임 작업 (앱이 실행하는 태스크)</td></tr><tr><td>강제 수단</td><td>agent teams · 훅</td><td><b>그래프 구조 자체</b> — 코드라서 반드시 그 순서로 돈다</td></tr><tr><td>모델</td><td>Claude (구독)</td><td><b>내가 고른 서빙</b> — NVIDIA API · Ollama · DGX</td></tr></tbody></table><div class="keymsg"><span class="k">연결</span><div>9강에서 손으로 만든 플래너·워커·검증 패턴을, 오늘은 서빙 위에서 <b>LangGraph 코드로</b> 다시 만든다. 프롬프트가 아니라 코드라서 병렬이 강제된다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>9강</th><th>10강 (오늘)</th></tr></thead><tbody><tr><td>오케스트레이터</td><td><b>하네스</b> (Claude Code 팀)</td><td><b>코드</b> (LangGraph)</td></tr><tr><td>무엇을 오케스트레이션</td><td>개발 작업 (기능 구현 병렬)</td><td>런타임 작업 (앱이 실행하는 태스크)</td></tr><tr><td>강제 수단</td><td>agent teams · 훅</td><td><b>그래프 구조 자체</b> — 코드라서 반드시 그 순서로 돈다</td></tr><tr><td>모델</td><td>Claude (구독)</td><td><b>내가 고른 서빙</b> — NVIDIA API · Ollama · DGX</td></tr></tbody></table><div class="keymsg"><span class="k">정리</span><div>9강의 플래너·워커·검증 패턴을 서빙 위에서 <b>LangGraph 코드로</b> 구현한다. 병렬은 프롬프트가 아니라 코드로 강제된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="그래프 설계 — 플래너·워커·종합">
@@ -633,7 +633,7 @@ vllm serve Qwen/Qwen3-8B
   \      |      /
    [aggregate]   결과 종합
         |
-       END</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>planner</b> — LLM이 목표를 독립 작업으로 분해한다.</div></div><div class="v"><span class="b">→</span><div><b>Send 팬아웃</b> — 작업 수만큼 worker 노드를 동적으로 띄운다. <b>같은 스텝 안에서 병렬</b>로 돈다.</div></div><div class="v"><span class="b">→</span><div><b>aggregate</b> — reducer로 모인 결과를 종합한다.</div></div><div class="v"><span class="b">★</span><div>9강 오케스트레이터-워커 패턴이 <b>그래프 세 노드</b>로 표현된다.</div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>하네스에선 '순서를 지켜라'가 프롬프트였지만, 여기선 <b>엣지가 곧 순서</b>다 — 어길 방법이 없다.</div></div></div>
+       END</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>planner</b> — LLM이 목표를 독립 작업으로 분해한다.</div></div><div class="v"><span class="b">→</span><div><b>Send 팬아웃</b> — 작업 수만큼 worker 노드를 동적으로 띄운다. <b>같은 스텝 안에서 병렬</b>로 돈다.</div></div><div class="v"><span class="b">→</span><div><b>aggregate</b> — reducer로 모인 결과를 종합한다.</div></div><div class="v"><span class="b">★</span><div>9강 오케스트레이터-워커 패턴이 <b>그래프 세 노드</b>로 표현된다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>실행 순서가 프롬프트 지시가 아니라 엣지 정의로 강제된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="코드 1 — 상태와 플래너">
@@ -673,7 +673,7 @@ def fan_out(state: State):
 
 def worker(state: WorkerState):
     ans = ask(f"다음 작업을 수행하라: {state['task']}")
-    return {"results": [f"[{state['task']}]\n{ans}"]}</code></pre></div><div class="keymsg"><span class="k">Send</span><div>조건부 엣지가 <code>Send</code> 목록을 반환하면, 각 항목이 <b>독립 상태로 병렬 실행</b>된다. 9강에서 '프롬프트로는 병렬이 강제되지 않는다'고 했던 문제의 코드 쪽 답이다.</div></div></div>
+    return {"results": [f"[{state['task']}]\n{ans}"]}</code></pre></div><div class="keymsg"><span class="k">Send</span><div>조건부 엣지가 <code>Send</code> 목록을 반환하면, 각 항목이 <b>독립 상태로 병렬 실행</b>된다. 프롬프트 지시 없이 병렬이 보장된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="코드 3 — 조립과 실행">
@@ -700,7 +700,7 @@ app = g.compile()</code></pre></div></div><div><div class="code sm"><div class="
 # max_concurrency 가 9강의
 # '동시성 캡'을 한 줄로 해결한다
 
-print(out["final"])</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div><code>max_concurrency</code> 설정 하나로 관리형 API의 호출 한도 아래에서 병렬을 돌린다 — 9강 '호출 한도 아래의 설계'가 프레임워크 기능이 된다.</div></div></div>
+print(out["final"])</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div><code>max_concurrency</code> 설정으로 관리형 API 호출 한도 안에서 병렬 실행 수를 제한한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="모델 교체와 하이브리드">
@@ -719,7 +719,7 @@ llm_local = OpenAI(
   api_key="ollama")
 
 # worker 안의 ask 를 ask_local 로 바꾸면
-# 병렬 호출이 관리형 키에서 사라진다</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 코드는 <b>한 글자도 안 바뀐다</b> — 노드 안의 base_url만 갈린다.</div></div><div class="v"><span class="b">→</span><div>CH4의 하이브리드 라우팅이 오케스트레이터 안에서 실현된다.</div></div><div class="v"><span class="b">★</span><div>서빙(오늘 배운 층)과 오케스트레이션(LangGraph)이 <b>OpenAI 호환 규격 하나</b>로 만나는 지점이다.</div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙을 알면 오케스트레이터의 모델 자리를 자유롭게 갈아끼울 수 있다 — 10강을 9강 위에 얹은 이유다.</div></div></div>
+# 병렬 호출이 관리형 키에서 사라진다</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 코드는 그대로다. 노드 안의 base_url만 다르다.</div></div><div class="v"><span class="b">→</span><div>CH4의 하이브리드 라우팅이 오케스트레이터 안에서 실현된다.</div></div><div class="v"><span class="b">★</span><div>서빙(오늘 배운 층)과 오케스트레이션(LangGraph)이 <b>OpenAI 호환 규격 하나</b>로 만나는 지점이다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>오케스트레이터의 모델은 노드 안 base_url 변경만으로 교체된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="오늘 정리">
@@ -727,7 +727,7 @@ llm_local = OpenAI(
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 채운 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)와 vLLM(프로덕션)의 쓰임과 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델 위에서 도는 구조를 확인했다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙까지 내려가 보면, 관리형 API의 제약이 선택의 문제였다는 것을 알게 된다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)와 vLLM(프로덕션)의 쓰임과 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델 위에서 도는 구조를 확인했다.</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API의 제약(호출 한도·데이터 위치)은 자가 서빙으로 대체할 수 있는 선택 사항이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="열흘의 지도">
@@ -740,7 +740,7 @@ llm_local = OpenAI(
  8강  하네스         CLAUDE.md · 보안 게이트 · 풀스택
  7강  에이전트       LLM + 도구 + 루프
  3-6강 MCP           도구 프로토콜 · 서버 제작
- 1-2강 RAG           검색으로 근거를 대는 생성</code></pre></div><div class="keymsg"><span class="k">마무리</span><div>모델 위의 모든 층을 한 번씩 직접 만들거나 다뤘다. 어떤 층에서 문제가 나든, 이제 어디를 열어봐야 하는지 안다.</div></div></div>
+ 1-2강 RAG           검색으로 근거를 대는 생성</code></pre></div><div class="keymsg"><span class="k">정리</span><div>1~10강에서 모델 위의 전 층(RAG · MCP · 에이전트 · 하네스 · 멀티에이전트 · 서빙)을 다뤘다.</div></div></div>
 </section>
 
 
