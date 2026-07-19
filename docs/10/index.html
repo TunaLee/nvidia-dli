@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH5</span><h3>오케스트레이터</h3><p>LangGraph로 플래너·워커를 직접 구현.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH5</span><h3>오케스트레이터</h3><p>LangGraph로 플래너·워커를 직접 구현.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 원리 중심으로 살펴본다. 명령과 코드는 참고용 예시이며, 별도 실습은 없다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 9→10">
@@ -295,7 +295,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>연결</div>
   <h2 class="s-title sm">API 뒤의 마지막 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층을 직접 다룬다. 서빙까지 알면 스택의 전 층을 만져본 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층의 원리를 살펴본다. 서빙까지 알면 스택의 전 층을 이해한 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
  8-9강 하네스·팀    (Claude Code · 오케스트레이터)
  7강   에이전트 루프 (판단 → 도구 → 관찰)
  3-6강 MCP 도구
@@ -440,7 +440,7 @@ B 끝남 → E 즉시 투입
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">서버용과 개인용의 갈림</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 실습</span><div>개인용(Ollama)을 직접 띄워보고, 프로덕션용(vLLM)은 원리와 설정을 다룬다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 구성</span><div>개인용(Ollama)과 프로덕션용(vLLM)의 원리와 설정을 예시 중심으로 살펴본다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] Ollama">
@@ -521,14 +521,6 @@ PARAMETER temperature 0.2</code></pre></div></div><div><div class="code sm"><div
 ollama run my-assistant</code></pre></div></div></div><div class="keymsg"><span class="k">용도</span><div>시스템 프롬프트·파라미터를 박은 나만의 모델 이름을 만든다. 도커 이미지의 Dockerfile과 같은 발상이다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 1 — Ollama 로컬 서빙">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 1 — 내 컴퓨터에 모델 띄우기</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>winget install Ollama.Ollama</code> (맥은 brew). 새 터미널에서 <code>ollama --version</code> 확인.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>모델 받기 · 대화</h4><p><code>ollama pull qwen3:4b-instruct</code> → <code>ollama run qwen3:4b-instruct</code> 로 터미널 대화. 저사양이면 <code>qwen2.5:3b</code>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>API 확인</h4><p>openai 패키지로 <code>http://localhost:11434/v1</code> 을 호출한다 — NVIDIA API와 같은 규격임을 확인.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>관찰</h4><p>첫 토큰까지의 시간과 생성 속도를 NVIDIA API와 비교해 본다. 로컬의 지연·품질 감각을 잡는다.</p></div></div></div></div></div>
-</section>
-
 <section class="slide section" data-title="[섹션] vLLM과 프로덕션 서빙">
   <div class="ghost">03</div><div class="seyebrow">CHAPTER 03</div><h2>vLLM과 프로덕션 서빙</h2>
   <div class="agenda"><span>vllm serve</span><span>도구 호출 파서</span><span>NIM</span></div>
@@ -587,14 +579,6 @@ vllm serve Qwen/Qwen3-8B
   <div class="body"><table class="ctable"><thead><tr><th>상황</th><th>선택</th></tr></thead><tbody><tr><td>개인 노트북 · 오프라인 실험</td><td><b>Ollama</b></td></tr><tr><td>사내 GPU 서버 · 팀 공용</td><td><b>vLLM</b> (+ 도구 호출 파서)</td></tr><tr><td>구조화 출력·병렬 호출이 많은 서비스</td><td><b>SGLang</b></td></tr><tr><td>엔터프라이즈 지원 · 규제 환경</td><td><b>NIM</b></td></tr><tr><td>소량 호출 · 운영 부담 회피</td><td>관리형 API (NVIDIA · OpenAI …)</td></tr></tbody></table><div class="keymsg"><span class="k">공통 전제</span><div>무엇을 고르든 앱 쪽 변경은 base_url 한 줄이다. 서빙과 앱이 OpenAI 호환 규격으로 분리돼 있기 때문이다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 2 — base_url 교체">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 2 — 7강 루프를 내 모델로</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프 준비</h4><p>7강의 에이전트 루프(판단 → 도구 → 관찰)를 그대로 가져온다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>교체</h4><p><code>base_url="http://localhost:11434/v1"</code> · <code>model="qwen3:4b-instruct"</code> — 바뀌는 것은 두 줄뿐.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 호출 확인</h4><p>할 일 추가 도구를 시켜 <b>tool_calls 가 네이티브로 오는지</b> 본다. 로컬 모델이 에이전트가 되는 순간이다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>같은 요청을 NVIDIA API와 로컬로 각각 돌려 속도·품질을 표로 적는다.</p></div></div></div></div></div>
-</section>
-
 <section class="slide section" data-title="[섹션] 앱 연결">
   <div class="ghost">04</div><div class="seyebrow">CHAPTER 04</div><h2>앱 연결</h2>
   <div class="agenda"><span>모델 스위처</span><span>하이브리드 라우팅</span></div>
@@ -621,14 +605,6 @@ vllm serve Qwen/Qwen3-8B
   <h2 class="s-title sm">관리형과 자가 서빙의 분업</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>역할</th><th>보낼 곳</th><th>이유</th></tr></thead><tbody><tr><td>도구를 쓰는 워커</td><td><b>NVIDIA API</b> (또는 파서 켠 vLLM)</td><td>안정적인 tool_calls</td></tr><tr><td>요약 · 비평 · 저지</td><td><b>DGX / Ollama</b> (자가 서빙)</td><td>도구 불필요 · 호출량 부담 없음</td></tr><tr><td>대량 배치 작업</td><td><b>자가 서빙</b></td><td>rate limit·비용 해방</td></tr></tbody></table><div class="keymsg"><span class="k">연결</span><div>9강 멀티에이전트의 rate limit 대응이 여기서 완성된다 — 동시성 캡이 아니라 <b>부하 자체를 나누는</b> 해법이다. 8강 모델 라우팅의 서빙판이기도 하다.</div></div></div>
-</section>
-
-<section class="slide" data-title="[실습] Lab 3 — 앱에 로컬 모델 연결 (선택)">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 3 — 모델 스위처 확장</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>모델 목록 추가</h4><p>앱의 모델 상수에 Ollama 항목(<code>localhost:11434/v1</code>)을 더한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>동작 확인</h4><p>설정 패널에서 로컬 모델을 고르고 대화가 되는지, 스트리밍이 흐르는지 확인한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>강사 시연 — DGX 파서</h4><p>DGX의 서빙 스택에서 도구 호출 파서를 켜고, tool_calls 가 네이티브로 바뀌는 것을 확인한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>회고</h4><p>관리형·로컬·자가 서버 세 경로의 속도·품질·제약을 표로 정리한다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 직접 만드는 오케스트레이터">
@@ -746,20 +722,12 @@ llm_local = OpenAI(
 # 병렬 호출이 관리형 키에서 사라진다</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 코드는 <b>한 글자도 안 바뀐다</b> — 노드 안의 base_url만 갈린다.</div></div><div class="v"><span class="b">→</span><div>CH4의 하이브리드 라우팅이 오케스트레이터 안에서 실현된다.</div></div><div class="v"><span class="b">★</span><div>서빙(오늘 배운 층)과 오케스트레이션(LangGraph)이 <b>OpenAI 호환 규격 하나</b>로 만나는 지점이다.</div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙을 알면 오케스트레이터의 모델 자리를 자유롭게 갈아끼울 수 있다 — 10강을 9강 위에 얹은 이유다.</div></div></div>
 </section>
 
-<section class="slide" data-title="[실습] Lab 4 — LangGraph 오케스트레이터">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">Lab 4 — 플래너·워커·종합을 코드로</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>그래프 구성</h4><p>State(reducer) → planner → Send 팬아웃 → worker 병렬 → aggregate. NVIDIA Qwen으로 실행한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>동시성 제한</h4><p><code>max_concurrency=2</code> 로 호출 한도 아래에서 병렬을 확인한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>하이브리드</h4><p>워커의 base_url을 Ollama로 바꿔 병렬 호출을 로컬로 옮긴다 — 그래프는 그대로.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>9강 하네스 오케스트레이션과 무엇이 같고 무엇이 다른지 표로 정리한다.</p></div></div></div></div></div>
-</section>
-
 <section class="slide" data-title="오늘 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 채운 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)를 직접 띄웠고, vLLM(프로덕션)의 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델로 돌았다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙까지 내려가 보면, 관리형 API의 제약이 선택의 문제였다는 것을 알게 된다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)와 vLLM(프로덕션)의 쓰임과 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델 위에서 도는 구조를 확인했다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙까지 내려가 보면, 관리형 API의 제약이 선택의 문제였다는 것을 알게 된다.</div></div></div>
 </section>
 
 <section class="slide" data-title="열흘의 지도">
