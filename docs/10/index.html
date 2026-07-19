@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤의 구조 · 자가 호스팅 · 엔진 비교.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>핵심 설정</h3><p>base_url · 모델 태그 · 도구 호출 파서.</p></div><div class="card"><span class="n">CH3</span><h3>앱 연결</h3><p>모델 스위처 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH4</span><h3>오케스트레이터</h3><p>LangGraph 구현 · 실무 적용 예제.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 원리 중심으로 살펴본다. 명령과 코드는 참고용 예시이며, 별도 실습은 없다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤의 구조 · 자가 호스팅 · 엔진 비교.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>모델과 핵심 설정</h3><p>모델 지형 · MoE · 사양 · 파서.</p></div><div class="card"><span class="n">CH3</span><h3>앱 연결</h3><p>모델 스위처 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH4</span><h3>오케스트레이터</h3><p>LangGraph 구현 · 실무 적용 예제.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 원리 중심으로 살펴본다. 명령과 코드는 참고용 예시이며, 별도 실습은 없다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 9→10">
@@ -445,9 +445,33 @@ B 끝남 → E 즉시 투입
   <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 구성</span><div>개인용(Ollama)과 프로덕션용(vLLM)의 원리와 설정을 예시 중심으로 살펴본다.</div></div></div>
 </section>
 
-<section class="slide section" data-title="[섹션] 핵심 설정">
-  <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div><h2>핵심 설정</h2>
-  <div class="agenda"><span>base_url</span><span>모델 태그</span><span>도구 호출 파서</span></div>
+<section class="slide section" data-title="[섹션] 모델과 핵심 설정">
+  <div class="ghost">02</div><div class="seyebrow">CHAPTER 02</div><h2>모델과 핵심 설정</h2>
+  <div class="agenda"><span>모델 지형</span><span>MoE</span><span>사양</span><span>파서</span></div>
+</section>
+
+<section class="slide" data-title="오픈 웨이트 모델 지형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>2026 중반</div>
+  <h2 class="s-title sm">규모대별 대표 모델</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>급</th><th>모델 (총/활성)</th><th>비고</th></tr></thead><tbody><tr><td>노트북 (CPU 가능)</td><td><b>Qwen3 4B-instruct</b> · Gemma 4 12B · Qwen2.5 3B</td><td>자습 기본이 이 급</td></tr><tr><td>단일 GPU</td><td>Qwen3 8B · 14B</td><td>VRAM 8~16GB</td></tr><tr><td>GPU 서버 (MoE)</td><td>Qwen3 30B-A3B · <b>Qwen3.5 35B-A3B</b></td><td>우리 DGX가 이 급</td></tr><tr><td>대형 (멀티 GPU)</td><td>Qwen3 235B-A22B · Qwen3.5 397B-A17B · DeepSeek V4 · GLM-5.2 · Kimi K2.7 · Llama 4 Maverick · Nemotron 3</td><td>관리형 API로 쓰는 급</td></tr></tbody></table><div class="keymsg"><span class="k">경향</span><div>2026년 대형 오픈 모델은 대부분 MoE다 (다음 장). 로컬 실습 기준은 노트북·단일 GPU 급이고, 그 위는 서버·관리형 영역이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="Dense와 MoE">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">총 파라미터와 활성 파라미터</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Dense</b> — 토큰마다 전체 파라미터가 계산에 참여한다. 8B dense는 8B 전부.</div></div><div class="v"><span class="b">→</span><div><b>MoE</b>(Mixture of Experts) — 전문가 블록 중 일부만 라우팅된다. <code>235B-A22B</code>는 총 235B 중 토큰당 <b>22B만 활성</b>.</div></div><div class="v"><span class="b">★</span><div>메모리는 <b>총 파라미터</b> 기준(가중치 전부 로드), 속도·비용은 <b>활성 파라미터</b> 기준이다.</div></div></div></div><div><table class="ctable"><thead><tr><th>모델</th><th>메모리 부담</th><th>속도 체감</th></tr></thead><tbody><tr><td>Qwen3 8B (dense)</td><td>8B급</td><td>8B급</td></tr><tr><td>Qwen3 30B-A3B (MoE)</td><td>30B급</td><td><b>3B급</b></td></tr><tr><td>Qwen3.5 397B-A17B (MoE)</td><td>397B급</td><td><b>17B급</b></td></tr></tbody></table></div></div><div class="keymsg"><span class="k">정리</span><div>MoE는 메모리만 확보되면 큰 모델을 작은 모델 속도로 돌린다. 대형 오픈 모델이 MoE로 수렴한 이유다.</div></div></div>
+</section>
+
+<section class="slide" data-title="실행 사양 기준표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>사양</div>
+  <h2 class="s-title sm">모델 규모별 메모리 요구</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>규모</th><th>FP16 원본</th><th>Q4 양자화 (GGUF)</th><th>실행 환경</th></tr></thead><tbody><tr><td>4B</td><td>약 8GB</td><td>약 2.5GB</td><td>CPU · RAM 16GB</td></tr><tr><td>8B</td><td>약 16GB</td><td>약 5GB</td><td>VRAM 8GB 또는 RAM 16GB</td></tr><tr><td>14B</td><td>약 28GB</td><td>약 9GB</td><td>VRAM 12~16GB</td></tr><tr><td>30B-A3B (MoE)</td><td>약 60GB</td><td>약 18GB</td><td>VRAM 24GB 또는 RAM 32GB</td></tr><tr><td>70B급</td><td>약 140GB</td><td>약 40GB</td><td>멀티 GPU · 워크스테이션</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">→</span><div>가중치 외에 <b>KV 캐시</b>가 컨텍스트 길이·동시 요청 수에 비례해 추가된다 (CH1).</div></div><div class="v"><span class="b">→</span><div>로컬은 Q4 양자화가 기본값이다 — Ollama가 받는 GGUF가 이것이다.</div></div><div class="v"><span class="b">★</span><div>따라서 GPU 없는 노트북의 실습 상한은 <b>4B Q4</b> 급이다.</div></div></div></div>
 </section>
 
 <section class="slide" data-title="OpenAI 호환 API">
@@ -474,7 +498,7 @@ r = llm.chat.completions.create(
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
   <h2 class="s-title sm">hybrid와 instruct의 응답 시간 차이</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>같은 질문 (M3 · 24GB 실측)</th><th>qwen3:4b (hybrid)</th><th>qwen3:4b-instruct</th></tr></thead><tbody><tr><td>생성 토큰</td><td>2,232 (안 보이는 추론 포함)</td><td><b>63</b></td></tr><tr><td>답변 시간</td><td>82.5초</td><td><b>3.9초</b></td></tr><tr><td>스트리밍 첫 토큰</td><td>88.9초</td><td><b>0.23초</b></td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✕</span><div>hybrid 모델은 <b>thinking이 기본으로 켜져</b> 있고, <code>/v1</code>의 <code>think:false</code>·<code>/no_think</code> 스위치로는 <b>꺼지지 않았다</b> (실측).</div></div><div class="v"><span class="b">→</span><div>해법은 우회가 아니라 <b>모델 태그 선택</b>이다 — thinking이 없는 <code>-instruct</code> 변형을 받는다.</div></div></div><div class="keymsg"><span class="k">정리</span><div>도구 호출 파서와 마찬가지로, 모델 태그 선택이 에이전트 응답 시간을 결정한다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>같은 질문 — 실측 비교</th><th>qwen3:4b (hybrid)</th><th>qwen3:4b-instruct</th></tr></thead><tbody><tr><td>생성 토큰</td><td>2,232 (안 보이는 추론 포함)</td><td><b>63</b></td></tr><tr><td>스트리밍 첫 응답</td><td>추론이 끝난 뒤에야 시작</td><td><b>즉시</b></td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">✕</span><div>hybrid 모델은 <b>thinking이 기본으로 켜져</b> 있고, <code>/v1</code>의 <code>think:false</code>·<code>/no_think</code> 스위치로는 <b>꺼지지 않았다</b> (실측).</div></div><div class="v"><span class="b">→</span><div>해법은 우회가 아니라 <b>모델 태그 선택</b>이다 — thinking이 없는 <code>-instruct</code> 변형을 받는다.</div></div></div><div class="keymsg"><span class="k">정리</span><div>도구 호출 파서와 마찬가지로, 모델 태그 선택이 에이전트 응답 시간을 결정한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="도구 호출 파서">
@@ -672,7 +696,7 @@ def worker(state):       # 배치별 감성·주제 분석
     return {"results": [ans]}
 
 def aggregate(state):    # 경영 보고 종합
-    ...</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 구조(분할 → 팬아웃 → 병렬 → 종합)는 CH4 코드와 동일하다.</div></div><div class="v"><span class="b">→</span><div>분할 노드는 LLM이 아니라 <b>일반 코드</b>다 — 규칙으로 나눌 수 있으면 LLM을 쓰지 않는다.</div></div><div class="v"><span class="b">★</span><div>실측 (M3 · Ollama qwen3:4b-instruct): 리뷰 12건 · 3배치 병렬 · <b>총 19.6초</b>. 긍/부정 비율·주제별 불만·개선 우선순위가 담긴 보고가 나온다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>실무 적용은 그래프를 새로 짜는 일이 아니라, 검증된 구조에 입력과 워커 프롬프트를 바꾸는 일이다.</div></div></div>
+    ...</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 구조(분할 → 팬아웃 → 병렬 → 종합)는 CH4 코드와 동일하다.</div></div><div class="v"><span class="b">→</span><div>분할 노드는 LLM이 아니라 <b>일반 코드</b>다 — 규칙으로 나눌 수 있으면 LLM을 쓰지 않는다.</div></div><div class="v"><span class="b">★</span><div>실측 (Ollama qwen3:4b-instruct): 리뷰 12건 · 3배치 병렬. 긍/부정 비율·주제별 불만·개선 우선순위가 담긴 보고가 생성된다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>실무 적용은 그래프를 새로 짜는 일이 아니라, 검증된 구조에 입력과 워커 프롬프트를 바꾸는 일이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="오늘 정리">
@@ -680,7 +704,7 @@ def aggregate(state):    # 경영 보고 종합
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 채운 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)와 vLLM(프로덕션)의 쓰임과 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델 위에서 도는 구조를 확인했다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>오케스트레이터</h4><p>LangGraph로 플래너·워커·종합을 구현하고, 리뷰 일괄 분석에 적용했다 (실측 19.6초).</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API의 제약(호출 한도·데이터 위치)은 자가 서빙으로 대체할 수 있는 선택 사항이다.</div></div></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)와 vLLM(프로덕션)의 쓰임과 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델 위에서 도는 구조를 확인했다.</p></div></div><div class="li"><div class="num">5</div><div class="tx"><h4>오케스트레이터</h4><p>LangGraph로 플래너·워커·종합을 구현하고, 리뷰 일괄 분석에 적용했다 (실측 검증).</p></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API의 제약(호출 한도·데이터 위치)은 자가 서빙으로 대체할 수 있는 선택 사항이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="열흘의 지도">
