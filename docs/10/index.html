@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤의 구조 · 자가 호스팅 · 엔진 비교.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>모델과 핵심 설정</h3><p>모델 지형 · MoE · 사양 · 파서.</p></div><div class="card"><span class="n">CH3</span><h3>앱 연결</h3><p>모델 스위처 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH4</span><h3>오케스트레이터</h3><p>LangGraph 구현 · 실무 적용 예제.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 원리 중심으로 살펴본다. 명령과 코드는 참고용 예시이며, 별도 실습은 없다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤의 구조 · 자가 호스팅 · 엔진 비교.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>모델과 핵심 설정</h3><p>모델 지형 · MoE · 사양 · 파서.</p></div><div class="card"><span class="n">CH3</span><h3>앱 연결</h3><p>모델 스위처 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH4</span><h3>오케스트레이터</h3><p>LangGraph 구현 · 실무 적용 예제.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>명령과 코드는 참고용 예시다. 별도 실습은 없다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 9→10">
@@ -295,7 +295,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>연결</div>
   <h2 class="s-title sm">API 뒤의 마지막 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층의 원리를 다룬다.</div></div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>서빙 엔진의 선택과 설정이 에이전트의 응답 시간·비용·도구 호출 동작을 결정한다.</div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 서빙이란">
@@ -351,7 +351,7 @@ docker run --gpus all nvcr.io/nim/...     # :8000/v1</code></pre></div><div clas
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>사례</div>
   <h2 class="s-title sm">이미 하나 갖고 있다</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트용으로 못 썼던 이유.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>원인은 모델이 아니라 서빙 설정이다.</div></div><div class="v"><span class="b">★</span><div>해결 설정은 <b>도구 호출 파서</b>다 (CH3).</div></div></div></div></div><div class="keymsg"><span class="k">참고</span><div>해결 설정(도구 호출 파서)은 CH3에서 다룬다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트용으로 못 썼던 이유.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>원인은 모델이 아니라 서빙 설정이다.</div></div><div class="v"><span class="b">★</span><div>해결 설정은 <b>도구 호출 파서</b>다 (CH2).</div></div></div></div></div><div class="keymsg"><span class="k">참고</span><div>해결 설정은 CH2 도구 호출 파서다.</div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 추론의 원리">
@@ -437,7 +437,7 @@ B 끝남 → E 즉시 투입
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">서버용과 개인용의 차이</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table><div class="keymsg"><span class="k">오늘 구성</span><div>개인용(Ollama)과 프로덕션용(vLLM)의 원리와 설정을 예시 중심으로 살펴본다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>처리량(throughput) 우선</th><th>지연(latency) · 간편함 우선</th></tr></thead><tbody><tr><td>목표</td><td>동시 요청을 최대한 많이</td><td>내 요청 하나가 빠르고 쉽게</td></tr><tr><td>대표</td><td><b>vLLM · SGLang</b></td><td><b>Ollama · llama.cpp</b></td></tr><tr><td>기법</td><td>PagedAttention · continuous batching</td><td>GGUF 양자화 · CPU 오프로드</td></tr><tr><td>자리</td><td>프로덕션 서버 · DGX</td><td>개인 노트북 · 프로토타입</td></tr></tbody></table></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 모델과 핵심 설정">
