@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>지금까지 불러 쓰던 API의 뒤편을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH5</span><h3>오케스트레이터</h3><p>LangGraph로 플래너·워커를 직접 구현.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>지금까지 불러 쓰던 API의 뒤편을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 9→10">
@@ -623,9 +623,132 @@ vllm serve Qwen/Qwen3-8B
   <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>모델 목록 추가</h4><p>앱의 모델 상수에 Ollama 항목(<code>localhost:11434/v1</code>)을 더한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>동작 확인</h4><p>설정 패널에서 로컬 모델을 고르고 대화가 되는지, 스트리밍이 흐르는지 확인한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>강사 시연 — DGX 파서</h4><p>DGX의 서빙 스택에서 도구 호출 파서를 켜고, tool_calls 가 네이티브로 바뀌는 것을 확인한다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>회고</h4><p>관리형·로컬·자가 서버 세 경로의 속도·품질·제약을 표로 정리한다.</p></div></div></div></div></div>
 </section>
 
+<section class="slide section" data-title="[섹션] 직접 만드는 오케스트레이터">
+  <div class="ghost">05</div><div class="seyebrow">CHAPTER 05</div><h2>직접 만드는 오케스트레이터</h2>
+  <div class="agenda"><span>LangGraph</span><span>플래너·워커</span><span>팬아웃</span><span>하이브리드</span></div>
+</section>
+
+<section class="slide" data-title="9강과의 분업">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>자리</div>
+  <h2 class="s-title sm">같은 패턴, 다른 구현 층</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th></th><th>9강</th><th>10강 (오늘)</th></tr></thead><tbody><tr><td>오케스트레이터</td><td><b>하네스</b> (Claude Code 팀)</td><td><b>코드</b> (LangGraph)</td></tr><tr><td>무엇을 오케스트레이션</td><td>개발 작업 (기능 구현 병렬)</td><td>런타임 작업 (앱이 실행하는 태스크)</td></tr><tr><td>강제 수단</td><td>agent teams · 훅</td><td><b>그래프 구조 자체</b> — 코드라서 반드시 그 순서로 돈다</td></tr><tr><td>모델</td><td>Claude (구독)</td><td><b>내가 고른 서빙</b> — NVIDIA API · Ollama · DGX</td></tr></tbody></table><div class="keymsg"><span class="k">연결</span><div>9강에서 손으로 만든 플래너·워커·검증 패턴을, 오늘은 서빙 위에서 <b>LangGraph 코드로</b> 다시 만든다. 프롬프트가 아니라 코드라서 병렬이 강제된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="그래프 설계 — 플래너·워커·종합">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">맵리듀스 모양의 오케스트레이터</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그래프 구조</span></div><pre><code>START
+  |
+[planner]   목표 → 작업 3개로 분해
+  |  (팬아웃 — 작업 수만큼 Send)
+[worker] [worker] [worker]   ← 병렬
+  \      |      /
+   [aggregate]   결과 종합
+        |
+       END</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>planner</b> — LLM이 목표를 독립 작업으로 분해한다.</div></div><div class="v"><span class="b">→</span><div><b>Send 팬아웃</b> — 작업 수만큼 worker 노드를 동적으로 띄운다. <b>같은 스텝 안에서 병렬</b>로 돈다.</div></div><div class="v"><span class="b">→</span><div><b>aggregate</b> — reducer로 모인 결과를 종합한다.</div></div><div class="v"><span class="b">★</span><div>9강 오케스트레이터-워커 패턴이 <b>그래프 세 노드</b>로 표현된다.</div></div></div></div></div><div class="keymsg"><span class="k">차이</span><div>하네스에선 '순서를 지켜라'가 프롬프트였지만, 여기선 <b>엣지가 곧 순서</b>다 — 어길 방법이 없다.</div></div></div>
+</section>
+
+<section class="slide" data-title="코드 1 — 상태와 플래너">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">공유 상태와 분해 노드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">state_and_planner.py</span></div><pre><code>from typing import Annotated, TypedDict
+import operator
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import Send
+
+class State(TypedDict):
+    goal: str
+    tasks: list[str]
+    results: Annotated[list[str], operator.add]  # 병렬 결과를 이어 붙이는 reducer
+    final: str
+
+def planner(state: State):
+    out = ask(f"목표를 독립 작업 3개로 나눠라. 한 줄에 하나씩.\n목표: {state['goal']}",
+              system="계획만 세운다. 실행하지 않는다.")
+    tasks = [l.strip('-· ').strip() for l in out.splitlines() if l.strip()][:3]
+    return {"tasks": tasks}</code></pre></div><div class="keymsg"><span class="k">포인트</span><div><code>results</code>의 reducer(<code>operator.add</code>)가 핵심이다. 병렬 워커들의 반환이 덮어쓰이지 않고 <b>합쳐진다</b> — 8강 컨텍스트의 <code>add_messages</code>와 같은 원리다.</div></div></div>
+</section>
+
+<section class="slide" data-title="코드 2 — 팬아웃과 워커">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">Send로 만드는 동적 병렬</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">fanout_and_worker.py</span></div><pre><code>class WorkerState(TypedDict):
+    task: str
+
+def fan_out(state: State):
+    # 작업 수만큼 worker 를 띄운다 — 이 리스트가 곧 병렬이다
+    return [Send("worker", {"task": t}) for t in state["tasks"]]
+
+def worker(state: WorkerState):
+    ans = ask(f"다음 작업을 수행하라: {state['task']}")
+    return {"results": [f"[{state['task']}]\n{ans}"]}</code></pre></div><div class="keymsg"><span class="k">Send</span><div>조건부 엣지가 <code>Send</code> 목록을 반환하면, 각 항목이 <b>독립 상태로 병렬 실행</b>된다. 9강에서 '프롬프트로는 병렬이 강제되지 않는다'고 했던 문제의 코드 쪽 답이다.</div></div></div>
+</section>
+
+<section class="slide" data-title="코드 3 — 조립과 실행">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">컴파일과 동시성 제한</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">graph_build.py</span></div><pre><code>g = StateGraph(State)
+g.add_node("planner", planner)
+g.add_node("worker", worker)
+g.add_node("aggregate", aggregate)
+
+g.add_edge(START, "planner")
+g.add_conditional_edges(
+    "planner", fan_out, ["worker"])
+g.add_edge("worker", "aggregate")
+g.add_edge("aggregate", END)
+
+app = g.compile()</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실행 — rate limit 대응 포함</span></div><pre><code>out = app.invoke(
+  {"goal": "사내 AI 도입 현황을 조사해\n   요약하고 다음 단계를 정리한다",
+   "results": []},
+  config={"max_concurrency": 2},
+)
+# max_concurrency 가 9강의
+# '동시성 캡'을 한 줄로 해결한다
+
+print(out["final"])</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div><code>max_concurrency</code> 설정 하나로 관리형 API의 호출 한도 아래에서 병렬을 돌린다 — 9강 '호출 한도 아래의 설계'가 프레임워크 기능이 된다.</div></div></div>
+</section>
+
+<section class="slide" data-title="모델 교체와 하이브리드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>서빙 연결</div>
+  <h2 class="s-title sm">같은 그래프, 다른 서빙</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">역할별 라우팅</span></div><pre><code># 플래너·종합 — 관리형 (품질)
+llm = OpenAI(
+  base_url="https://integrate.api.nvidia.com/v1",
+  api_key=NVIDIA_API_KEY)
+
+# 워커 — 로컬 (호출량 부담 없음)
+llm_local = OpenAI(
+  base_url="http://localhost:11434/v1",
+  api_key="ollama")
+
+# worker 안의 ask 를 ask_local 로 바꾸면
+# 병렬 호출이 관리형 키에서 사라진다</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>그래프 코드는 <b>한 글자도 안 바뀐다</b> — 노드 안의 base_url만 갈린다.</div></div><div class="v"><span class="b">→</span><div>CH4의 하이브리드 라우팅이 오케스트레이터 안에서 실현된다.</div></div><div class="v"><span class="b">★</span><div>서빙(오늘 배운 층)과 오케스트레이션(LangGraph)이 <b>OpenAI 호환 규격 하나</b>로 만나는 지점이다.</div></div></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙을 알면 오케스트레이터의 모델 자리를 자유롭게 갈아끼울 수 있다 — 10강을 9강 위에 얹은 이유다.</div></div></div>
+</section>
+
+<section class="slide" data-title="[실습] Lab 4 — LangGraph 오케스트레이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">Lab 4 — 플래너·워커·종합을 코드로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>그래프 구성</h4><p>State(reducer) → planner → Send 팬아웃 → worker 병렬 → aggregate. NVIDIA Qwen으로 실행한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>동시성 제한</h4><p><code>max_concurrency=2</code> 로 호출 한도 아래에서 병렬을 확인한다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>하이브리드</h4><p>워커의 base_url을 Ollama로 바꿔 병렬 호출을 로컬로 옮긴다 — 그래프는 그대로.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>9강 하네스 오케스트레이션과 무엇이 같고 무엇이 다른지 표로 정리한다.</p></div></div></div></div></div>
+</section>
+
 <section class="slide" data-title="오늘 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 채운 층</h2>
   <div class="rule"></div>
   <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>서빙의 자리</h4><p>API 뒤에서 모델을 GPU에 올리고 요청을 받아내는 층이다. 관리형 API는 이 층을 대신해 주는 대신 호출량을 제한한다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>원리 네 가지</h4><p>KV 캐시(계산→메모리) · PagedAttention(블록 할당) · continuous batching(빈자리 충전) · 양자화(정밀도→크기).</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 두 가지</h4><p>Ollama(개인·로컬)를 직접 띄웠고, vLLM(프로덕션)의 설정 — 특히 <b>도구 호출 파서</b>를 배웠다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>앱 연결</h4><p>base_url 교체만으로 7강 루프와 9강 앱이 로컬 모델로 돌았다.</p></div></div></div><div class="keymsg"><span class="k">한 줄</span><div>서빙까지 내려가 보면, 관리형 API의 제약이 선택의 문제였다는 것을 알게 된다.</div></div></div>
@@ -633,7 +756,7 @@ vllm serve Qwen/Qwen3-8B
 
 <section class="slide" data-title="열흘의 지도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>마무리</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>마무리</div>
   <h2 class="s-title sm">1강부터 10강까지</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">전체 스택</span></div><pre><code>10강  서빙          vLLM · Ollama · NIM — 모델을 직접 띄운다
