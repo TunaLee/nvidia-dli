@@ -308,7 +308,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
   <h2 class="s-title sm">관리형 API의 역할</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA API를 쓰는 동안 서빙은 <b>NVIDIA가 대신</b> 하고 있었다 (NIM 계열 인프라).</div></div><div class="v"><span class="b">→</span><div>우리는 OpenAI 호환 <code>/v1</code> 규격만 알면 됐다.</div></div><div class="v"><span class="b">→</span><div>OpenAI · Anthropic API도 구조는 같다 — 관리형 서빙이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">★</span><div>관리형 API의 대가는 호출량 제한(<b>rate limit</b>)이다.</div></div><div class="v"><span class="b">→</span><div>동시성 캡·백오프는 우회책이고, <b>자가 서빙</b>이 근본 해법이다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API는 서빙을 대신하는 대신 호출량을 제한한다.</div></div></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>NVIDIA API는 서빙을 <b>NVIDIA가 대신</b> 운영하는 형태다 (NIM 계열 인프라). 사용자에게는 OpenAI 호환 <code>/v1</code> 규격만 노출된다.</div></div><div class="v"><span class="b">→</span><div>OpenAI · Anthropic API도 구조는 같다 — 관리형 서빙이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">★</span><div>관리형 API의 대가는 호출량 제한(<b>rate limit</b>)이다.</div></div><div class="v"><span class="b">→</span><div>동시성 캡·백오프는 우회책이고, <b>자가 서빙</b>이 근본 해법이다.</div></div></div></div></div><div class="keymsg"><span class="k">정리</span><div>관리형 API는 서빙을 대신하는 대신 호출량을 제한한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="자가 호스팅의 세 가지 이유">
@@ -489,7 +489,7 @@ r = llm.chat.completions.create(
   --tool-call-parser hermes
 
 # 이 두 플래그가 없으면
-# tool_calls 가 텍스트로 온다</code></pre></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>우리 DGX가 정확히 이 상태였다</h4><p>DGX Qwen이 <code>&lt;tool_call&gt;</code> 을 텍스트로 뱉어 에이전트용으로 못 썼다 — 모델이 아니라 <b>서빙 설정 문제</b>다. 파서를 켜면 rate limit 없는 에이전트 서버가 된다.</p></div></div></div>
+# tool_calls 가 텍스트로 온다</code></pre></div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>강의용 DGX의 사례</h4><p>DGX Qwen이 <code>&lt;tool_call&gt;</code> 을 텍스트로 반환해 에이전트용으로 쓸 수 없었다 — 모델이 아니라 <b>서빙 설정 문제</b>다. 파서를 켜면 rate limit 없는 에이전트 서버가 된다.</p></div></div></div>
 </section>
 
 <section class="slide" data-title="서빙 선택 가이드">
