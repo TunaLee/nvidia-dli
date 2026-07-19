@@ -287,7 +287,7 @@
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH5</span><h3>오케스트레이터</h3><p>LangGraph로 플래너·워커를 직접 구현.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>지금까지 불러 쓰던 API의 뒤편을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">CH0</span><h3>서빙이란</h3><p>API 뒤에 무엇이 있나. 자가 호스팅의 이유.</p></div><div class="card"><span class="n">CH1</span><h3>추론의 원리</h3><p>KV 캐시 · PagedAttention · 배칭 · 양자화.</p></div><div class="card"><span class="n">CH2</span><h3>Ollama</h3><p>내 컴퓨터에서 모델을 띄운다.</p></div><div class="card"><span class="n">CH3</span><h3>vLLM · NIM</h3><p>프로덕션 서빙과 도구 호출 파서.</p></div><div class="card"><span class="n">CH4</span><h3>앱 연결</h3><p>base_url 교체 · 하이브리드 라우팅.</p></div><div class="card"><span class="n">CH5</span><h3>오케스트레이터</h3><p>LangGraph로 플래너·워커를 직접 구현.</p></div></div><div class="keymsg"><span class="k">오늘 방식</span><div>관리형 API 뒤의 서빙 계층을 열어 보고, 같은 모델을 내 컴퓨터에서 직접 띄워 앱에 연결한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="이어가기 · 9→10">
@@ -295,7 +295,7 @@
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>연결</div>
   <h2 class="s-title sm">API 뒤의 마지막 층</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>1~9강 내내 <code>integrate.api.nvidia.com/v1</code> 을 불렀다.</div></div><div class="v"><span class="b">→</span><div>그 주소 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층을 직접 다룬다. 서빙까지 알면 스택의 전 층을 만져본 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><code>integrate.api.nvidia.com/v1</code> 뒤에는 <b>서빙 엔진</b>이 있다 — 모델을 GPU에 올리고 요청을 받아내는 층이다.</div></div><div class="v"><span class="b">★</span><div>오늘은 그 층을 직접 다룬다. 서빙까지 알면 스택의 전 층을 만져본 것이 된다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">우리가 만져온 층</span></div><pre><code>10강  서빙        ← 오늘 (vLLM · Ollama · NIM)
  8-9강 하네스·팀    (Claude Code · 오케스트레이터)
  7강   에이전트 루프 (판단 → 도구 → 관찰)
  3-6강 MCP 도구
