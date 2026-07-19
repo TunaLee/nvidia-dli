@@ -343,7 +343,7 @@ Authorization: Bearer nvapi-...
 ...
 
 # 매 단계의 attention 계산이
-# 앞 토큰 전체를 다시 본다</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div>이 반복 계산을 줄이는 것이 서빙 엔진 최적화의 출발점이다.</div></div></div>
+# 앞 토큰 전체를 다시 본다</code></pre></div></div></div><div class="keymsg"><span class="k">정리</span><div>이 반복을 줄이기 위해 앞 토큰들의 attention 중간 계산(K·V)을 저장해 재사용한다 — 이것이 <b>KV 캐시</b>이고, 서빙 엔진 최적화의 출발점이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="KV 캐시">
