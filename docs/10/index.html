@@ -337,14 +337,6 @@ vllm serve Qwen/Qwen3-8B                  # :8000/v1 (GPU)
 docker run --gpus all nvcr.io/nim/...     # :8000/v1</code></pre></div><div class="keymsg"><span class="k">정리</span><div>앱 쪽 차이는 base_url 하나다. 엔진 선택 기준은 대상 환경(개인·서버·엔터프라이즈)이다.</div></div></div>
 </section>
 
-<section class="slide" data-title="우리 DGX의 정체">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>사례</div>
-  <h2 class="s-title sm">이미 하나 갖고 있다</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>강의용 백업 서버 <code>DGX :30001/v1</code> — Qwen 3.5 35B를 <b>자가 서빙</b> 중이다.</div></div><div class="v"><span class="b">→</span><div>OpenAI 호환 <code>/v1</code> 을 열어두는 것이 서빙 엔진의 전형적인 모습이다.</div></div><div class="v"><span class="b">✕</span><div>다만 이 서버는 도구 호출(tool_calls)이 <b>텍스트로 깨져</b> 나온다 — 에이전트 루프가 동작하지 않는 원인이다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>원인은 모델이 아니라 서빙 설정이다.</div></div><div class="v"><span class="b">★</span><div>해결 설정은 <b>도구 호출 파서</b>다 (CH2).</div></div></div></div></div><div class="keymsg"><span class="k">참고</span><div>해결 설정은 CH2 도구 호출 파서다.</div></div></div>
-</section>
-
 <section class="slide section" data-title="[섹션] 추론의 원리">
   <div class="ghost">01</div><div class="seyebrow">CHAPTER 01</div><h2>추론의 원리</h2>
   <div class="agenda"><span>KV 캐시</span><span>PagedAttention</span><span>배칭</span><span>양자화</span></div>
@@ -441,7 +433,7 @@ B 끝남 → E 즉시 투입
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>2026 중반</div>
   <h2 class="s-title sm">규모대별 대표 모델</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>급</th><th>모델 (총/활성)</th><th>비고</th></tr></thead><tbody><tr><td>노트북 (CPU 가능)</td><td><b>Qwen3 4B-instruct</b> · Gemma 4 12B · Qwen2.5 3B</td><td>자습 기본이 이 급</td></tr><tr><td>단일 GPU</td><td>Qwen3 8B · 14B</td><td>VRAM 8~16GB</td></tr><tr><td>GPU 서버 (MoE)</td><td>Qwen3 30B-A3B · <b>Qwen3.5 35B-A3B</b></td><td>우리 DGX가 이 급</td></tr><tr><td>대형 (멀티 GPU)</td><td>Qwen3 235B-A22B · Qwen3.5 397B-A17B · DeepSeek V4 · GLM-5.2 · Kimi K2.7 · Llama 4 Maverick · Nemotron 3</td><td>관리형 API로 쓰는 급</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">→</span><div><b>라이선스</b> — Qwen 계열은 Apache 2.0, DeepSeek 계열은 MIT 기반으로 상용 제약이 거의 없다.</div></div><div class="v"><span class="b">→</span><div>Llama·Gemma는 <b>조건부 커뮤니티 라이선스</b>다 (대규모 서비스·이용 약관 조건). 상용 배포 전 라이선스 확인이 필요하다.</div></div></div><div class="keymsg"><span class="k">경향</span><div>2026년 대형 오픈 모델은 대부분 MoE다 (다음 장). 로컬 실습 기준은 노트북·단일 GPU 급이고, 그 위는 서버·관리형 영역이다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>급</th><th>모델 (총/활성)</th><th>비고</th></tr></thead><tbody><tr><td>노트북 (CPU 가능)</td><td><b>Qwen3 4B-instruct</b> · Gemma 4 12B · Qwen2.5 3B</td><td>자습 기본이 이 급</td></tr><tr><td>단일 GPU</td><td>Qwen3 8B · 14B</td><td>VRAM 8~16GB</td></tr><tr><td>GPU 서버 (MoE)</td><td>Qwen3 30B-A3B · <b>Qwen3.5 35B-A3B</b></td><td>강의용 DGX가 이 급</td></tr><tr><td>대형 (멀티 GPU)</td><td>Qwen3 235B-A22B · Qwen3.5 397B-A17B · DeepSeek V4 · GLM-5.2 · Kimi K2.7 · Llama 4 Maverick · Nemotron 3</td><td>관리형 API로 쓰는 급</td></tr></tbody></table><div class="vlist"><div class="v"><span class="b">→</span><div><b>라이선스</b> — Qwen 계열은 Apache 2.0, DeepSeek 계열은 MIT 기반으로 상용 제약이 거의 없다.</div></div><div class="v"><span class="b">→</span><div>Llama·Gemma는 <b>조건부 커뮤니티 라이선스</b>다 (대규모 서비스·이용 약관 조건). 상용 배포 전 라이선스 확인이 필요하다.</div></div></div><div class="keymsg"><span class="k">경향</span><div>2026년 대형 오픈 모델은 대부분 MoE다 (다음 장). 로컬 실습 기준은 노트북·단일 GPU 급이고, 그 위는 서버·관리형 영역이다.</div></div></div>
 </section>
 
 <section class="slide" data-title="Dense와 MoE">
