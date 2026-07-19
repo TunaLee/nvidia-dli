@@ -453,8 +453,8 @@ B 끝남 → E 즉시 투입
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>개요</div>
   <h2 class="s-title sm">내 컴퓨터의 모델 실행기</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>llama.cpp</b> 기반의 로컬 서빙 도구 — 설치와 실행이 한 줄이다.</div></div><div class="v"><span class="b">→</span><div>모델은 <b>GGUF 양자화본</b>으로 받는다 — 8B급이 일반 노트북에서 돈다.</div></div><div class="v"><span class="b">→</span><div>GPU가 있으면 쓰고, 없으면 CPU로도 돈다 (느리지만).</div></div><div class="v"><span class="b">★</span><div>기본 포트 <code>11434</code> 에 <b>OpenAI 호환 <code>/v1</code></b> 을 연다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 명령이 전부</span></div><pre><code>ollama pull qwen3:8b   # 모델 받기
-ollama run qwen3:8b    # 대화 실행
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>llama.cpp</b> 기반의 로컬 서빙 도구 — 설치와 실행이 한 줄이다.</div></div><div class="v"><span class="b">→</span><div>모델은 <b>GGUF 양자화본</b>으로 받는다 — 8B급이 일반 노트북에서 돈다.</div></div><div class="v"><span class="b">→</span><div>GPU가 있으면 쓰고, 없으면 CPU로도 돈다 (느리지만).</div></div><div class="v"><span class="b">★</span><div>기본 포트 <code>11434</code> 에 <b>OpenAI 호환 <code>/v1</code></b> 을 연다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 명령이 전부</span></div><pre><code>ollama pull qwen3:4b   # 모델 받기 (수업 기본)
+ollama run qwen3:4b    # 대화 실행
 ollama list            # 받은 모델 목록</code></pre></div></div></div><div class="keymsg"><span class="k">자리</span><div>개인 실험·프로토타입·오프라인 환경용이다. 동시 사용자가 많은 서비스는 vLLM 쪽이 맞다.</div></div></div>
 </section>
 
@@ -479,7 +479,7 @@ curl -fsSL https://ollama.com/install.sh | sh</code></pre></div></div></div><div
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>모델</div>
   <h2 class="s-title sm">수업용 권장 — qwen3:8b</h2>
   <div class="rule"></div>
-  <div class="body"><table class="ctable"><thead><tr><th>모델</th><th>메모리 기준</th><th>특징</th></tr></thead><tbody><tr><td><b>qwen3:8b</b></td><td>VRAM 8GB 또는 RAM 16GB</td><td><b>도구 호출 지원</b> · 수업 권장</td></tr><tr><td>qwen3:4b</td><td>더 가벼움</td><td>저사양 노트북용 대안</td></tr><tr><td>기타 (llama · gemma …)</td><td>모델별 상이</td><td>ollama.com 라이브러리에서 확인</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>도구 호출 지원 여부가 핵심</h4><p>에이전트 실습에는 <b>tool calling을 지원하는 모델</b>이어야 한다. qwen3 계열은 지원한다 — 7강 루프를 그대로 붙일 수 있는 이유다.</p></div></div><div class="keymsg"><span class="k">수업 기준</span><div>사양이 되면 <code>qwen3:8b</code>, 무거우면 <code>qwen3:4b</code> 로 내려간다.</div></div></div>
+  <div class="body"><table class="ctable"><thead><tr><th>모델</th><th>메모리 기준</th><th>특징</th></tr></thead><tbody><tr><td><b>qwen3:4b</b></td><td>2.6GB · RAM 16GB (CPU 가능)</td><td><b>수업 기본</b> — CPU에서도 초당 약 10토큰</td></tr><tr><td>qwen3:1.7b</td><td>1.4GB · RAM 8GB</td><td>저사양 노트북용 — 빠르고 가벼움</td></tr><tr><td>qwen3:8b</td><td>5.2GB · <b>GPU(VRAM 8GB) 권장</b></td><td>GPU 있는 경우의 상위 선택</td></tr></tbody></table><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>도구 호출 지원 여부가 핵심</h4><p>에이전트 실습에는 <b>tool calling을 지원하는 모델</b>이어야 한다. qwen3 계열은 작은 사이즈까지 전부 지원한다 — CPU 노트북에서도 7강 루프를 붙일 수 있는 이유다.</p></div></div><div class="keymsg"><span class="k">수업 기준</span><div>GPU가 없는 것을 기본 전제로 한다 — <code>qwen3:4b</code>로 시작하고, RAM 8GB면 <code>qwen3:1.7b</code>, GPU가 있으면 <code>qwen3:8b</code>로 올린다. qwen3는 전 사이즈가 도구 호출을 지원한다.</div></div></div>
 </section>
 
 <section class="slide" data-title="OpenAI 호환 API">
@@ -495,7 +495,7 @@ llm = OpenAI(
 )
 
 r = llm.chat.completions.create(
-  model="qwen3:8b",
+  model="qwen3:4b",
   messages=[{"role":"user",
              "content":"안녕"}],
 )</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>바뀐 것은 <b>base_url과 model 두 줄</b>이다.</div></div><div class="v"><span class="b">→</span><div>NVIDIA API · DGX · Ollama 가 전부 같은 규격을 열기 때문이다.</div></div><div class="v"><span class="b">★</span><div>7강 에이전트 루프, 9강 앱이 <b>수정 없이</b> 로컬 모델로 돌아간다.</div></div></div></div></div><div class="keymsg"><span class="k">표준의 힘</span><div>OpenAI 호환 <code>/v1</code> 이 사실상의 업계 표준이라, 서빙을 갈아끼워도 앱은 그대로다.</div></div></div>
@@ -518,7 +518,7 @@ ollama run my-assistant</code></pre></div></div></div><div class="keymsg"><span 
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 1 — 내 컴퓨터에 모델 띄우기</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>winget install Ollama.Ollama</code> (맥은 brew). 새 터미널에서 <code>ollama --version</code> 확인.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>모델 받기 · 대화</h4><p><code>ollama pull qwen3:8b</code> → <code>ollama run qwen3:8b</code> 로 터미널 대화. 저사양이면 <code>qwen3:4b</code>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>API 확인</h4><p>openai 패키지로 <code>http://localhost:11434/v1</code> 을 호출한다 — NVIDIA API와 같은 규격임을 확인.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>관찰</h4><p>첫 토큰까지의 시간과 생성 속도를 NVIDIA API와 비교해 본다. 로컬의 지연·품질 감각을 잡는다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>설치</h4><p><code>winget install Ollama.Ollama</code> (맥은 brew). 새 터미널에서 <code>ollama --version</code> 확인.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>모델 받기 · 대화</h4><p><code>ollama pull qwen3:4b</code> → <code>ollama run qwen3:4b</code> 로 터미널 대화. RAM 8GB면 <code>qwen3:1.7b</code>, GPU가 있으면 <code>qwen3:8b</code>.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>API 확인</h4><p>openai 패키지로 <code>http://localhost:11434/v1</code> 을 호출한다 — NVIDIA API와 같은 규격임을 확인.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>관찰</h4><p>첫 토큰까지의 시간과 생성 속도를 NVIDIA API와 비교해 본다. 로컬의 지연·품질 감각을 잡는다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] vLLM과 프로덕션 서빙">
@@ -584,7 +584,7 @@ vllm serve Qwen/Qwen3-8B
   <div class="eyebrow"><span class="tag mint">HANDS-ON</span><span class="dot"></span>실습</div>
   <h2 class="s-title sm">Lab 2 — 7강 루프를 내 모델로</h2>
   <div class="rule"></div>
-  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프 준비</h4><p>7강의 에이전트 루프(판단 → 도구 → 관찰)를 그대로 가져온다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>교체</h4><p><code>base_url="http://localhost:11434/v1"</code> · <code>model="qwen3:8b"</code> — 바뀌는 것은 두 줄뿐.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 호출 확인</h4><p>할 일 추가 도구를 시켜 <b>tool_calls 가 네이티브로 오는지</b> 본다. 로컬 모델이 에이전트가 되는 순간이다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>같은 요청을 NVIDIA API와 로컬로 각각 돌려 속도·품질을 표로 적는다.</p></div></div></div></div></div>
+  <div class="body"><div class="lab-badge"><span class="sq"></span>Day10_서빙_실습.ipynb</div><div style="margin-top:12px"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>루프 준비</h4><p>7강의 에이전트 루프(판단 → 도구 → 관찰)를 그대로 가져온다.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>교체</h4><p><code>base_url="http://localhost:11434/v1"</code> · <code>model="qwen3:4b"</code> — 바뀌는 것은 두 줄뿐.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>도구 호출 확인</h4><p>할 일 추가 도구를 시켜 <b>tool_calls 가 네이티브로 오는지</b> 본다. 로컬 모델이 에이전트가 되는 순간이다.</p></div></div><div class="li"><div class="num">4</div><div class="tx"><h4>비교</h4><p>같은 요청을 NVIDIA API와 로컬로 각각 돌려 속도·품질을 표로 적는다.</p></div></div></div></div></div>
 </section>
 
 <section class="slide section" data-title="[섹션] 앱 연결">
@@ -601,7 +601,7 @@ vllm serve Qwen/Qwen3-8B
   { id: "qwen/qwen3-next-80b-a3b-instruct",
     baseURL: "https://integrate.api.nvidia.com/v1",
     label: "NVIDIA Qwen (관리형)" },
-  { id: "qwen3:8b",
+  { id: "qwen3:4b",
     baseURL: "http://localhost:11434/v1",
     label: "로컬 Ollama" },
 ]</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">→</span><div>9강 앱의 설정 패널(모델 선택)에 <b>로컬 항목</b>을 더한다.</div></div><div class="v"><span class="b">→</span><div>API Route가 선택된 baseURL로 클라이언트를 만들면 끝이다.</div></div><div class="v"><span class="b">★</span><div>같은 채팅 UI에서 <b>관리형·로컬을 골라 쓰는</b> 앱이 된다.</div></div></div></div></div><div class="keymsg"><span class="k">의미</span><div>서빙 계층이 표준 규격으로 분리돼 있어서, 앱 기능이 아니라 설정 항목 하나로 끝나는 일이다.</div></div></div>
