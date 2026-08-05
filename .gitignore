@@ -43,3 +43,7 @@ day*/sandbox_real/
 
 # 채점 하네스 (강사용)
 .claude/
+채점/
+
+# Day11 원본 PPT (대용량 소스 — 커밋 제외)
+docs/11/*.pptx
